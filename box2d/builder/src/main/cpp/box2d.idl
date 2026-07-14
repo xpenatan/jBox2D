@@ -1,0 +1,1149 @@
+[Prefix="JBox2D::"]
+interface B2Vec2 {
+    void B2Vec2();
+    void B2Vec2(float x, float y);
+    float GetX();
+    float GetY();
+    void SetX(float x);
+    void SetY(float y);
+    void Set(float x, float y);
+    void SetZero();
+    float Length();
+    float LengthSquared();
+    float Normalize();
+    boolean IsValid();
+};
+
+[Prefix="JBox2D::"]
+interface B2Rot {
+    void B2Rot();
+    void B2Rot(float radians);
+    float GetCosine();
+    float GetSine();
+    float GetAngle();
+    void Set(float radians);
+    void SetIdentity();
+    [Value] B2Vec2 RotateVector([Const, Ref] B2Vec2 vector);
+    [Value] B2Vec2 InverseRotateVector([Const, Ref] B2Vec2 vector);
+};
+
+[Prefix="JBox2D::"]
+interface B2Transform {
+    void B2Transform();
+    void B2Transform([Const, Ref] B2Vec2 position, [Const, Ref] B2Rot rotation);
+    [Value] B2Vec2 GetPosition();
+    void SetPosition([Const, Ref] B2Vec2 position);
+    [Value] B2Rot GetRotation();
+    void SetRotation([Const, Ref] B2Rot rotation);
+    [Value] B2Vec2 TransformPoint([Const, Ref] B2Vec2 point);
+    [Value] B2Vec2 InverseTransformPoint([Const, Ref] B2Vec2 point);
+};
+
+[Prefix="JBox2D::"]
+interface B2AABB {
+    void B2AABB();
+    void B2AABB([Const, Ref] B2Vec2 lowerBound, [Const, Ref] B2Vec2 upperBound);
+    [Value] B2Vec2 GetLowerBound();
+    void SetLowerBound([Const, Ref] B2Vec2 lowerBound);
+    [Value] B2Vec2 GetUpperBound();
+    void SetUpperBound([Const, Ref] B2Vec2 upperBound);
+    [Value] B2Vec2 GetCenter();
+    [Value] B2Vec2 GetExtents();
+    float GetPerimeter();
+    boolean IsValid();
+    boolean Contains([Const, Ref] B2AABB other);
+};
+
+[Prefix="JBox2D::"]
+interface B2Circle {
+    void B2Circle();
+    void B2Circle([Const, Ref] B2Vec2 center, float radius);
+    [Value] B2Vec2 GetCenter();
+    void SetCenter([Const, Ref] B2Vec2 center);
+    float GetRadius();
+    void SetRadius(float radius);
+};
+
+[Prefix="JBox2D::"]
+interface B2Capsule {
+    void B2Capsule();
+    void B2Capsule([Const, Ref] B2Vec2 center1, [Const, Ref] B2Vec2 center2, float radius);
+    [Value] B2Vec2 GetCenter1();
+    void SetCenter1([Const, Ref] B2Vec2 center);
+    [Value] B2Vec2 GetCenter2();
+    void SetCenter2([Const, Ref] B2Vec2 center);
+    float GetRadius();
+    void SetRadius(float radius);
+};
+
+[Prefix="JBox2D::"]
+interface B2Segment {
+    void B2Segment();
+    void B2Segment([Const, Ref] B2Vec2 point1, [Const, Ref] B2Vec2 point2);
+    [Value] B2Vec2 GetPoint1();
+    void SetPoint1([Const, Ref] B2Vec2 point);
+    [Value] B2Vec2 GetPoint2();
+    void SetPoint2([Const, Ref] B2Vec2 point);
+};
+
+[Prefix="JBox2D::"]
+interface B2ChainSegment {
+    void B2ChainSegment();
+    void B2ChainSegment([Const, Ref] B2Vec2 ghost1, [Const, Ref] B2Segment segment, [Const, Ref] B2Vec2 ghost2);
+    [Value] B2Vec2 GetGhost1();
+    void SetGhost1([Const, Ref] B2Vec2 point);
+    [Value] B2Segment GetSegment();
+    void SetSegment([Const, Ref] B2Segment segment);
+    [Value] B2Vec2 GetGhost2();
+    void SetGhost2([Const, Ref] B2Vec2 point);
+};
+
+[Prefix="JBox2D::"]
+interface B2MassData {
+    void B2MassData();
+    float GetMass();
+    void SetMass(float mass);
+    [Value] B2Vec2 GetCenter();
+    void SetCenter([Const, Ref] B2Vec2 center);
+    float GetRotationalInertia();
+    void SetRotationalInertia(float inertia);
+};
+
+[Prefix="JBox2D::"]
+interface B2Hull {
+    void B2Hull();
+    void ClearPoints();
+    void AddPoint([Const, Ref] B2Vec2 point);
+    long GetInputPointCount();
+    boolean Compute();
+    boolean IsValid();
+    long GetPointCount();
+    [Value] B2Vec2 GetPoint(long index);
+};
+
+[Prefix="JBox2D::"]
+interface B2Polygon {
+    void B2Polygon();
+    static B2Polygon CreateSquare(float halfWidth);
+    static B2Polygon CreateBox(float halfWidth, float halfHeight);
+    static B2Polygon CreateRoundedBox(float halfWidth, float halfHeight, float radius);
+    static B2Polygon CreateOffsetBox(float halfWidth, float halfHeight, [Const, Ref] B2Vec2 center, [Const, Ref] B2Rot rotation);
+    static B2Polygon CreateOffsetRoundedBox(float halfWidth, float halfHeight, [Const, Ref] B2Vec2 center, [Const, Ref] B2Rot rotation, float radius);
+    static B2Polygon CreateFromHull([Const, Ref] B2Hull hull, float radius);
+    long GetVertexCount();
+    [Value] B2Vec2 GetVertex(long index);
+    [Value] B2Vec2 GetNormal(long index);
+    [Value] B2Vec2 GetCentroid();
+    float GetRadius();
+    void SetRadius(float radius);
+    [Value] B2MassData ComputeMass(float density);
+};
+
+[Prefix="JBox2D::"]
+interface B2ShapeProxy {
+    void B2ShapeProxy();
+    void Clear();
+    void AddPoint([Const, Ref] B2Vec2 point);
+    long GetPointCount();
+    [Value] B2Vec2 GetPoint(long index);
+    float GetRadius();
+    void SetRadius(float radius);
+    void SetCircle([Const, Ref] B2Circle circle);
+    void SetCapsule([Const, Ref] B2Capsule capsule);
+    void SetSegment([Const, Ref] B2Segment segment);
+    void SetPolygon([Const, Ref] B2Polygon polygon);
+};
+
+[Prefix="JBox2D::"]
+interface B2SimplexCache {
+    void B2SimplexCache();
+    void Clear();
+    long GetCount();
+};
+
+[Prefix="JBox2D::"]
+interface B2DistanceInput {
+    void B2DistanceInput();
+    [Value] B2ShapeProxy GetProxyA();
+    void SetProxyA([Const, Ref] B2ShapeProxy proxy);
+    [Value] B2ShapeProxy GetProxyB();
+    void SetProxyB([Const, Ref] B2ShapeProxy proxy);
+    [Value] B2Transform GetTransformA();
+    void SetTransformA([Const, Ref] B2Transform transform);
+    [Value] B2Transform GetTransformB();
+    void SetTransformB([Const, Ref] B2Transform transform);
+    boolean GetUseRadii();
+    void SetUseRadii(boolean useRadii);
+};
+
+[Prefix="JBox2D::"]
+interface B2DistanceOutput {
+    void B2DistanceOutput();
+    [Value] B2Vec2 GetPointA();
+    [Value] B2Vec2 GetPointB();
+    [Value] B2Vec2 GetNormal();
+    float GetDistance();
+    long GetIterations();
+    long GetSimplexCount();
+};
+
+[Prefix="JBox2D::"]
+interface B2ShapeCastPairInput {
+    void B2ShapeCastPairInput();
+    [Value] B2ShapeProxy GetProxyA();
+    void SetProxyA([Const, Ref] B2ShapeProxy proxy);
+    [Value] B2ShapeProxy GetProxyB();
+    void SetProxyB([Const, Ref] B2ShapeProxy proxy);
+    [Value] B2Transform GetTransformA();
+    void SetTransformA([Const, Ref] B2Transform transform);
+    [Value] B2Transform GetTransformB();
+    void SetTransformB([Const, Ref] B2Transform transform);
+    [Value] B2Vec2 GetTranslationB();
+    void SetTranslationB([Const, Ref] B2Vec2 translation);
+    float GetMaxFraction();
+    void SetMaxFraction(float fraction);
+    boolean GetCanEncroach();
+    void SetCanEncroach(boolean canEncroach);
+};
+
+[Prefix="JBox2D::"]
+interface B2Sweep {
+    void B2Sweep();
+    [Value] B2Vec2 GetLocalCenter();
+    void SetLocalCenter([Const, Ref] B2Vec2 center);
+    [Value] B2Vec2 GetCenter1();
+    void SetCenter1([Const, Ref] B2Vec2 center);
+    [Value] B2Vec2 GetCenter2();
+    void SetCenter2([Const, Ref] B2Vec2 center);
+    [Value] B2Rot GetRotation1();
+    void SetRotation1([Const, Ref] B2Rot rotation);
+    [Value] B2Rot GetRotation2();
+    void SetRotation2([Const, Ref] B2Rot rotation);
+};
+
+[Prefix="JBox2D::"]
+interface B2TOIInput {
+    void B2TOIInput();
+    [Value] B2ShapeProxy GetProxyA();
+    void SetProxyA([Const, Ref] B2ShapeProxy proxy);
+    [Value] B2ShapeProxy GetProxyB();
+    void SetProxyB([Const, Ref] B2ShapeProxy proxy);
+    [Value] B2Sweep GetSweepA();
+    void SetSweepA([Const, Ref] B2Sweep sweep);
+    [Value] B2Sweep GetSweepB();
+    void SetSweepB([Const, Ref] B2Sweep sweep);
+    float GetMaxFraction();
+    void SetMaxFraction(float fraction);
+};
+
+[Prefix="JBox2D::"]
+interface B2TOIOutput {
+    void B2TOIOutput();
+    long GetState();
+    float GetFraction();
+};
+
+[Prefix="JBox2D::"]
+interface B2TreeResult {
+    void B2TreeResult();
+    long GetCount();
+    long GetProxyId(long index);
+    long long GetUserData(long index);
+    long GetNodeVisits();
+    long GetLeafVisits();
+};
+
+[Prefix="JBox2D::"]
+interface B2DynamicTree {
+    void B2DynamicTree();
+    void Destroy();
+    long CreateProxy([Const, Ref] B2AABB aabb, long long categoryBits, long long userData);
+    void DestroyProxy(long proxyId);
+    void MoveProxy(long proxyId, [Const, Ref] B2AABB aabb);
+    void EnlargeProxy(long proxyId, [Const, Ref] B2AABB aabb);
+    void SetCategoryBits(long proxyId, long long categoryBits);
+    long long GetCategoryBits(long proxyId);
+    long long GetUserData(long proxyId);
+    [Value] B2AABB GetAABB(long proxyId);
+    long GetHeight();
+    float GetAreaRatio();
+    [Value] B2AABB GetRootBounds();
+    long GetProxyCount();
+    long Rebuild(boolean fullBuild);
+    long GetByteCount();
+    void Validate();
+    B2TreeResult Query([Const, Ref] B2AABB aabb, long long maskBits); //[-NEW_OBJECT]
+    B2TreeResult RayCast([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, float maxFraction, long long maskBits); //[-NEW_OBJECT]
+    B2TreeResult ShapeCast([Const, Ref] B2ShapeProxy proxy, [Const, Ref] B2Vec2 translation, float maxFraction, boolean canEncroach, long long maskBits); //[-NEW_OBJECT]
+};
+
+[Prefix="JBox2D::"]
+interface B2Filter {
+    void B2Filter();
+    long long GetCategoryBits();
+    void SetCategoryBits(long long categoryBits);
+    long long GetMaskBits();
+    void SetMaskBits(long long maskBits);
+    long GetGroupIndex();
+    void SetGroupIndex(long groupIndex);
+};
+
+[Prefix="JBox2D::"]
+interface B2QueryFilter {
+    void B2QueryFilter();
+    long long GetCategoryBits();
+    void SetCategoryBits(long long categoryBits);
+    long long GetMaskBits();
+    void SetMaskBits(long long maskBits);
+};
+
+[Prefix="JBox2D::"]
+interface B2SurfaceMaterial {
+    void B2SurfaceMaterial();
+    float GetFriction();
+    void SetFriction(float friction);
+    float GetRestitution();
+    void SetRestitution(float restitution);
+    float GetRollingResistance();
+    void SetRollingResistance(float resistance);
+    float GetTangentSpeed();
+    void SetTangentSpeed(float speed);
+    long GetUserMaterialId();
+    void SetUserMaterialId(long materialId);
+    long GetCustomColor();
+    void SetCustomColor(long color);
+};
+
+[Prefix="JBox2D::"]
+interface B2WorldDef {
+    void B2WorldDef();
+    [Value] B2Vec2 GetGravity();
+    void SetGravity([Const, Ref] B2Vec2 gravity);
+    float GetRestitutionThreshold();
+    void SetRestitutionThreshold(float threshold);
+    float GetHitEventThreshold();
+    void SetHitEventThreshold(float threshold);
+    float GetContactHertz();
+    void SetContactHertz(float hertz);
+    float GetContactDampingRatio();
+    void SetContactDampingRatio(float ratio);
+    float GetMaxContactPushSpeed();
+    void SetMaxContactPushSpeed(float speed);
+    float GetMaximumLinearSpeed();
+    void SetMaximumLinearSpeed(float speed);
+    boolean GetEnableSleep();
+    void SetEnableSleep(boolean enabled);
+    boolean GetEnableContinuous();
+    void SetEnableContinuous(boolean enabled);
+};
+
+[Prefix="JBox2D::"]
+interface B2BodyDef {
+    void B2BodyDef();
+    long GetType();
+    void SetType(long type);
+    [Value] B2Vec2 GetPosition();
+    void SetPosition([Const, Ref] B2Vec2 position);
+    [Value] B2Rot GetRotation();
+    void SetRotation([Const, Ref] B2Rot rotation);
+    void SetAngle(float radians);
+    [Value] B2Vec2 GetLinearVelocity();
+    void SetLinearVelocity([Const, Ref] B2Vec2 velocity);
+    float GetAngularVelocity();
+    void SetAngularVelocity(float velocity);
+    float GetLinearDamping();
+    void SetLinearDamping(float damping);
+    float GetAngularDamping();
+    void SetAngularDamping(float damping);
+    float GetGravityScale();
+    void SetGravityScale(float scale);
+    float GetSleepThreshold();
+    void SetSleepThreshold(float threshold);
+    boolean GetEnableSleep();
+    void SetEnableSleep(boolean enabled);
+    boolean GetIsAwake();
+    void SetIsAwake(boolean awake);
+    boolean GetFixedRotation();
+    void SetFixedRotation(boolean fixedRotation);
+    boolean GetIsBullet();
+    void SetIsBullet(boolean bullet);
+    boolean GetIsEnabled();
+    void SetIsEnabled(boolean enabled);
+    boolean GetAllowFastRotation();
+    void SetAllowFastRotation(boolean allowed);
+};
+
+[Prefix="JBox2D::"]
+interface B2ShapeDef {
+    void B2ShapeDef();
+    [Value] B2SurfaceMaterial GetMaterial();
+    void SetMaterial([Const, Ref] B2SurfaceMaterial material);
+    float GetDensity();
+    void SetDensity(float density);
+    [Value] B2Filter GetFilter();
+    void SetFilter([Const, Ref] B2Filter filter);
+    boolean GetIsSensor();
+    void SetIsSensor(boolean sensor);
+    boolean GetEnableSensorEvents();
+    void SetEnableSensorEvents(boolean enabled);
+    boolean GetEnableContactEvents();
+    void SetEnableContactEvents(boolean enabled);
+    boolean GetEnableHitEvents();
+    void SetEnableHitEvents(boolean enabled);
+    boolean GetEnablePreSolveEvents();
+    void SetEnablePreSolveEvents(boolean enabled);
+    boolean GetInvokeContactCreation();
+    void SetInvokeContactCreation(boolean enabled);
+    boolean GetUpdateBodyMass();
+    void SetUpdateBodyMass(boolean enabled);
+};
+
+[Prefix="JBox2D::"]
+interface B2ChainDef {
+    void B2ChainDef();
+    void ClearPoints();
+    void AddPoint([Const, Ref] B2Vec2 point);
+    long GetPointCount();
+    [Value] B2Vec2 GetPoint(long index);
+    void ClearMaterials();
+    void AddMaterial([Const, Ref] B2SurfaceMaterial material);
+    long GetMaterialCount();
+    [Value] B2SurfaceMaterial GetMaterial(long index);
+    [Value] B2Filter GetFilter();
+    void SetFilter([Const, Ref] B2Filter filter);
+    boolean GetIsLoop();
+    void SetIsLoop(boolean loop);
+    boolean GetEnableSensorEvents();
+    void SetEnableSensorEvents(boolean enabled);
+};
+
+[Prefix="JBox2D::"]
+interface B2DistanceJointDef {
+    void B2DistanceJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+    [Value] B2Vec2 GetLocalAnchorA();
+    void SetLocalAnchorA([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAnchorB();
+    void SetLocalAnchorB([Const, Ref] B2Vec2 anchor);
+    float GetLength();
+    void SetLength(float length);
+    boolean GetEnableSpring();
+    void SetEnableSpring(boolean enabled);
+    float GetHertz();
+    void SetHertz(float hertz);
+    float GetDampingRatio();
+    void SetDampingRatio(float ratio);
+    boolean GetEnableLimit();
+    void SetEnableLimit(boolean enabled);
+    float GetMinLength();
+    void SetMinLength(float length);
+    float GetMaxLength();
+    void SetMaxLength(float length);
+    boolean GetEnableMotor();
+    void SetEnableMotor(boolean enabled);
+    float GetMaxMotorForce();
+    void SetMaxMotorForce(float force);
+    float GetMotorSpeed();
+    void SetMotorSpeed(float speed);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+};
+
+[Prefix="JBox2D::"]
+interface B2MotorJointDef {
+    void B2MotorJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+    [Value] B2Vec2 GetLinearOffset();
+    void SetLinearOffset([Const, Ref] B2Vec2 offset);
+    float GetAngularOffset();
+    void SetAngularOffset(float offset);
+    float GetMaxForce();
+    void SetMaxForce(float force);
+    float GetMaxTorque();
+    void SetMaxTorque(float torque);
+    float GetCorrectionFactor();
+    void SetCorrectionFactor(float factor);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+};
+
+[Prefix="JBox2D::"]
+interface B2MouseJointDef {
+    void B2MouseJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+    [Value] B2Vec2 GetTarget();
+    void SetTarget([Const, Ref] B2Vec2 target);
+    float GetHertz();
+    void SetHertz(float hertz);
+    float GetDampingRatio();
+    void SetDampingRatio(float ratio);
+    float GetMaxForce();
+    void SetMaxForce(float force);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+};
+
+[Prefix="JBox2D::"]
+interface B2FilterJointDef {
+    void B2FilterJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+};
+
+[Prefix="JBox2D::"]
+interface B2PrismaticJointDef {
+    void B2PrismaticJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+    [Value] B2Vec2 GetLocalAnchorA();
+    void SetLocalAnchorA([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAnchorB();
+    void SetLocalAnchorB([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAxisA();
+    void SetLocalAxisA([Const, Ref] B2Vec2 axis);
+    float GetReferenceAngle();
+    void SetReferenceAngle(float angle);
+    float GetTargetTranslation();
+    void SetTargetTranslation(float translation);
+    boolean GetEnableSpring();
+    void SetEnableSpring(boolean enabled);
+    float GetHertz();
+    void SetHertz(float hertz);
+    float GetDampingRatio();
+    void SetDampingRatio(float ratio);
+    boolean GetEnableLimit();
+    void SetEnableLimit(boolean enabled);
+    float GetLowerTranslation();
+    void SetLowerTranslation(float translation);
+    float GetUpperTranslation();
+    void SetUpperTranslation(float translation);
+    boolean GetEnableMotor();
+    void SetEnableMotor(boolean enabled);
+    float GetMaxMotorForce();
+    void SetMaxMotorForce(float force);
+    float GetMotorSpeed();
+    void SetMotorSpeed(float speed);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+};
+
+[Prefix="JBox2D::"]
+interface B2RevoluteJointDef {
+    void B2RevoluteJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+    [Value] B2Vec2 GetLocalAnchorA();
+    void SetLocalAnchorA([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAnchorB();
+    void SetLocalAnchorB([Const, Ref] B2Vec2 anchor);
+    float GetReferenceAngle();
+    void SetReferenceAngle(float angle);
+    float GetTargetAngle();
+    void SetTargetAngle(float angle);
+    boolean GetEnableSpring();
+    void SetEnableSpring(boolean enabled);
+    float GetHertz();
+    void SetHertz(float hertz);
+    float GetDampingRatio();
+    void SetDampingRatio(float ratio);
+    boolean GetEnableLimit();
+    void SetEnableLimit(boolean enabled);
+    float GetLowerAngle();
+    void SetLowerAngle(float angle);
+    float GetUpperAngle();
+    void SetUpperAngle(float angle);
+    boolean GetEnableMotor();
+    void SetEnableMotor(boolean enabled);
+    float GetMaxMotorTorque();
+    void SetMaxMotorTorque(float torque);
+    float GetMotorSpeed();
+    void SetMotorSpeed(float speed);
+    float GetDrawSize();
+    void SetDrawSize(float size);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+};
+
+[Prefix="JBox2D::"]
+interface B2WeldJointDef {
+    void B2WeldJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+    [Value] B2Vec2 GetLocalAnchorA();
+    void SetLocalAnchorA([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAnchorB();
+    void SetLocalAnchorB([Const, Ref] B2Vec2 anchor);
+    float GetReferenceAngle();
+    void SetReferenceAngle(float angle);
+    float GetLinearHertz();
+    void SetLinearHertz(float hertz);
+    float GetAngularHertz();
+    void SetAngularHertz(float hertz);
+    float GetLinearDampingRatio();
+    void SetLinearDampingRatio(float ratio);
+    float GetAngularDampingRatio();
+    void SetAngularDampingRatio(float ratio);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+};
+
+[Prefix="JBox2D::"]
+interface B2WheelJointDef {
+    void B2WheelJointDef();
+    long long GetBodyIdA();
+    void SetBodyIdA(long long bodyId);
+    long long GetBodyIdB();
+    void SetBodyIdB(long long bodyId);
+    [Value] B2Vec2 GetLocalAnchorA();
+    void SetLocalAnchorA([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAnchorB();
+    void SetLocalAnchorB([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAxisA();
+    void SetLocalAxisA([Const, Ref] B2Vec2 axis);
+    boolean GetEnableSpring();
+    void SetEnableSpring(boolean enabled);
+    float GetHertz();
+    void SetHertz(float hertz);
+    float GetDampingRatio();
+    void SetDampingRatio(float ratio);
+    boolean GetEnableLimit();
+    void SetEnableLimit(boolean enabled);
+    float GetLowerTranslation();
+    void SetLowerTranslation(float translation);
+    float GetUpperTranslation();
+    void SetUpperTranslation(float translation);
+    boolean GetEnableMotor();
+    void SetEnableMotor(boolean enabled);
+    float GetMaxMotorTorque();
+    void SetMaxMotorTorque(float torque);
+    float GetMotorSpeed();
+    void SetMotorSpeed(float speed);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+};
+
+[Prefix="JBox2D::"]
+interface B2CastResult {
+    void B2CastResult();
+    [Value] B2Vec2 GetPoint();
+    [Value] B2Vec2 GetNormal();
+    float GetFraction();
+    long GetIterations();
+    boolean GetHit();
+};
+
+[Prefix="JBox2D::"]
+interface B2RayResult {
+    void B2RayResult();
+    long long GetShapeId();
+    [Value] B2Vec2 GetPoint();
+    [Value] B2Vec2 GetNormal();
+    float GetFraction();
+    long GetNodeVisits();
+    long GetLeafVisits();
+    boolean GetHit();
+};
+
+[Prefix="JBox2D::"]
+interface B2ManifoldPoint {
+    void B2ManifoldPoint();
+    [Value] B2Vec2 GetPoint();
+    [Value] B2Vec2 GetAnchorA();
+    [Value] B2Vec2 GetAnchorB();
+    float GetSeparation();
+    float GetNormalImpulse();
+    float GetTangentImpulse();
+    float GetTotalNormalImpulse();
+    float GetNormalVelocity();
+    long GetId();
+    boolean GetPersisted();
+};
+
+[Prefix="JBox2D::"]
+interface B2Manifold {
+    void B2Manifold();
+    [Value] B2Vec2 GetNormal();
+    float GetRollingImpulse();
+    long GetPointCount();
+    [Value] B2ManifoldPoint GetPoint(long index);
+};
+
+[Prefix="JBox2D::"]
+interface B2Collision {
+    [Value] static B2DistanceOutput ShapeDistance([Const, Ref] B2DistanceInput input, [Ref] B2SimplexCache cache);
+    [Value] static B2CastResult ShapeCast([Const, Ref] B2ShapeCastPairInput input);
+    [Value] static B2TOIOutput TimeOfImpact([Const, Ref] B2TOIInput input);
+    [Value] static B2Transform GetSweepTransform([Const, Ref] B2Sweep sweep, float time);
+    [Value] static B2CastResult RayCastCircle([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, float maxFraction, [Const, Ref] B2Circle circle);
+    [Value] static B2CastResult RayCastCapsule([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, float maxFraction, [Const, Ref] B2Capsule capsule);
+    [Value] static B2CastResult RayCastSegment([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, float maxFraction, [Const, Ref] B2Segment segment, boolean oneSided);
+    [Value] static B2CastResult RayCastPolygon([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, float maxFraction, [Const, Ref] B2Polygon polygon);
+    [Value] static B2Manifold CollideCircles([Const, Ref] B2Circle shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Circle shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollideCapsuleAndCircle([Const, Ref] B2Capsule shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Circle shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollideSegmentAndCircle([Const, Ref] B2Segment shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Circle shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollidePolygonAndCircle([Const, Ref] B2Polygon shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Circle shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollideCapsules([Const, Ref] B2Capsule shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Capsule shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollideSegmentAndCapsule([Const, Ref] B2Segment shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Capsule shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollidePolygonAndCapsule([Const, Ref] B2Polygon shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Capsule shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollidePolygons([Const, Ref] B2Polygon shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Polygon shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollideSegmentAndPolygon([Const, Ref] B2Segment shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Polygon shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollideChainSegmentAndCircle([Const, Ref] B2ChainSegment shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Circle shapeB, [Const, Ref] B2Transform transformB);
+    [Value] static B2Manifold CollideChainSegmentAndCapsule([Const, Ref] B2ChainSegment shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Capsule shapeB, [Const, Ref] B2Transform transformB, [Ref] B2SimplexCache cache);
+    [Value] static B2Manifold CollideChainSegmentAndPolygon([Const, Ref] B2ChainSegment shapeA, [Const, Ref] B2Transform transformA, [Const, Ref] B2Polygon shapeB, [Const, Ref] B2Transform transformB, [Ref] B2SimplexCache cache);
+    static long TOIUnknown();
+    static long TOIFailed();
+    static long TOIOverlapped();
+    static long TOIHit();
+    static long TOISeparated();
+};
+
+[Prefix="JBox2D::"]
+interface B2WorldCastHit {
+    void B2WorldCastHit();
+    long long GetShapeId();
+    [Value] B2Vec2 GetPoint();
+    [Value] B2Vec2 GetNormal();
+    float GetFraction();
+};
+
+[Prefix="JBox2D::"]
+interface B2WorldCastResult {
+    void B2WorldCastResult();
+    long GetHitCount();
+    [Value] B2WorldCastHit GetHit(long index);
+    long GetNodeVisits();
+    long GetLeafVisits();
+};
+
+[Prefix="JBox2D::"]
+interface B2WorldOverlapResult {
+    void B2WorldOverlapResult();
+    long GetShapeCount();
+    long long GetShapeId(long index);
+    long GetNodeVisits();
+    long GetLeafVisits();
+};
+
+[Prefix="JBox2D::"]
+interface B2MoverResult {
+    void B2MoverResult();
+    [Value] B2Vec2 GetTranslation();
+    [Value] B2Vec2 GetClippedVelocity();
+    long GetIterationCount();
+    long GetPlaneCount();
+    [Value] B2Vec2 GetPlaneNormal(long index);
+    float GetPlaneOffset(long index);
+    float GetPlanePush(long index);
+};
+
+[Prefix="JBox2D::"]
+interface B2BodyMoveEvent {
+    void B2BodyMoveEvent();
+    long long GetBodyId();
+    [Value] B2Transform GetTransform();
+    boolean GetFellAsleep();
+};
+
+[Prefix="JBox2D::"]
+interface B2BodyEvents {
+    void B2BodyEvents();
+    long GetMoveCount();
+    [Value] B2BodyMoveEvent GetMoveEvent(long index);
+};
+
+[Prefix="JBox2D::"]
+interface B2SensorBeginTouchEvent {
+    void B2SensorBeginTouchEvent();
+    long long GetSensorShapeId();
+    long long GetVisitorShapeId();
+};
+
+[Prefix="JBox2D::"]
+interface B2SensorEndTouchEvent {
+    void B2SensorEndTouchEvent();
+    long long GetSensorShapeId();
+    long long GetVisitorShapeId();
+};
+
+[Prefix="JBox2D::"]
+interface B2SensorEvents {
+    void B2SensorEvents();
+    long GetBeginCount();
+    [Value] B2SensorBeginTouchEvent GetBeginEvent(long index);
+    long GetEndCount();
+    [Value] B2SensorEndTouchEvent GetEndEvent(long index);
+};
+
+[Prefix="JBox2D::"]
+interface B2ContactBeginTouchEvent {
+    void B2ContactBeginTouchEvent();
+    long long GetShapeIdA();
+    long long GetShapeIdB();
+    [Value] B2Manifold GetManifold();
+};
+
+[Prefix="JBox2D::"]
+interface B2ContactEndTouchEvent {
+    void B2ContactEndTouchEvent();
+    long long GetShapeIdA();
+    long long GetShapeIdB();
+};
+
+[Prefix="JBox2D::"]
+interface B2ContactHitEvent {
+    void B2ContactHitEvent();
+    long long GetShapeIdA();
+    long long GetShapeIdB();
+    [Value] B2Vec2 GetPoint();
+    [Value] B2Vec2 GetNormal();
+    float GetApproachSpeed();
+};
+
+[Prefix="JBox2D::"]
+interface B2ContactEvents {
+    void B2ContactEvents();
+    long GetBeginCount();
+    [Value] B2ContactBeginTouchEvent GetBeginEvent(long index);
+    long GetEndCount();
+    [Value] B2ContactEndTouchEvent GetEndEvent(long index);
+    long GetHitCount();
+    [Value] B2ContactHitEvent GetHitEvent(long index);
+};
+
+[Prefix="JBox2D::"]
+interface B2DebugPolygon {
+    void B2DebugPolygon();
+    long GetVertexCount();
+    [Value] B2Vec2 GetVertex(long index);
+};
+
+[Prefix="JBox2D::"]
+interface B2Body {
+    void B2Body();
+    void B2Body(long long bodyId);
+    long long GetId();
+    boolean IsValid();
+    void Destroy();
+    long GetType();
+    void SetType(long type);
+    [Value] B2Vec2 GetPosition();
+    [Value] B2Rot GetRotation();
+    [Value] B2Transform GetTransform();
+    void SetTransform([Const, Ref] B2Vec2 position, [Const, Ref] B2Rot rotation);
+    void SetTargetTransform([Const, Ref] B2Transform target, float timeStep);
+    [Value] B2Vec2 GetLocalPoint([Const, Ref] B2Vec2 worldPoint);
+    [Value] B2Vec2 GetWorldPoint([Const, Ref] B2Vec2 localPoint);
+    [Value] B2Vec2 GetLocalVector([Const, Ref] B2Vec2 worldVector);
+    [Value] B2Vec2 GetWorldVector([Const, Ref] B2Vec2 localVector);
+    [Value] B2Vec2 GetLinearVelocity();
+    void SetLinearVelocity([Const, Ref] B2Vec2 velocity);
+    float GetAngularVelocity();
+    void SetAngularVelocity(float velocity);
+    void ApplyForce([Const, Ref] B2Vec2 force, [Const, Ref] B2Vec2 point, boolean wake);
+    void ApplyForceToCenter([Const, Ref] B2Vec2 force, boolean wake);
+    void ApplyTorque(float torque, boolean wake);
+    void ApplyLinearImpulse([Const, Ref] B2Vec2 impulse, [Const, Ref] B2Vec2 point, boolean wake);
+    void ApplyLinearImpulseToCenter([Const, Ref] B2Vec2 impulse, boolean wake);
+    void ApplyAngularImpulse(float impulse, boolean wake);
+    float GetMass();
+    float GetRotationalInertia();
+    [Value] B2Vec2 GetLocalCenterOfMass();
+    [Value] B2Vec2 GetWorldCenterOfMass();
+    [Value] B2MassData GetMassData();
+    void SetMassData([Const, Ref] B2MassData massData);
+    void ApplyMassFromShapes();
+    float GetLinearDamping();
+    void SetLinearDamping(float damping);
+    float GetAngularDamping();
+    void SetAngularDamping(float damping);
+    float GetGravityScale();
+    void SetGravityScale(float scale);
+    boolean IsAwake();
+    void SetAwake(boolean awake);
+    boolean IsSleepEnabled();
+    void EnableSleep(boolean enabled);
+    boolean IsEnabled();
+    void Disable();
+    void Enable();
+    boolean IsFixedRotation();
+    void SetFixedRotation(boolean fixedRotation);
+    boolean IsBullet();
+    void SetBullet(boolean bullet);
+    long GetShapeCount();
+    B2Shape GetShape(long index); //[-NEW_OBJECT]
+    long GetJointCount();
+    B2Joint GetJoint(long index); //[-NEW_OBJECT]
+    [Value] B2AABB ComputeAABB();
+    B2Shape CreateCircleShape([Const, Ref] B2ShapeDef def, [Const, Ref] B2Circle circle); //[-NEW_OBJECT]
+    B2Shape CreateCapsuleShape([Const, Ref] B2ShapeDef def, [Const, Ref] B2Capsule capsule); //[-NEW_OBJECT]
+    B2Shape CreateSegmentShape([Const, Ref] B2ShapeDef def, [Const, Ref] B2Segment segment); //[-NEW_OBJECT]
+    B2Shape CreatePolygonShape([Const, Ref] B2ShapeDef def, [Const, Ref] B2Polygon polygon); //[-NEW_OBJECT]
+    B2Chain CreateChain([Ref] B2ChainDef def); //[-NEW_OBJECT]
+};
+
+[Prefix="JBox2D::"]
+interface B2Shape {
+    void B2Shape();
+    void B2Shape(long long shapeId);
+    long long GetId();
+    boolean IsValid();
+    void Destroy(boolean updateBodyMass);
+    long GetType();
+    long long GetBodyId();
+    boolean IsSensor();
+    float GetDensity();
+    void SetDensity(float density, boolean updateBodyMass);
+    float GetFriction();
+    void SetFriction(float friction);
+    float GetRestitution();
+    void SetRestitution(float restitution);
+    [Value] B2SurfaceMaterial GetSurfaceMaterial();
+    void SetSurfaceMaterial([Const, Ref] B2SurfaceMaterial material);
+    [Value] B2Filter GetFilter();
+    void SetFilter([Const, Ref] B2Filter filter);
+    void EnableSensorEvents(boolean enabled);
+    boolean AreSensorEventsEnabled();
+    void EnableContactEvents(boolean enabled);
+    boolean AreContactEventsEnabled();
+    void EnablePreSolveEvents(boolean enabled);
+    boolean ArePreSolveEventsEnabled();
+    void EnableHitEvents(boolean enabled);
+    boolean AreHitEventsEnabled();
+    boolean TestPoint([Const, Ref] B2Vec2 point);
+    [Value] B2CastResult RayCast([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, float maxFraction);
+    [Value] B2Circle GetCircle();
+    void SetCircle([Const, Ref] B2Circle circle);
+    [Value] B2Capsule GetCapsule();
+    void SetCapsule([Const, Ref] B2Capsule capsule);
+    [Value] B2Segment GetSegment();
+    void SetSegment([Const, Ref] B2Segment segment);
+    B2Polygon GetPolygon(); //[-NEW_OBJECT]
+    void SetPolygon([Const, Ref] B2Polygon polygon);
+    [Value] B2AABB GetAABB();
+    [Value] B2MassData GetMassData();
+    [Value] B2Vec2 GetClosestPoint([Const, Ref] B2Vec2 target);
+};
+
+[Prefix="JBox2D::"]
+interface B2Chain {
+    void B2Chain();
+    void B2Chain(long long chainId);
+    long long GetId();
+    boolean IsValid();
+    void Destroy();
+    long GetSegmentCount();
+    B2Shape GetSegment(long index); //[-NEW_OBJECT]
+    float GetFriction();
+    void SetFriction(float friction);
+    float GetRestitution();
+    void SetRestitution(float restitution);
+};
+
+[Prefix="JBox2D::"]
+interface B2Joint {
+    void B2Joint();
+    void B2Joint(long long jointId);
+    long long GetId();
+    boolean IsValid();
+    void Destroy();
+    long GetType();
+    long long GetBodyIdA();
+    long long GetBodyIdB();
+    [Value] B2Vec2 GetLocalAnchorA();
+    void SetLocalAnchorA([Const, Ref] B2Vec2 anchor);
+    [Value] B2Vec2 GetLocalAnchorB();
+    void SetLocalAnchorB([Const, Ref] B2Vec2 anchor);
+    boolean GetCollideConnected();
+    void SetCollideConnected(boolean collide);
+    void WakeBodies();
+    [Value] B2Vec2 GetConstraintForce();
+    float GetConstraintTorque();
+    float GetLinearSeparation();
+    float GetAngularSeparation();
+    void DistanceSetLength(float length);
+    float DistanceGetLength();
+    void DistanceEnableSpring(boolean enabled);
+    void DistanceSetSpringHertz(float hertz);
+    void DistanceSetSpringDampingRatio(float ratio);
+    void DistanceEnableLimit(boolean enabled);
+    void DistanceSetLengthRange(float minLength, float maxLength);
+    void DistanceEnableMotor(boolean enabled);
+    void DistanceSetMotorSpeed(float speed);
+    void DistanceSetMaxMotorForce(float force);
+    void MotorSetLinearOffset([Const, Ref] B2Vec2 offset);
+    void MotorSetAngularOffset(float offset);
+    void MotorSetMaxForce(float force);
+    void MotorSetMaxTorque(float torque);
+    void MotorSetCorrectionFactor(float factor);
+    void MouseSetTarget([Const, Ref] B2Vec2 target);
+    void MouseSetSpringHertz(float hertz);
+    void MouseSetSpringDampingRatio(float ratio);
+    void MouseSetMaxForce(float force);
+    void PrismaticEnableSpring(boolean enabled);
+    void PrismaticSetSpringHertz(float hertz);
+    void PrismaticSetSpringDampingRatio(float ratio);
+    void PrismaticSetTargetTranslation(float translation);
+    void PrismaticEnableLimit(boolean enabled);
+    void PrismaticSetLimits(float lower, float upper);
+    void PrismaticEnableMotor(boolean enabled);
+    void PrismaticSetMotorSpeed(float speed);
+    void PrismaticSetMaxMotorForce(float force);
+    float PrismaticGetTranslation();
+    void RevoluteEnableSpring(boolean enabled);
+    void RevoluteSetSpringHertz(float hertz);
+    void RevoluteSetSpringDampingRatio(float ratio);
+    void RevoluteSetTargetAngle(float angle);
+    void RevoluteEnableLimit(boolean enabled);
+    void RevoluteSetLimits(float lower, float upper);
+    void RevoluteEnableMotor(boolean enabled);
+    void RevoluteSetMotorSpeed(float speed);
+    void RevoluteSetMaxMotorTorque(float torque);
+    float RevoluteGetAngle();
+    void WheelEnableSpring(boolean enabled);
+    void WheelSetSpringHertz(float hertz);
+    void WheelSetSpringDampingRatio(float ratio);
+    void WheelEnableLimit(boolean enabled);
+    void WheelSetLimits(float lower, float upper);
+    void WheelEnableMotor(boolean enabled);
+    void WheelSetMotorSpeed(float speed);
+    void WheelSetMaxMotorTorque(float torque);
+};
+
+[Prefix="JBox2D::"]
+interface B2World {
+    void B2World();
+    void B2World([Const, Ref] B2WorldDef def);
+    long long GetId();
+    boolean IsValid();
+    void Destroy();
+    void Step(float timeStep, long subStepCount);
+    [Value] B2Vec2 GetGravity();
+    void SetGravity([Const, Ref] B2Vec2 gravity);
+    boolean IsSleepingEnabled();
+    void EnableSleeping(boolean enabled);
+    boolean IsWarmStartingEnabled();
+    void EnableWarmStarting(boolean enabled);
+    boolean IsContinuousEnabled();
+    void EnableContinuous(boolean enabled);
+    float GetRestitutionThreshold();
+    void SetRestitutionThreshold(float threshold);
+    float GetHitEventThreshold();
+    void SetHitEventThreshold(float threshold);
+    float GetMaximumLinearSpeed();
+    void SetMaximumLinearSpeed(float speed);
+    void SetContactTuning(float hertz, float dampingRatio, float pushSpeed);
+    void RebuildStaticTree();
+    long GetAwakeBodyCount();
+    B2Body CreateBody([Const, Ref] B2BodyDef def); //[-NEW_OBJECT]
+    B2Joint CreateDistanceJoint([Const, Ref] B2DistanceJointDef def); //[-NEW_OBJECT]
+    B2Joint CreateMotorJoint([Const, Ref] B2MotorJointDef def); //[-NEW_OBJECT]
+    B2Joint CreateMouseJoint([Const, Ref] B2MouseJointDef def); //[-NEW_OBJECT]
+    B2Joint CreateFilterJoint([Const, Ref] B2FilterJointDef def); //[-NEW_OBJECT]
+    B2Joint CreatePrismaticJoint([Const, Ref] B2PrismaticJointDef def); //[-NEW_OBJECT]
+    B2Joint CreateRevoluteJoint([Const, Ref] B2RevoluteJointDef def); //[-NEW_OBJECT]
+    B2Joint CreateWeldJoint([Const, Ref] B2WeldJointDef def); //[-NEW_OBJECT]
+    B2Joint CreateWheelJoint([Const, Ref] B2WheelJointDef def); //[-NEW_OBJECT]
+    B2BodyEvents GetBodyEvents(); //[-NEW_OBJECT]
+    B2SensorEvents GetSensorEvents(); //[-NEW_OBJECT]
+    B2ContactEvents GetContactEvents(); //[-NEW_OBJECT]
+    [Value] B2RayResult CastRayClosest([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter);
+    B2WorldCastResult CastRay([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
+    B2WorldCastResult CastShape([Const, Ref] B2ShapeProxy proxy, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
+    B2WorldOverlapResult OverlapAABB([Const, Ref] B2AABB aabb, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
+    B2WorldOverlapResult OverlapShape([Const, Ref] B2ShapeProxy proxy, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
+    float CastMover([Const, Ref] B2Capsule mover, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter);
+    B2MoverResult SolveMover([Const, Ref] B2Capsule mover, [Const, Ref] B2Vec2 translation, [Const, Ref] B2Vec2 velocity, [Const, Ref] B2QueryFilter collideFilter, [Const, Ref] B2QueryFilter castFilter, long maxIterations); //[-NEW_OBJECT]
+};
+
+[Prefix="JBox2D::"]
+interface B2DebugDrawEm {
+    void DrawWorld(B2World world);
+    void SetDrawingBounds([Const, Ref] B2AABB bounds);
+    [Value] B2AABB GetDrawingBounds();
+    void SetUseDrawingBounds(boolean enabled);
+    boolean GetUseDrawingBounds();
+    void SetDrawShapes(boolean enabled);
+    boolean GetDrawShapes();
+    void SetDrawJoints(boolean enabled);
+    boolean GetDrawJoints();
+    void SetDrawJointExtras(boolean enabled);
+    boolean GetDrawJointExtras();
+    void SetDrawBounds(boolean enabled);
+    boolean GetDrawBounds();
+    void SetDrawMass(boolean enabled);
+    boolean GetDrawMass();
+    void SetDrawBodyNames(boolean enabled);
+    boolean GetDrawBodyNames();
+    void SetDrawContacts(boolean enabled);
+    boolean GetDrawContacts();
+    void SetDrawGraphColors(boolean enabled);
+    boolean GetDrawGraphColors();
+    void SetDrawContactNormals(boolean enabled);
+    boolean GetDrawContactNormals();
+    void SetDrawContactImpulses(boolean enabled);
+    boolean GetDrawContactImpulses();
+    void SetDrawContactFeatures(boolean enabled);
+    boolean GetDrawContactFeatures();
+    void SetDrawFrictionImpulses(boolean enabled);
+    boolean GetDrawFrictionImpulses();
+    void SetDrawIslands(boolean enabled);
+    boolean GetDrawIslands();
+};
+
+[JSImplementation="B2DebugDrawEm"]
+interface B2DebugDrawImplCustom : B2DebugDrawEm {
+    void B2DebugDrawImplCustom();
+    void DrawPolygon(B2DebugPolygon polygon, long color);
+    void DrawSolidPolygon([Const, Ref] B2Transform transform, B2DebugPolygon polygon, float radius, long color);
+    void DrawCircle([Const, Ref] B2Vec2 center, float radius, long color);
+    void DrawSolidCircle([Const, Ref] B2Transform transform, float radius, long color);
+    void DrawSolidCapsule([Const, Ref] B2Vec2 p1, [Const, Ref] B2Vec2 p2, float radius, long color);
+    void DrawSegment([Const, Ref] B2Vec2 p1, [Const, Ref] B2Vec2 p2, long color);
+    void DrawTransform([Const, Ref] B2Transform transform);
+    void DrawPoint([Const, Ref] B2Vec2 point, float size, long color);
+};
+
+[Prefix="JBox2D::"]
+interface B2 {
+    static long StaticBody();
+    static long KinematicBody();
+    static long DynamicBody();
+    static long CircleShape();
+    static long CapsuleShape();
+    static long SegmentShape();
+    static long PolygonShape();
+    static long ChainSegmentShape();
+    static long DistanceJoint();
+    static long FilterJoint();
+    static long MotorJoint();
+    static long MouseJoint();
+    static long PrismaticJoint();
+    static long RevoluteJoint();
+    static long WeldJoint();
+    static long WheelJoint();
+    static long MaxPolygonVertices();
+    static long long DefaultCategoryBits();
+    static long long DefaultMaskBits();
+    static long VersionMajor();
+    static long VersionMinor();
+    static long VersionRevision();
+    static void SetLengthUnitsPerMeter(float lengthUnits);
+    static float GetLengthUnitsPerMeter();
+};

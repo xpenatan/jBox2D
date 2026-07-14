@@ -1,23 +1,53 @@
-include(":box2d:core")
+pluginManagement {
+    val jParserPluginVersion = "-SNAPSHOT"
+    val gdxTeaVMPluginVersion = "-SNAPSHOT"
+
+    resolutionStrategy {
+        eachPlugin {
+            if(requested.id.id == "com.github.xpenatan.jparser") {
+                useModule("com.github.xpenatan.jParser:jparser-gradle-plugin:$jParserPluginVersion")
+            }
+        }
+    }
+
+    plugins {
+        id("com.github.xpenatan.jparser") version jParserPluginVersion
+        id("com.github.xpenatan.gdx-teavm") version gdxTeaVMPluginVersion
+    }
+
+    repositories {
+        google()
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
+        gradlePluginPortal()
+        maven {
+            url = uri("http://teavm.org/maven/repository/")
+            isAllowInsecureProtocol = true
+        }
+    }
+}
+
+rootProject.name = "jBox2D"
+
+include(":box2d:builder")
+include(":box2d:download")
 include(":box2d:base")
-include(":box2d:generator")
-include(":box2d:teavm")
-include(":box2d:desktop")
+include(":box2d:core")
+include(":box2d:shared:jni")
+include(":box2d:shared:c")
+include(":box2d:desktop:jni")
+include(":box2d:desktop:ffm")
+include(":box2d:desktop:c")
+include(":box2d:web:wasm")
+include(":box2d:android:jni")
+include(":box2d:android:c")
 
-include(":examples:basic:core")
-include(":examples:basic:desktop")
-include(":examples:basic:teavm")
-
-//includeBuild("E:\\Dev\\Projects\\java\\jParser") {
-//    dependencySubstitution {
-//        substitute(module("com.github.xpenatan.jParser:jParser-base")).using(project(":jParser:base"))
-//        substitute(module("com.github.xpenatan.jParser:jParser-core")).using(project(":jParser:core"))
-//        substitute(module("com.github.xpenatan.jParser:jParser-cpp")).using(project(":jParser:cpp"))
-//        substitute(module("com.github.xpenatan.jParser:jParser-idl")).using(project(":jParser:idl"))
-//        substitute(module("com.github.xpenatan.jParser:loader-core")).using(project(":jParser:loader:loader-core"))
-//        substitute(module("com.github.xpenatan.jParser:loader-teavm")).using(project(":jParser:loader:loader-teavm"))
-//        substitute(module("com.github.xpenatan.jParser:jParser-teavm")).using(project(":jParser:teavm"))
-//    }
-//}
-
-// #########
+include(":samples:core")
+include(":samples:shared")
+include(":samples:desktop:jni")
+include(":samples:desktop:ffm")
+include(":samples:web")
+include(":samples:android")

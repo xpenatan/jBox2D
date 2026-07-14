@@ -135,31 +135,6 @@ $env:GRADLE_OPTS = '-Djbox2d.sample.sample=Benchmark/Cast'
 .\gradlew.bat :samples:desktop:jni:box2d_sample_jni_run
 ```
 
-## Java API example
-
-```java
-B2WorldDef worldDef = new B2WorldDef();
-worldDef.SetGravity(new B2Vec2(0f, -10f));
-B2World world = new B2World(worldDef);
-
-B2BodyDef bodyDef = new B2BodyDef();
-bodyDef.SetType(B2.DynamicBody());
-bodyDef.SetPosition(new B2Vec2(0f, 5f));
-B2Body body = world.CreateBody(bodyDef);
-
-B2ShapeDef shapeDef = new B2ShapeDef();
-shapeDef.SetDensity(1f);
-B2Polygon box = B2Polygon.CreateBox(0.5f, 0.5f);
-B2Shape shape = body.CreatePolygonShape(shapeDef, box);
-
-world.Step(1f / 60f, 4);
-float y = body.GetPosition().GetY();
-
-world.Destroy();
-```
-
-Generated objects wrap native allocations. Dispose owned wrapper objects when they are no longer needed; call `Destroy()` first for worlds, bodies, shapes, chains, or joints whose Box2D handle should also be destroyed.
-
 ## License
 
 jBox2D is licensed under the [Apache License 2.0](LICENSE). Upstream Box2D is developed by Erin Catto and is licensed under the MIT license.

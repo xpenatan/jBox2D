@@ -34,7 +34,7 @@ jobs:
       - name: Setup Emscripten
         uses: emscripten-core/setup-emsdk@v16
         with:
-          version: "4.0.21"
+          version: "6.0.3"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6

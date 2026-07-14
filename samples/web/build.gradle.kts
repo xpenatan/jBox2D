@@ -57,9 +57,44 @@ fun Task.stageBox2DWebRuntime(distribution: String) {
 }
 
 tasks.matching { it.name == "gdx_teavm_web_js_build" }.configureEach {
-    stageBox2DWebRuntime("web")
+    stageBox2DWebRuntime("js")
 }
 
 tasks.matching { it.name == "gdx_teavm_web_wasm_build" }.configureEach {
     stageBox2DWebRuntime("wasm")
+}
+
+val pagesDirectory = layout.buildDirectory.dir("pages")
+
+tasks.register<Sync>("box2d_samples_pages_build") {
+    group = "samples"
+    description = "Builds and stages the jBox2D browser samples for GitHub Pages."
+    dependsOn("gdx_teavm_web_js_build", "gdx_teavm_web_wasm_build")
+
+    into(pagesDirectory)
+    from(layout.buildDirectory.dir("dist/js/webapp")) {
+        into("gdx/gl/js")
+        exclude("WEB-INF/**")
+    }
+    from(layout.buildDirectory.dir("dist/wasm/webapp")) {
+        into("gdx/gl/wasm")
+        exclude("WEB-INF/**")
+    }
+    from(layout.projectDirectory.dir("src/main/pages"))
+
+    doLast {
+        val requiredFiles = listOf(
+            "index.html",
+            "gdx/gl/js/index.html",
+            "gdx/gl/js/scripts/box2d.js",
+            "gdx/gl/js/scripts/box2d.wasm",
+            "gdx/gl/wasm/index.html",
+            "gdx/gl/wasm/scripts/box2d.js",
+            "gdx/gl/wasm/scripts/box2d.wasm"
+        )
+        val missing = requiredFiles.filterNot { pagesDirectory.get().file(it).asFile.isFile }
+        if(missing.isNotEmpty()) {
+            throw GradleException("Incomplete GitHub Pages site. Missing: ${missing.joinToString()}")
+        }
+    }
 }

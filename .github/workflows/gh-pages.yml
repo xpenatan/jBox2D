@@ -1,0 +1,100 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/gh-pages.yml"
+      - "box2d/**"
+      - "samples/**"
+      - "buildSrc/**"
+      - "gradle/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "gradlew"
+      - "gradlew.bat"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build web samples
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Setup Emscripten
+        uses: emscripten-core/setup-emsdk@v16
+        with:
+          version: "4.0.21"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build Box2D WebAssembly runtime
+        run: ./gradlew --no-daemon :box2d:builder:jParser_build_web_wasm
+
+      - name: Verify Box2D WebAssembly runtime
+        run: |
+          test -f box2d/builder/build/c++/libs/emscripten/box2d.js
+          test -f box2d/builder/build/c++/libs/emscripten/box2d.wasm
+
+      - name: Build GitHub Pages site
+        run: ./gradlew --no-daemon :samples:web:box2d_samples_pages_build
+
+      - name: Verify GitHub Pages site
+        run: |
+          test -f samples/web/build/pages/index.html
+          test -f samples/web/build/pages/gdx/gl/js/index.html
+          test -f samples/web/build/pages/gdx/gl/js/scripts/box2d.js
+          test -f samples/web/build/pages/gdx/gl/js/scripts/box2d.wasm
+          test -f samples/web/build/pages/gdx/gl/wasm/index.html
+          test -f samples/web/build/pages/gdx/gl/wasm/scripts/box2d.js
+          test -f samples/web/build/pages/gdx/gl/wasm/scripts/box2d.wasm
+          test ! -d samples/web/build/pages/gdx/gl/js/WEB-INF
+          test ! -d samples/web/build/pages/gdx/gl/wasm/WEB-INF
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: samples/web/build/pages
+
+  deploy:
+    name: Deploy
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

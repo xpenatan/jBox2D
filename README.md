@@ -95,6 +95,17 @@ Web JavaScript and WasmGC distributions:
 .\gradlew.bat :samples:web:gdx_teavm_web_wasm_run
 ```
 
+GitHub Pages packages both web variants behind a platform selector:
+
+```powershell
+.\gradlew.bat :samples:web:box2d_samples_pages_build
+```
+
+The static site is written to `samples/web/build/pages`, with the JavaScript build under
+`gdx/gl/js` and the WasmGC build under `gdx/gl/wasm`. The
+`.github/workflows/gh-pages.yml` workflow builds and deploys this site from `master`;
+the repository's Pages source must be set to **GitHub Actions**.
+
 Android (API 29 or newer):
 
 ```powershell

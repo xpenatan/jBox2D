@@ -1,20 +1,6 @@
 name: Deploy GitHub Pages
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - ".github/workflows/gh-pages.yml"
-      - "box2d/**"
-      - "samples/**"
-      - "buildSrc/**"
-      - "gradle/**"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradle.properties"
-      - "gradlew"
-      - "gradlew.bat"
   workflow_dispatch:
 
 permissions:

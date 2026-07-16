@@ -1,6 +1,6 @@
 pluginManagement {
     val jParserPluginVersion = "-SNAPSHOT"
-    val gdxTeaVMPluginVersion = "-SNAPSHOT"
+    val gdxTeaVMPluginVersion = "1.6.0"
 
     resolutionStrategy {
         eachPlugin {

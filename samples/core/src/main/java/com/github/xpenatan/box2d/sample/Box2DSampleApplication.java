@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
@@ -32,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.xpenatan.box2d.sample.shared.Box2DSample;
@@ -82,7 +84,7 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
     private boolean controlsUpdating;
     private int highlightedSampleIndex = -1;
     private int controlsSignature = Integer.MIN_VALUE;
-    private long sampleFrameCount;
+    private long renderedFrameCount;
     private boolean screenshotWritten;
     private float cameraCenterX;
     private float cameraCenterY;
@@ -145,7 +147,7 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
         stage.addActor(root);
 
         Table top = new Table(skin);
-        top.setBackground(skin.newDrawable("white", PANEL));
+        top.setBackground(skin.getDrawable("panel"));
         titleLabel = new Label("", skin, "title");
         statsLabel = new Label("", skin, "small");
         TextButton restart = new TextButton("Restart", skin);
@@ -228,7 +230,7 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
     }
 
     private void buildOptions(Table table) {
-        table.setBackground(skin.newDrawable("white", PANEL));
+        table.setBackground(skin.getDrawable("panel"));
         table.defaults().left().padLeft(10f).padRight(10f);
         table.add(new Label("SIMULATION", skin, "section")).growX().padTop(10f).padBottom(6f).row();
 
@@ -533,7 +535,6 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
                     drawRenderer.render(worldCamera, shapes, batch, worldFont, screenFont);
                     refreshDynamicControls(false);
                     updateHeader();
-                    sampleFrameCount++;
                 }
             }
             catch(Throwable throwable) {
@@ -546,11 +547,12 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
         }
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1f / 20f));
         stage.draw();
+        renderedFrameCount++;
 
-        if(!screenshotWritten && screenshotPath.length() > 0 && sampleFrameCount >= 3) {
+        if(!screenshotWritten && screenshotPath.length() > 0 && renderedFrameCount >= 3) {
             writeScreenshot();
         }
-        if(exitAfterFrames > 0 && sampleFrameCount >= exitAfterFrames) {
+        if(exitAfterFrames > 0 && renderedFrameCount >= exitAfterFrames) {
             Gdx.app.exit();
         }
     }
@@ -603,14 +605,12 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
         Pixmap source = null;
         Pixmap flipped = null;
         try {
-            int width = Gdx.graphics.getWidth();
-            int height = Gdx.graphics.getHeight();
+            int width = Gdx.graphics.getBackBufferWidth();
+            int height = Gdx.graphics.getBackBufferHeight();
             source = Pixmap.createFromFrameBuffer(0, 0, width, height);
             flipped = new Pixmap(width, height, source.getFormat());
             for(int y = 0; y < height; y++) {
-                for(int x = 0; x < width; x++) {
-                    flipped.drawPixel(x, height - y - 1, source.getPixel(x, y));
-                }
+                flipped.drawPixmap(source, 0, y, width, 1, 0, height - y - 1, width, 1);
             }
             FileHandle output = Gdx.files.absolute(screenshotPath);
             output.parent().mkdirs();
@@ -648,12 +648,10 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
 
     private Skin createSkin() {
         Skin result = new Skin();
-        Pixmap pixel = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixel.setColor(Color.WHITE);
-        pixel.fill();
-        Texture white = new Texture(pixel);
-        pixel.dispose();
-        result.add("white", white);
+        Drawable panel = addSolidDrawable(result, "panel", PANEL);
+        Drawable buttonUp = addSolidDrawable(result, "button-up", PANEL_LIGHT);
+        Drawable buttonDown = addSolidDrawable(result, "button-down", new Color(0.16f, 0.43f, 0.57f, 1f));
+        Drawable buttonChecked = addSolidDrawable(result, "button-checked", new Color(0.12f, 0.36f, 0.49f, 1f));
 
         BitmapFont font = new BitmapFont();
         result.add("default-font", font);
@@ -664,15 +662,12 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
         result.add("section", new Label.LabelStyle(font, ACCENT));
         result.add("category", new Label.LabelStyle(font, new Color(0.48f, 0.74f, 0.88f, 1f)));
 
-        Drawable buttonUp = result.newDrawable("white", PANEL_LIGHT);
-        Drawable buttonDown = result.newDrawable("white", new Color(0.16f, 0.43f, 0.57f, 1f));
-        Drawable buttonChecked = result.newDrawable("white", new Color(0.12f, 0.36f, 0.49f, 1f));
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(buttonUp, buttonDown, buttonChecked, font);
         result.add("default", buttonStyle);
-        result.add("sample", new TextButton.TextButtonStyle(result.newDrawable("white", PANEL), buttonDown, buttonChecked, font));
+        result.add("sample", new TextButton.TextButtonStyle(panel, buttonDown, buttonChecked, font));
 
-        Drawable checkOff = result.newDrawable("white", new Color(0.18f, 0.21f, 0.26f, 1f));
-        Drawable checkOn = result.newDrawable("white", ACCENT);
+        Drawable checkOff = addSolidDrawable(result, "check-off", new Color(0.18f, 0.21f, 0.26f, 1f));
+        Drawable checkOn = addSolidDrawable(result, "check-on", ACCENT);
         checkOff.setMinWidth(16f);
         checkOff.setMinHeight(16f);
         checkOn.setMinWidth(16f);
@@ -681,26 +676,37 @@ public final class Box2DSampleApplication extends ApplicationAdapter {
         result.add("default", checkStyle);
 
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle(
-                result.newDrawable("white", new Color(0.18f, 0.21f, 0.26f, 1f)),
-                result.newDrawable("white", ACCENT));
+                addSolidDrawable(result, "slider-background", new Color(0.18f, 0.21f, 0.26f, 1f)),
+                addSolidDrawable(result, "slider-knob", ACCENT));
         sliderStyle.background.setMinHeight(5f);
         sliderStyle.knob.setMinWidth(12f);
         sliderStyle.knob.setMinHeight(18f);
         result.add("default-horizontal", sliderStyle);
 
         ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
-        scrollStyle.background = result.newDrawable("white", PANEL);
-        scrollStyle.vScroll = result.newDrawable("white", new Color(0.10f, 0.12f, 0.15f, 1f));
-        scrollStyle.vScrollKnob = result.newDrawable("white", new Color(0.31f, 0.37f, 0.44f, 1f));
+        scrollStyle.background = panel;
+        scrollStyle.vScroll = addSolidDrawable(result, "scroll-track", new Color(0.10f, 0.12f, 0.15f, 1f));
+        scrollStyle.vScrollKnob = addSolidDrawable(result, "scroll-knob", new Color(0.31f, 0.37f, 0.44f, 1f));
         result.add("default", scrollStyle);
 
-        List.ListStyle listStyle = new List.ListStyle(font, Color.WHITE, Color.WHITE,
-                result.newDrawable("white", new Color(0.12f, 0.36f, 0.49f, 1f)));
+        List.ListStyle listStyle = new List.ListStyle(font, Color.WHITE, Color.WHITE, buttonChecked);
         result.add("default", listStyle);
         SelectBox.SelectBoxStyle selectStyle = new SelectBox.SelectBoxStyle(font, Color.WHITE,
                 buttonUp, scrollStyle, listStyle);
         result.add("default", selectStyle);
         return result;
+    }
+
+    private static Drawable addSolidDrawable(Skin skin, String name, Color color) {
+        Pixmap pixel = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixel.setColor(color);
+        pixel.fill();
+        Texture texture = new Texture(pixel);
+        pixel.dispose();
+        skin.add(name + "-texture", texture);
+        TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(texture));
+        skin.add(name, drawable, Drawable.class);
+        return drawable;
     }
 
     private static String formatValue(float value, float step) {

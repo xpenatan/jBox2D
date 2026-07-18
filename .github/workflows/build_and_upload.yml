@@ -1,0 +1,433 @@
+name: Build and Upload
+
+on:
+  workflow_call:
+    inputs:
+      isRelease:
+        required: true
+        type: boolean
+      shouldUpload:
+        required: true
+        type: boolean
+
+env:
+  CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
+  CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
+  SIGNING_KEY: ${{ secrets.PGP_SECRET }}
+  SIGNING_PASSWORD: ${{ secrets.PGP_PASSPHRASE }}
+
+jobs:
+  build-windows:
+    name: Build Windows natives
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: "25"
+
+      - name: Set up MSVC
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build Windows JNI, FFM, and TeaVM C natives
+        run: >-
+          ./gradlew --no-daemon
+          :box2d:builder:jParser_build_windows64_jni
+          :box2d:builder:jParser_build_windows64_ffm
+          :box2d:builder:jParser_build_windows64_teavm_c
+
+      - name: Upload Windows natives
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-natives
+          path: box2d/builder/build/c++/libs/
+          if-no-files-found: error
+          compression-level: 0
+
+  build-linux:
+    name: Build Linux natives
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build Linux JNI, FFM, and TeaVM C natives
+        run: >-
+          ./gradlew --no-daemon
+          :box2d:builder:jParser_build_linux64_jni
+          :box2d:builder:jParser_build_linux64_ffm
+          :box2d:builder:jParser_build_linux64_teavm_c
+
+      - name: Upload Linux natives
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-natives
+          path: box2d/builder/build/c++/libs/
+          if-no-files-found: error
+          compression-level: 0
+
+  build-macos-intel:
+    name: Build macOS Intel natives
+    runs-on: macos-26-intel
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build macOS Intel JNI, FFM, and TeaVM C natives
+        run: >-
+          ./gradlew --no-daemon
+          :box2d:builder:jParser_build_mac64_jni
+          :box2d:builder:jParser_build_mac64_ffm
+          :box2d:builder:jParser_build_mac64_teavm_c
+
+      - name: Upload macOS Intel natives
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-intel-natives
+          path: box2d/builder/build/c++/libs/
+          if-no-files-found: error
+          compression-level: 0
+
+  build-macos-arm:
+    name: Build macOS Arm natives
+    runs-on: macos-26
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build macOS Arm JNI, FFM, and TeaVM C natives
+        run: >-
+          ./gradlew --no-daemon
+          :box2d:builder:jParser_build_macArm_jni
+          :box2d:builder:jParser_build_macArm_ffm
+          :box2d:builder:jParser_build_macArm_teavm_c
+
+      - name: Upload macOS Arm natives
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-arm-natives
+          path: box2d/builder/build/c++/libs/
+          if-no-files-found: error
+          compression-level: 0
+
+  build-web:
+    name: Build WebAssembly natives
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: "25"
+
+      - name: Set up Emscripten
+        uses: emscripten-core/setup-emsdk@v16
+        with:
+          version: "6.0.3"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build WebAssembly runtime
+        run: ./gradlew --no-daemon :box2d:builder:jParser_build_web_wasm
+
+      - name: Upload WebAssembly natives
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-natives
+          path: box2d/builder/build/c++/libs/
+          if-no-files-found: error
+          compression-level: 0
+
+  build-android:
+    name: Build Android natives
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: "25"
+
+      - name: Install Android NDK r29
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: false
+          link-to-sdk: true
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build Android JNI and TeaVM C natives
+        run: >-
+          ./gradlew --no-daemon
+          :box2d:builder:jParser_build_android_jni
+          :box2d:builder:jParser_build_android_teavm_c
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+      - name: Upload Android natives
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-natives
+          path: box2d/builder/build/c++/libs/
+          if-no-files-found: error
+          compression-level: 0
+
+  publish:
+    name: Assemble and publish Maven artifacts
+    needs:
+      - build-windows
+      - build-linux
+      - build-macos-intel
+      - build-macos-arm
+      - build-web
+      - build-android
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: "25"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform 36
+        run: sdkmanager "platforms;android-36"
+
+      - name: Set up Emscripten
+        uses: emscripten-core/setup-emsdk@v16
+        with:
+          version: "6.0.3"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Clean generated and build outputs
+        run: ./gradlew --no-daemon clean
+
+      - name: Download Windows natives
+        uses: actions/download-artifact@v8
+        with:
+          name: windows-natives
+          path: box2d/builder/build/c++/libs/
+
+      - name: Download Linux natives
+        uses: actions/download-artifact@v8
+        with:
+          name: linux-natives
+          path: box2d/builder/build/c++/libs/
+
+      - name: Download macOS Intel natives
+        uses: actions/download-artifact@v8
+        with:
+          name: macos-intel-natives
+          path: box2d/builder/build/c++/libs/
+
+      - name: Download macOS Arm natives
+        uses: actions/download-artifact@v8
+        with:
+          name: macos-arm-natives
+          path: box2d/builder/build/c++/libs/
+
+      - name: Download WebAssembly natives
+        uses: actions/download-artifact@v8
+        with:
+          name: web-natives
+          path: box2d/builder/build/c++/libs/
+
+      - name: Download Android natives
+        uses: actions/download-artifact@v8
+        with:
+          name: android-natives
+          path: box2d/builder/build/c++/libs/
+
+      - name: Generate Java bindings
+        run: ./gradlew --no-daemon :box2d:builder:jParser_generate
+
+      - name: Verify packaged native inputs
+        shell: bash
+        run: |
+          required_files=(
+            windows/vc/jni/box2d64.dll
+            windows/vc/ffm/box2d64.dll
+            windows/vc/teavm_c/box2d64.dll
+            windows/vc/teavm_c/box2d64.lib
+            windows/vc/teavm_c/box2d64_.lib
+            linux/jni/libbox2d64.so
+            linux/ffm/libbox2d64.so
+            linux/teavm_c/libbox2d64.so
+            linux/teavm_c/libbox2d64_.a
+            mac/jni/libbox2d64.dylib
+            mac/ffm/libbox2d64.dylib
+            mac/teavm_c/libbox2d64.dylib
+            mac/teavm_c/libbox2d64_.a
+            mac/arm/jni/libbox2darm64.dylib
+            mac/arm/ffm/libbox2darm64.dylib
+            mac/arm/teavm_c/libbox2darm64.dylib
+            mac/arm/teavm_c/libbox2d64_.a
+            emscripten/box2d.js
+            emscripten/box2d.wasm
+            android/x86/libbox2d.so
+            android/x86/teavm_c/libbox2d.so
+            android/x86_64/libbox2d.so
+            android/x86_64/teavm_c/libbox2d.so
+            android/armeabi-v7a/libbox2d.so
+            android/armeabi-v7a/teavm_c/libbox2d.so
+            android/arm64-v8a/libbox2d.so
+            android/arm64-v8a/teavm_c/libbox2d.so
+          )
+
+          for file in "${required_files[@]}"; do
+            test -f "box2d/builder/build/c++/libs/$file" || {
+              echo "Missing native artifact: $file" >&2
+              exit 1
+            }
+          done
+
+      - name: Read release version
+        id: version
+        shell: bash
+        run: |
+          version="$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties | head -n 1 | tr -d '\r')"
+          test -n "$version"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare release deployment bundle
+        if: ${{ inputs.shouldUpload && inputs.isRelease }}
+        run: ./gradlew --no-daemon prepareReleaseDeploy
+
+      - name: Upload release deployment bundle
+        if: ${{ inputs.shouldUpload && inputs.isRelease }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-staging-deploy-${{ steps.version.outputs.value }}
+          path: |
+            build/staging-deploy/
+            build/staging-deploy.zip
+          if-no-files-found: error
+
+      - name: Publish release to Maven Central
+        if: ${{ inputs.shouldUpload && inputs.isRelease }}
+        uses: nick-fields/retry@v4
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_on: error
+          command: ./gradlew --no-daemon publishRelease
+
+      - name: Prepare snapshot deployment repository
+        if: ${{ inputs.shouldUpload && !inputs.isRelease }}
+        run: ./gradlew --no-daemon prepareSnapshotDeploy
+
+      - name: Upload snapshot deployment repository
+        if: ${{ inputs.shouldUpload && !inputs.isRelease }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-deploy-${{ steps.version.outputs.value }}-${{ github.run_number }}
+          path: build/snapshot-deploy/
+          if-no-files-found: error
+
+      - name: Publish snapshot to Central Portal
+        if: ${{ inputs.shouldUpload && !inputs.isRelease }}
+        uses: nick-fields/retry@v4
+        with:
+          max_attempts: 3
+          timeout_minutes: 30
+          retry_on: error
+          command: ./gradlew --no-daemon publishSnapshot
+
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+
+  tag-release:
+    name: Tag release
+    if: ${{ inputs.shouldUpload && inputs.isRelease }}
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create release tag
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const version = '${{ needs.publish.outputs.version }}';
+            const ref = `refs/tags/${version}`;
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref,
+              sha: context.sha
+            });

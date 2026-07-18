@@ -1,0 +1,21 @@
+name: Build Snapshot
+
+on:
+  push:
+    branches:
+      - "master"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: maven-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-upload:
+    uses: ./.github/workflows/build_and_upload.yml
+    with:
+      isRelease: false
+      shouldUpload: true
+    secrets: inherit

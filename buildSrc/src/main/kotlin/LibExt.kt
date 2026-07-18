@@ -31,6 +31,6 @@ private fun getVersion(): String {
 
     val properties = Properties()
     file.inputStream().use(properties::load)
-    return properties.getProperty("version")
+    return properties.getProperty("version")?.trim()?.takeIf(String::isNotEmpty)
         ?: throw RuntimeException("version is missing from gradle.properties")
 }

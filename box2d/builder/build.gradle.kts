@@ -96,6 +96,7 @@ jParser {
                     compileFlag("-ffp-contract=off")
                 }
                 if(targetName in linuxTargetNames) {
+                    compileFlag("-D_POSIX_C_SOURCE=200809L")
                     linkerFlag("-lm")
                 }
                 if(targetName == JParserTargets.ANDROID_JNI || targetName == JParserTargets.ANDROID_TEAVM_C) {

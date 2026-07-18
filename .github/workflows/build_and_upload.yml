@@ -38,9 +38,6 @@ jobs:
         with:
           arch: x64
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
-
       - name: Build Windows JNI, FFM, and TeaVM C natives
         run: >-
           ./gradlew --no-daemon
@@ -72,8 +69,8 @@ jobs:
           distribution: corretto
           java-version: "25"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Build Linux JNI, FFM, and TeaVM C natives
         run: >-
@@ -106,8 +103,8 @@ jobs:
           distribution: corretto
           java-version: "25"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Build macOS Intel JNI, FFM, and TeaVM C natives
         run: >-
@@ -140,8 +137,8 @@ jobs:
           distribution: corretto
           java-version: "25"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Build macOS Arm JNI, FFM, and TeaVM C natives
         run: >-
@@ -179,8 +176,8 @@ jobs:
         with:
           version: "6.0.3"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Build WebAssembly runtime
         run: ./gradlew --no-daemon :box2d:builder:jParser_build_web_wasm
@@ -217,8 +214,8 @@ jobs:
           add-to-path: false
           link-to-sdk: true
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Build Android JNI and TeaVM C natives
         run: >-
@@ -268,8 +265,8 @@ jobs:
         with:
           version: "6.0.3"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Clean generated and build outputs
         run: ./gradlew --no-daemon clean

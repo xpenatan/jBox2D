@@ -246,8 +246,6 @@ jobs:
       - build-web
       - build-android
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout
@@ -407,23 +405,12 @@ jobs:
           retry_on: error
           command: ./gradlew --no-daemon publishSnapshot
 
-    outputs:
-      version: ${{ steps.version.outputs.value }}
-
-  tag-release:
-    name: Tag release
-    if: ${{ inputs.shouldUpload && inputs.isRelease }}
-    needs: publish
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Create release tag
+      - name: Create Git tag
+        if: ${{ inputs.shouldUpload && inputs.isRelease }}
         uses: actions/github-script@v8
         with:
           script: |
-            const version = '${{ needs.publish.outputs.version }}';
+            const version = '${{ steps.version.outputs.value }}';
             const ref = `refs/tags/${version}`;
             await github.rest.git.createRef({
               owner: context.repo.owner,

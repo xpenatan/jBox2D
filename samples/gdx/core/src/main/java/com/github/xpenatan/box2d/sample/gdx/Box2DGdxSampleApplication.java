@@ -12,9 +12,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -67,10 +65,6 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
     private Stage stage;
     private Skin skin;
     private OrthographicCamera worldCamera;
-    private ShapeRenderer shapes;
-    private SpriteBatch batch;
-    private BitmapFont worldFont;
-    private BitmapFont screenFont;
     private GdxSampleDrawRenderer drawRenderer;
     private Box2DSampleController controller;
     private Box2DSample currentSample;
@@ -103,10 +97,6 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
     public void create() {
         Gdx.gl.glClearColor(BACKGROUND.r, BACKGROUND.g, BACKGROUND.b, BACKGROUND.a);
         worldCamera = new OrthographicCamera();
-        shapes = new ShapeRenderer();
-        batch = new SpriteBatch();
-        worldFont = new BitmapFont();
-        screenFont = new BitmapFont();
         skin = createSkin();
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(new InputMultiplexer(cameraScrollInput, stage, worldInput));
@@ -532,7 +522,7 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
                     drawRenderer.beginFrame();
                     drawRenderer.DrawWorld(currentSample.world());
                     currentSample.draw(drawRenderer);
-                    drawRenderer.render(worldCamera, shapes, batch, worldFont, screenFont);
+                    drawRenderer.render(worldCamera);
                     refreshDynamicControls(false);
                     updateHeader();
                 }
@@ -640,10 +630,6 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
         if(drawRenderer != null) drawRenderer.dispose();
         if(stage != null) stage.dispose();
         if(skin != null) skin.dispose();
-        if(shapes != null) shapes.dispose();
-        if(batch != null) batch.dispose();
-        if(worldFont != null) worldFont.dispose();
-        if(screenFont != null) screenFont.dispose();
     }
 
     private Skin createSkin() {

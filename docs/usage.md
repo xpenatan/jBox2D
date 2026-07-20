@@ -23,6 +23,7 @@ The Gradle wrapper uses Gradle 9.4.1. The commands below use PowerShell on Windo
 | TeaVM C | `:box2d:shared:c`, `:box2d:desktop:c` | TeaVM C bindings and desktop native packaging. |
 | WebAssembly | `:box2d:web:wasm` | TeaVM web API and the Emscripten side module. |
 | Android | `:box2d:android:jni`, `:box2d:android:c` | Android JNI and TeaVM C runtime packaging. |
+| Integrations | `:extensions:gdx:gl`, `:extensions:fdx` | libGDX and libfdx converters and debug renderers. |
 | Samples | `:samples:shared`, `:samples:gdx:*`, `:samples:fdx:*` | Shared scenarios plus libGDX and libfdx frontends and platform launchers. |
 
 ## Generate the bindings

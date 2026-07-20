@@ -178,7 +178,6 @@ public final class Box2DFdxSampleApplication extends ApplicationAdapter implemen
             uiRoot = null;
         }
         if(drawRenderer != null) {
-            drawRenderer.disposeGraphics();
             drawRenderer.dispose();
             drawRenderer = null;
         }

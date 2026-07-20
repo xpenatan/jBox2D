@@ -13,7 +13,9 @@ val libraryProjects = setOf(
     project(":box2d:desktop:c"),
     project(":box2d:web:wasm"),
     project(":box2d:android:jni"),
-    project(":box2d:android:c")
+    project(":box2d:android:c"),
+    project(":extensions:gdx:gl"),
+    project(":extensions:fdx")
 )
 
 val requestedTaskNames = gradle.startParameter.taskNames

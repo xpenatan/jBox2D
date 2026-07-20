@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation(project(":samples:shared"))
     compileOnlyApi(project(":box2d:core"))
+    api(project(":extensions:gdx:gl"))
     api("com.badlogicgames.gdx:gdx:${LibExt.gdxVersion}")
 }
 

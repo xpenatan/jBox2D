@@ -5,7 +5,7 @@
 
 Java bindings for [Box2D](https://github.com/erincatto/box2d) across desktop, web, and Android.
 
-jBox2D provides a platform-neutral Java API and native runtimes for JNI, Java FFM, TeaVM C, and WebAssembly. The bindings are generated from a WebIDL contract and stay close to the upstream Box2D API.
+jBox2D provides a platform-neutral Java API and native runtimes for JNI, Java FFM, TeaVM C, and WebAssembly, plus libGDX and libfdx sample frontends. The bindings are generated from a WebIDL contract and stay close to the upstream Box2D API.
 
 **Online samples:** [xpenatan.github.io/jBox2D](https://xpenatan.github.io/jBox2D) | **3D companion project:** [jBox3D](https://github.com/xpenatan/jBox3D)
 
@@ -52,7 +52,7 @@ The Java API follows Box2D's handle-based ownership model: worlds own bodies, bo
 
 ## Samples
 
-The sample suite ports the official Box2D scenarios to Java and runs the same catalog on desktop, web, and Android through a shared libGDX interface.
+The sample suite ports the official Box2D scenarios to Java and runs the same catalog through separate libGDX and libfdx frontends on desktop, web, and Android. The libfdx frontend supports OpenGL, WebGPU/WGPU, and Vulkan where the platform provider is available.
 
 ## Documentation
 

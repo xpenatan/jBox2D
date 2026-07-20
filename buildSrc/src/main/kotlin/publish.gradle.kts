@@ -61,7 +61,7 @@ configure(libraryProjects) {
         publications.withType<MavenPublication>().configureEach {
             pom {
                 name.set(LibExt.libName)
-                description.set("Box2D ${LibExt.box2dVersion} Java bindings")
+                description.set("Box2D Java bindings")
                 url.set("https://github.com/xpenatan/jBox2d")
                 licenses {
                     license {

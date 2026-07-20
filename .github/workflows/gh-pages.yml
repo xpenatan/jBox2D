@@ -51,24 +51,27 @@ jobs:
           test -f box2d/builder/build/c++/libs/emscripten/box2d.wasm
 
       - name: Build GitHub Pages site
-        run: ./gradlew --no-daemon :samples:web:box2d_samples_pages_build
+        run: ./gradlew --no-daemon :samples:gdx:platforms:web:box2d_gdx_samples_pages_build
 
       - name: Verify GitHub Pages site
         run: |
-          test -f samples/web/build/pages/index.html
-          test -f samples/web/build/pages/gdx/gl/js/index.html
-          test -f samples/web/build/pages/gdx/gl/js/scripts/box2d.js
-          test -f samples/web/build/pages/gdx/gl/js/scripts/box2d.wasm
-          test -f samples/web/build/pages/gdx/gl/wasm/index.html
-          test -f samples/web/build/pages/gdx/gl/wasm/scripts/box2d.js
-          test -f samples/web/build/pages/gdx/gl/wasm/scripts/box2d.wasm
-          test ! -d samples/web/build/pages/gdx/gl/js/WEB-INF
-          test ! -d samples/web/build/pages/gdx/gl/wasm/WEB-INF
+          test -f samples/gdx/platforms/web/build/pages/index.html
+          test -f samples/gdx/platforms/web/build/pages/gdx/gl/js/index.html
+          test -f samples/gdx/platforms/web/build/pages/gdx/gl/js/scripts/box2d.js
+          test -f samples/gdx/platforms/web/build/pages/gdx/gl/js/scripts/box2d.wasm
+          test -f samples/gdx/platforms/web/build/pages/gdx/gl/wasm/index.html
+          test -f samples/gdx/platforms/web/build/pages/gdx/gl/wasm/scripts/box2d.js
+          test -f samples/gdx/platforms/web/build/pages/gdx/gl/wasm/scripts/box2d.wasm
+          test -f samples/gdx/platforms/web/build/pages/fdx/gl/js/index.html
+          test -f samples/gdx/platforms/web/build/pages/fdx/gl/wasm/index.html
+          test -f samples/gdx/platforms/web/build/pages/fdx/webgpu/js/webgpu.html
+          test ! -d samples/gdx/platforms/web/build/pages/gdx/gl/js/WEB-INF
+          test ! -d samples/gdx/platforms/web/build/pages/gdx/gl/wasm/WEB-INF
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: samples/web/build/pages
+          path: samples/gdx/platforms/web/build/pages
 
   deploy:
     name: Deploy

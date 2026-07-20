@@ -1,6 +1,7 @@
 pluginManagement {
     val jParserPluginVersion = "-SNAPSHOT"
     val gdxTeaVMPluginVersion = "1.6.0"
+    val libfdxPluginVersion = "-SNAPSHOT"
 
     resolutionStrategy {
         eachPlugin {
@@ -13,6 +14,7 @@ pluginManagement {
     plugins {
         id("com.github.xpenatan.jparser") version jParserPluginVersion
         id("com.github.xpenatan.gdx-teavm") version gdxTeaVMPluginVersion
+        id("io.github.libfdx") version libfdxPluginVersion
     }
 
     repositories {
@@ -45,10 +47,16 @@ include(":box2d:web:wasm")
 include(":box2d:android:jni")
 include(":box2d:android:c")
 
-include(":samples:core")
 include(":samples:shared")
-include(":samples:desktop:jni")
-include(":samples:desktop:ffm")
-include(":samples:desktop:c")
-include(":samples:web")
-include(":samples:android")
+include(":samples:gdx:core")
+include(":samples:gdx:platforms:desktop-jni")
+include(":samples:gdx:platforms:desktop-ffm")
+include(":samples:gdx:platforms:desktop-c")
+include(":samples:gdx:platforms:web")
+include(":samples:gdx:platforms:android")
+include(":samples:fdx:core")
+include(":samples:fdx:platforms:desktop-jni")
+include(":samples:fdx:platforms:desktop-ffm")
+include(":samples:fdx:platforms:desktop-c")
+include(":samples:fdx:platforms:web")
+include(":samples:fdx:platforms:android")

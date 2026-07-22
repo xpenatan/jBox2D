@@ -15,7 +15,7 @@ object LibExt {
     const val javaWebTarget = "17"
     const val javaFFMTarget = "25"
 
-    const val jParserVersion = "-SNAPSHOT"
+    const val jParserVersion = "1.2.5"
     const val fdxVersion = "-SNAPSHOT"
     const val gdxVersion = "1.14.2"
     const val gdxTeaVMVersion = "1.6.0"

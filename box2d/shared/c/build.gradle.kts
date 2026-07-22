@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "shared-c"
-group = "${LibExt.groupId}.shared"
 val generatedResourcesDir = layout.buildDirectory.dir("generated/jparser/resources/main")
 
 base { archivesName.set(moduleName) }
@@ -38,8 +37,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

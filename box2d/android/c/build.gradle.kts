@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "android-c"
-group = "${LibExt.groupId}.android"
 val cLibsDir = "$projectDir/../../builder/build/c++/libs/android"
 val stagedJniLibsDir = layout.buildDirectory.dir("generated/cJniLibs")
 val androidAbis = listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
@@ -60,8 +59,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
         }
     }
 }

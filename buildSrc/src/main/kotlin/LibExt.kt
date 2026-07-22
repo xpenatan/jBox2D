@@ -4,9 +4,12 @@ import java.util.Properties
 object LibExt {
     const val groupId = "com.github.xpenatan.jBox2D"
     const val libName = "jBox2D"
+    const val snapshotVersion = "-SNAPSHOT"
     var isRelease = false
+    val releaseVersion: String
+        get() = readReleaseVersion()
     val libVersion: String
-        get() = getVersion()
+        get() = if(isRelease) releaseVersion else snapshotVersion
 
     const val javaMainTarget = "1.8"
     const val javaWebTarget = "17"
@@ -19,11 +22,7 @@ object LibExt {
     const val jUnitVersion = "4.13.2"
 }
 
-private fun getVersion(): String {
-    if(!LibExt.isRelease) {
-        return "-SNAPSHOT"
-    }
-
+private fun readReleaseVersion(): String {
     val file = File("gradle.properties")
     if(!file.exists()) {
         throw RuntimeException("gradle.properties must exist for release builds")

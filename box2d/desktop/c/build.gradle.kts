@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "desktop-c"
-group = "${LibExt.groupId}.desktop"
 val nativeResourceRoot = "external_cpp/jparser/box2d/native"
 val nativeRoot = file("$projectDir/../../builder/build/c++/libs")
 data class NativeResource(val sourcePath: String, val platform: String)
@@ -48,8 +47,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

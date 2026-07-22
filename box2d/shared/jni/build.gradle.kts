@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "shared-jni"
-group = "${LibExt.groupId}.shared"
 
 base { archivesName.set(moduleName) }
 
@@ -32,8 +31,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "desktop-jni"
-group = "${LibExt.groupId}.desktop"
 val nativeRoot = file("$projectDir/../../builder/build/c++/libs")
 val nativePaths = listOf(
     "$nativeRoot/windows/vc/jni/box2d64.dll",
@@ -59,8 +58,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

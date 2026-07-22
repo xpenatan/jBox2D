@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "android-jni"
-group = "${LibExt.groupId}.android"
 
 android {
     namespace = "com.github.xpenatan.box2d.android.jni"
@@ -48,8 +47,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
         }
     }
 }

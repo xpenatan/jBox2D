@@ -358,18 +358,16 @@ jobs:
           test -n "$version"
           echo "value=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare release deployment bundle
+      - name: Prepare release deployment repository
         if: ${{ inputs.shouldUpload && inputs.isRelease }}
-        run: ./gradlew --no-daemon prepareReleaseDeploy
+        run: ./gradlew --no-daemon prepareRelease
 
-      - name: Upload release deployment bundle
+      - name: Upload release deployment repository
         if: ${{ inputs.shouldUpload && inputs.isRelease }}
         uses: actions/upload-artifact@v7
         with:
           name: release-staging-deploy-${{ steps.version.outputs.value }}
-          path: |
-            build/staging-deploy/
-            build/staging-deploy.zip
+          path: build/staging-deploy/
           if-no-files-found: error
 
       - name: Publish release to Maven Central
@@ -383,7 +381,7 @@ jobs:
 
       - name: Prepare snapshot deployment repository
         if: ${{ inputs.shouldUpload && !inputs.isRelease }}
-        run: ./gradlew --no-daemon prepareSnapshotDeploy
+        run: ./gradlew --no-daemon prepareSnapshot
 
       - name: Upload snapshot deployment repository
         if: ${{ inputs.shouldUpload && !inputs.isRelease }}

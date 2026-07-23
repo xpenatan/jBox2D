@@ -7,19 +7,17 @@ plugins {
     id("java")
 }
 
-val box2dVersion = libs.versions.box2dSource.get()
-
 val box2dSourceRoot = layout.buildDirectory.dir("box2d-source").get().asFile
 val box2dArchiveFile = layout.buildDirectory.file("tmp/box2d-source.zip").get().asFile
 
 tasks.register("box2d_download_source") {
     group = "box2d"
-    description = "Download Box2D ${box2dVersion} source into the build directory."
-    inputs.property("box2dVersion", box2dVersion)
+    description = "Download Box2D ${LibExt.box2dVersion} source into the build directory."
+    inputs.property("box2dVersion", LibExt.box2dVersion)
     outputs.dir(box2dSourceRoot)
 
     doLast {
-        val url = "https://github.com/erincatto/box2d/archive/refs/tags/v${box2dVersion}.zip"
+        val url = "https://github.com/erincatto/box2d/archive/refs/tags/v${LibExt.box2dVersion}.zip"
         println("Downloading $url")
         delete(box2dSourceRoot)
         box2dArchiveFile.parentFile.mkdirs()

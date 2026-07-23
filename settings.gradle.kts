@@ -1,12 +1,18 @@
 pluginManagement {
+    val jParserPluginVersion = "-SNAPSHOT"
+    val gdxTeaVMPluginVersion = "1.6.0"
+
     resolutionStrategy {
         eachPlugin {
             if(requested.id.id == "com.github.xpenatan.jparser") {
-                val version = requested.version
-                    ?: throw GradleException("The jParser plugin version must be declared in the version catalog")
-                useModule("com.github.xpenatan.jParser:jparser-gradle-plugin:$version")
+                useModule("com.github.xpenatan.jParser:jparser-gradle-plugin:$jParserPluginVersion")
             }
         }
+    }
+
+    plugins {
+        id("com.github.xpenatan.jparser") version jParserPluginVersion
+        id("com.github.xpenatan.gdx-teavm") version gdxTeaVMPluginVersion
     }
 
     repositories {
@@ -38,19 +44,11 @@ include(":box2d:desktop:c")
 include(":box2d:web:wasm")
 include(":box2d:android:jni")
 include(":box2d:android:c")
-include(":extensions:gdx:gl")
-include(":extensions:fdx")
 
+include(":samples:core")
 include(":samples:shared")
-include(":samples:gdx:core")
-include(":samples:gdx:platforms:desktop-jni")
-include(":samples:gdx:platforms:desktop-ffm")
-include(":samples:gdx:platforms:desktop-c")
-include(":samples:gdx:platforms:web")
-include(":samples:gdx:platforms:android")
-include(":samples:fdx:core")
-include(":samples:fdx:platforms:desktop-jni")
-include(":samples:fdx:platforms:desktop-ffm")
-include(":samples:fdx:platforms:desktop-c")
-include(":samples:fdx:platforms:web")
-include(":samples:fdx:platforms:android")
+include(":samples:desktop:jni")
+include(":samples:desktop:ffm")
+include(":samples:desktop:c")
+include(":samples:web")
+include(":samples:android")

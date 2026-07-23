@@ -5,7 +5,7 @@ import java.io.File
 
 plugins {
     id("java-library")
-    alias(libs.plugins.jparser)
+    id("com.github.xpenatan.jparser")
 }
 
 fun File.normalizedPath(): String = absolutePath.replace('\\', '/')
@@ -20,8 +20,8 @@ val box2dTimerSource = File(box2dPrivateSourceDir, "timer.c")
 val box2dWebTimerSource = File(box2dCustomSourceDir, "box2d_web_timer.c")
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
-    targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+    sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+    targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
 }
 
 val jParserTargetNames = listOf(

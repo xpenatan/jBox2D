@@ -1,40 +1,36 @@
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.OutputDirectory
-
 plugins {
-    alias(libs.plugins.androidLibrary)
-}
-
-abstract class StageCJniLibsTask : Sync() {
-    @get:OutputDirectory
-    abstract val outputDirectory: DirectoryProperty
+    id("com.android.library")
 }
 
 val moduleName = "android-c"
+group = "${LibExt.groupId}.android"
 val cLibsDir = "$projectDir/../../builder/build/c++/libs/android"
+val stagedJniLibsDir = layout.buildDirectory.dir("generated/cJniLibs")
 val androidAbis = listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
 
-val stageCJniLibs = tasks.register<StageCJniLibsTask>("stageCJniLibs") {
+val stageCJniLibs by tasks.registering(Copy::class) {
     androidAbis.forEach { abi ->
         from("$cLibsDir/$abi/teavm_c") {
             include("*.so")
             into(abi)
         }
     }
-    outputDirectory.set(layout.buildDirectory.dir("generated/cJniLibs"))
-    into(outputDirectory)
+    into(stagedJniLibsDir)
 }
 
 android {
     namespace = "com.github.xpenatan.box2d.android.c"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
-    enableKotlin = false
+    compileSdk = 36
 
-    defaultConfig { minSdk = libs.versions.androidMinSdk.get().toInt() }
+    defaultConfig { minSdk = 29 }
+
+    sourceSets {
+        named("main") { jniLibs.srcDirs(stagedJniLibsDir) }
+    }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
-        targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+        sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+        targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
     }
 
     buildTypes {
@@ -47,28 +43,25 @@ android {
     publishing { singleVariant("release") }
 }
 
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        variant.sources.jniLibs?.addGeneratedSourceDirectory(
-            stageCJniLibs,
-            StageCJniLibsTask::outputDirectory
-        )
-    }
+tasks.matching { it.name == "mergeReleaseJniLibFolders" || it.name == "mergeDebugJniLibFolders" }.configureEach {
+    dependsOn(stageCJniLibs)
 }
 
 dependencies {
     api(project(":box2d:shared:c"))
-    api(libs.jparserRuntimeAndroidC)
-    runtimeOnly(libs.jparserRuntimeAndroidCX86)
-    runtimeOnly(libs.jparserRuntimeAndroidCX8664)
-    runtimeOnly(libs.jparserRuntimeAndroidCArmeabiV7a)
-    runtimeOnly(libs.jparserRuntimeAndroidCArm64V8a)
+    api("com.github.xpenatan.jParser:runtime-android-c:${LibExt.jParserVersion}")
+    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_x86:${LibExt.jParserVersion}")
+    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_x86_64:${LibExt.jParserVersion}")
+    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_armeabi_v7a:${LibExt.jParserVersion}")
+    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_arm64_v8a:${LibExt.jParserVersion}")
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
+            groupId = LibExt.groupId
+            version = LibExt.libVersion
         }
     }
 }

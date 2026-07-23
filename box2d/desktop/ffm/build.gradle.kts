@@ -18,13 +18,13 @@ tasks.named<Jar>("jar") {
 }
 
 dependencies {
-    implementation(libs.jparserRuntimeDesktopFfm)
-    implementation(libs.jparserRuntimeDesktopFfmWindowsX64)
-    implementation(libs.jparserRuntimeDesktopFfmLinuxX64)
-    implementation(libs.jparserRuntimeDesktopFfmMacX64)
-    implementation(libs.jparserRuntimeDesktopFfmMacArm64)
-    implementation(libs.jparserApiCore)
-    implementation(libs.jparserLoaderCore)
+    implementation("com.github.xpenatan.jParser:runtime-desktop-ffm:${LibExt.jParserVersion}")
+    implementation("com.github.xpenatan.jParser:runtime-desktop-ffm_windows_x64:${LibExt.jParserVersion}")
+    implementation("com.github.xpenatan.jParser:runtime-desktop-ffm_linux_x64:${LibExt.jParserVersion}")
+    implementation("com.github.xpenatan.jParser:runtime-desktop-ffm_mac_x64:${LibExt.jParserVersion}")
+    implementation("com.github.xpenatan.jParser:runtime-desktop-ffm_mac_arm64:${LibExt.jParserVersion}")
+    implementation("com.github.xpenatan.jParser:api-core:${LibExt.jParserVersion}")
+    implementation("com.github.xpenatan.jParser:loader-core:${LibExt.jParserVersion}")
 }
 
 sourceSets {
@@ -36,8 +36,8 @@ tasks.named("clean") {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
-    targetCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
+    sourceCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
+    targetCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
     withJavadocJar()
     withSourcesJar()
 }
@@ -46,6 +46,8 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
+            groupId = LibExt.groupId
+            version = LibExt.libVersion
             from(components["java"])
         }
     }

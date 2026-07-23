@@ -3,13 +3,14 @@ plugins {
 }
 
 val moduleName = "shared-jni"
+group = "${LibExt.groupId}.shared"
 
 base { archivesName.set(moduleName) }
 
 dependencies {
-    api(libs.jparserRuntimeJni)
-    api(libs.jparserApiCore)
-    api(libs.jparserLoaderCore)
+    api("com.github.xpenatan.jParser:runtime-jni:${LibExt.jParserVersion}")
+    api("com.github.xpenatan.jParser:api-core:${LibExt.jParserVersion}")
+    api("com.github.xpenatan.jParser:loader-core:${LibExt.jParserVersion}")
 }
 
 sourceSets {
@@ -21,8 +22,8 @@ tasks.named("clean") {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
-    targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+    sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+    targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
     withJavadocJar()
     withSourcesJar()
 }
@@ -31,6 +32,8 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
+            groupId = LibExt.groupId
+            version = LibExt.libVersion
             from(components["java"])
         }
     }

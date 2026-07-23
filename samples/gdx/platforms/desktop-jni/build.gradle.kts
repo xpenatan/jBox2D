@@ -4,7 +4,7 @@ plugins {
 
 val box2dRuntimeName = "jni"
 val box2dRuntimeProject = ":box2d:desktop:jni"
-val box2dVersion = libs.versions.box2d.get()
+val box2dVersion = libs.versions.box2dSource.get()
 val box2dRuntimeClasspath by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true

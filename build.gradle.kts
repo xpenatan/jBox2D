@@ -3,25 +3,7 @@ plugins {
     alias(libs.plugins.easyPublishing)
 }
 
-val jbox2dGroup = "com.github.xpenatan.jBox2D"
-
-mapOf(
-    ":box2d:shared:jni" to "shared",
-    ":box2d:shared:c" to "shared",
-    ":box2d:desktop:jni" to "desktop",
-    ":box2d:desktop:c" to "desktop",
-    ":box2d:android:jni" to "android",
-    ":box2d:android:c" to "android"
-).forEach { (projectPath, internalGroup) ->
-    project(projectPath).afterEvaluate {
-        // These projects share the names "jni" and "c", so their internal Gradle
-        // coordinates must remain distinct even though their published group is shared.
-        group = "$jbox2dGroup.$internalGroup"
-        publishing.publications.withType<MavenPublication>().configureEach {
-            setGroupId(jbox2dGroup)
-        }
-    }
-}
+val jbox2dGroup = libs.versions.jbox2dGroup.get()
 
 allprojects {
     repositories {
@@ -37,14 +19,6 @@ allprojects {
 
     configurations.configureEach {
         resolutionStrategy.cacheChangingModulesFor(0, "seconds")
-        resolutionStrategy.eachDependency {
-            if(requested.group == "com.github.xpenatan.jParser") {
-                useVersion(libs.versions.jparser.get())
-            }
-            else if(requested.group == "com.github.xpenatan.gdx-teavm") {
-                useVersion(libs.versions.gdxTeavm.get())
-            }
-        }
     }
 }
 
@@ -73,9 +47,8 @@ easyPublishing {
     password.set(providers.environmentVariable("CENTRAL_PORTAL_PASSWORD"))
     signingKey.set(providers.environmentVariable("SIGNING_KEY"))
     signingPassword.set(providers.environmentVariable("SIGNING_PASSWORD"))
-    automaticRelease.set(true)
 
-    pomName.set("jBox2D")
+    pomName.set(libs.versions.jbox2dName)
     pomDescription.set("Box2D Java bindings")
     projectUrl.set("https://github.com/xpenatan/jBox2d")
 

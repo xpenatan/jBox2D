@@ -1,3 +1,5 @@
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.OutputDirectory
 import java.io.File
 import java.util.Properties
 
@@ -5,9 +7,14 @@ plugins {
     alias(libs.plugins.androidApplication)
 }
 
+abstract class StageGdxJniLibsTask : Sync() {
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+}
+
 group = "com.github.xpenatan.box2d.sample.gdx.android"
 
-val box2dVersion = libs.versions.box2d.get()
+val box2dVersion = libs.versions.box2dSource.get()
 val gdxNativeClassifiers = linkedMapOf(
     "armeabi-v7a" to "natives-armeabi-v7a",
     "arm64-v8a" to "natives-arm64-v8a",
@@ -20,9 +27,8 @@ val gdxNativeConfigurations = gdxNativeClassifiers.keys.associateWith { abi ->
         isCanBeResolved = true
     }
 }
-val stagedGdxJniLibsDir = layout.buildDirectory.dir("generated/gdxJniLibs")
 
-val stageGdxJniLibs by tasks.registering(Copy::class) {
+val stageGdxJniLibs = tasks.register<StageGdxJniLibsTask>("stageGdxJniLibs") {
     gdxNativeConfigurations.forEach { (abi, configuration) ->
         from(configuration.incoming.artifactView { }.files.elements.map { files ->
             files.map { zipTree(it.asFile) }
@@ -31,11 +37,11 @@ val stageGdxJniLibs by tasks.registering(Copy::class) {
             into(abi)
         }
     }
-    into(stagedGdxJniLibsDir)
-    doFirst { delete(stagedGdxJniLibsDir) }
+    outputDirectory.set(layout.buildDirectory.dir("generated/gdxJniLibs"))
+    into(outputDirectory)
     doLast {
         val missing = gdxNativeClassifiers.keys.filter { abi ->
-            !stagedGdxJniLibsDir.get().file("$abi/libgdx.so").asFile.isFile
+            !outputDirectory.get().file("$abi/libgdx.so").asFile.isFile
         }
         if(missing.isNotEmpty()) throw GradleException("Missing libGDX native libraries for: ${missing.joinToString()}")
     }
@@ -54,6 +60,7 @@ dependencies {
 android {
     namespace = "com.github.xpenatan.box2d.sample.gdx.android"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    enableKotlin = false
 
     defaultConfig {
         applicationId = "com.github.xpenatan.box2d.samples"
@@ -61,12 +68,6 @@ android {
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
         versionName = box2dVersion
-    }
-
-    sourceSets {
-        named("main") {
-            jniLibs.srcDirs(stagedGdxJniLibsDir)
-        }
     }
 
     buildTypes {
@@ -82,10 +83,18 @@ android {
     }
 }
 
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.sources.jniLibs?.addGeneratedSourceDirectory(
+            stageGdxJniLibs,
+            StageGdxJniLibsTask::outputDirectory
+        )
+    }
+}
+
 tasks.matching { task ->
     task.name == "mergeDebugJniLibFolders" || task.name == "mergeReleaseJniLibFolders"
 }.configureEach {
-    dependsOn(stageGdxJniLibs)
     dependsOn(":box2d:builder:jParser_build_android_jni")
 }
 

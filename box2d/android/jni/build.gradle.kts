@@ -7,6 +7,7 @@ val moduleName = "android-jni"
 android {
     namespace = "com.github.xpenatan.box2d.android.jni"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    enableKotlin = false
 
     defaultConfig { minSdk = libs.versions.androidMinSdk.get().toInt() }
 

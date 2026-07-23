@@ -13,7 +13,7 @@ dependencies {
 }
 
 val sampleMainClass = "com.github.xpenatan.box2d.sample.gdx.web.Box2DGdxWebLauncher"
-val box2dVersion = libs.versions.box2d.get()
+val box2dVersion = libs.versions.box2dSource.get()
 
 gdxTeaVM {
     js {

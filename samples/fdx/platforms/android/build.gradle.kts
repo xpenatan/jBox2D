@@ -10,13 +10,14 @@ group = "com.github.xpenatan.box2d.sample.fdx.android"
 android {
     namespace = "com.github.xpenatan.box2d.sample.fdx.android"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    enableKotlin = false
 
     defaultConfig {
         applicationId = "com.github.xpenatan.box2d.sample.fdx.android"
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
-        versionName = libs.versions.box2d.get()
+        versionName = libs.versions.box2dSource.get()
     }
 
     buildTypes {

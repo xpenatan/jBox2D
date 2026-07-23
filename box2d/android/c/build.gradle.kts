@@ -1,31 +1,36 @@
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.OutputDirectory
+
 plugins {
     alias(libs.plugins.androidLibrary)
 }
 
+abstract class StageCJniLibsTask : Sync() {
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+}
+
 val moduleName = "android-c"
 val cLibsDir = "$projectDir/../../builder/build/c++/libs/android"
-val stagedJniLibsDir = layout.buildDirectory.dir("generated/cJniLibs")
 val androidAbis = listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
 
-val stageCJniLibs by tasks.registering(Copy::class) {
+val stageCJniLibs = tasks.register<StageCJniLibsTask>("stageCJniLibs") {
     androidAbis.forEach { abi ->
         from("$cLibsDir/$abi/teavm_c") {
             include("*.so")
             into(abi)
         }
     }
-    into(stagedJniLibsDir)
+    outputDirectory.set(layout.buildDirectory.dir("generated/cJniLibs"))
+    into(outputDirectory)
 }
 
 android {
     namespace = "com.github.xpenatan.box2d.android.c"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    enableKotlin = false
 
     defaultConfig { minSdk = libs.versions.androidMinSdk.get().toInt() }
-
-    sourceSets {
-        named("main") { jniLibs.srcDirs(stagedJniLibsDir) }
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
@@ -42,8 +47,13 @@ android {
     publishing { singleVariant("release") }
 }
 
-tasks.matching { it.name == "mergeReleaseJniLibFolders" || it.name == "mergeDebugJniLibFolders" }.configureEach {
-    dependsOn(stageCJniLibs)
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.sources.jniLibs?.addGeneratedSourceDirectory(
+            stageCJniLibs,
+            StageCJniLibsTask::outputDirectory
+        )
+    }
 }
 
 dependencies {

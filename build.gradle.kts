@@ -1,9 +1,9 @@
 plugins {
     id("java")
-    id("com.github.xpenatan.easy-publishing") version "0.1.0"
+    alias(libs.plugins.easyPublishing)
 }
 
-LibExt.isRelease = rootProject.extra["easyPublishing.releaseRequested"] as Boolean
+val jbox2dGroup = "com.github.xpenatan.jBox2D"
 
 mapOf(
     ":box2d:shared:jni" to "shared",
@@ -16,21 +16,10 @@ mapOf(
     project(projectPath).afterEvaluate {
         // These projects share the names "jni" and "c", so their internal Gradle
         // coordinates must remain distinct even though their published group is shared.
-        group = "${LibExt.groupId}.$internalGroup"
+        group = "$jbox2dGroup.$internalGroup"
         publishing.publications.withType<MavenPublication>().configureEach {
-            setGroupId(LibExt.groupId)
+            setGroupId(jbox2dGroup)
         }
-    }
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-    }
-
-    dependencies {
-        classpath("com.android.tools.build:gradle:8.12.3")
     }
 }
 
@@ -50,10 +39,10 @@ allprojects {
         resolutionStrategy.cacheChangingModulesFor(0, "seconds")
         resolutionStrategy.eachDependency {
             if(requested.group == "com.github.xpenatan.jParser") {
-                useVersion(LibExt.jParserVersion)
+                useVersion(libs.versions.jparser.get())
             }
             else if(requested.group == "com.github.xpenatan.gdx-teavm") {
-                useVersion(LibExt.gdxTeaVMVersion)
+                useVersion(libs.versions.gdxTeavm.get())
             }
         }
     }
@@ -74,9 +63,9 @@ easyPublishing {
         ":extensions:fdx"
     )
 
-    groupId.set(LibExt.groupId)
-    releaseVersion.set(LibExt.releaseVersion)
-    snapshotVersion.set(LibExt.snapshotVersion)
+    groupId.set(jbox2dGroup)
+    releaseVersion.set(libs.versions.jbox2dRelease)
+    snapshotVersion.set(libs.versions.jbox2dSnapshot)
 
     snapshotRepositoryUrl.set("https://central.sonatype.com/repository/maven-snapshots/")
     releaseRepositoryUrl.set("https://central.sonatype.com")
@@ -86,7 +75,7 @@ easyPublishing {
     signingPassword.set(providers.environmentVariable("SIGNING_PASSWORD"))
     automaticRelease.set(true)
 
-    pomName.set(LibExt.libName)
+    pomName.set("jBox2D")
     pomDescription.set("Box2D Java bindings")
     projectUrl.set("https://github.com/xpenatan/jBox2d")
 

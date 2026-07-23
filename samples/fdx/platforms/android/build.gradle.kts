@@ -2,21 +2,21 @@ import java.io.File
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.androidApplication)
 }
 
 group = "com.github.xpenatan.box2d.sample.fdx.android"
 
 android {
     namespace = "com.github.xpenatan.box2d.sample.fdx.android"
-    compileSdk = 36
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.github.xpenatan.box2d.sample.fdx.android"
-        minSdk = 29
-        targetSdk = 36
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = libs.versions.box2d.get()
     }
 
     buildTypes {
@@ -27,20 +27,20 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
-        targetCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
         isCoreLibraryDesugaringEnabled = true
     }
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring(libs.desugarJdkLibs)
 
     implementation(project(":samples:fdx:core"))
     implementation(project(":box2d:android:jni"))
-    implementation("io.github.libfdx:backend_android:${LibExt.fdxVersion}")
-    implementation("io.github.libfdx:wgpu_android_jni:${LibExt.fdxVersion}")
-    implementation("io.github.libfdx:vulkan_android_jni:${LibExt.fdxVersion}")
+    implementation(libs.fdxBackendAndroid)
+    implementation(libs.fdxWgpuAndroidJni)
+    implementation(libs.fdxVulkanAndroidJni)
 }
 
 fun adbExecutable(): String {

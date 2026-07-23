@@ -2,11 +2,12 @@ import java.io.File
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.androidApplication)
 }
 
 group = "com.github.xpenatan.box2d.sample.gdx.android"
 
+val box2dVersion = libs.versions.box2d.get()
 val gdxNativeClassifiers = linkedMapOf(
     "armeabi-v7a" to "natives-armeabi-v7a",
     "arm64-v8a" to "natives-arm64-v8a",
@@ -43,23 +44,23 @@ val stageGdxJniLibs by tasks.registering(Copy::class) {
 dependencies {
     implementation(project(":samples:gdx:core"))
     implementation(project(":box2d:android:jni"))
-    implementation("com.badlogicgames.gdx:gdx-backend-android:${LibExt.gdxVersion}")
+    implementation(libs.gdxBackendAndroid)
     gdxNativeClassifiers.forEach { (abi, classifier) ->
         add(gdxNativeConfigurations.getValue(abi).name,
-            "com.badlogicgames.gdx:gdx-platform:${LibExt.gdxVersion}:$classifier")
+            variantOf(libs.gdxPlatform) { classifier(classifier) })
     }
 }
 
 android {
     namespace = "com.github.xpenatan.box2d.sample.gdx.android"
-    compileSdk = 36
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.github.xpenatan.box2d.samples"
-        minSdk = 29
-        targetSdk = 36
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
-        versionName = "3.1.1"
+        versionName = box2dVersion
     }
 
     sourceSets {
@@ -76,8 +77,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
-        targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
     }
 }
 
@@ -108,13 +109,13 @@ fun adbExecutable(): String {
 
 tasks.register("box2d_gdx_android_jni_build") {
     group = "samples"
-    description = "Builds the Box2D 3.1.1 Android sample browser."
+    description = "Builds the Box2D $box2dVersion Android sample browser."
     dependsOn("assembleDebug")
 }
 
 tasks.register<Exec>("box2d_gdx_android_jni_run") {
     group = "samples"
-    description = "Installs and launches the Box2D 3.1.1 Android sample browser."
+    description = "Installs and launches the Box2D $box2dVersion Android sample browser."
     dependsOn("installDebug")
     val command = mutableListOf(adbExecutable(), "shell", "am", "start", "-n",
         "com.github.xpenatan.box2d.samples/com.github.xpenatan.box2d.sample.gdx.android.Box2DGdxAndroidActivity")

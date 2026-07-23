@@ -1,10 +1,10 @@
 plugins {
-    id("com.github.xpenatan.gdx-teavm")
+    alias(libs.plugins.gdxTeavm)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
 }
 
 dependencies {
@@ -13,11 +13,12 @@ dependencies {
 }
 
 val sampleMainClass = "com.github.xpenatan.box2d.sample.gdx.web.Box2DGdxWebLauncher"
+val box2dVersion = libs.versions.box2d.get()
 
 gdxTeaVM {
     js {
         mainClass.set(sampleMainClass)
-        htmlTitle.set("jBox2D 3.1.1 Samples - Web JS")
+        htmlTitle.set("jBox2D $box2dVersion Samples - Web JS")
         htmlWidth.set(0)
         htmlHeight.set(0)
         serverPort.set(8081)
@@ -26,7 +27,7 @@ gdxTeaVM {
     }
     wasm {
         mainClass.set(sampleMainClass)
-        htmlTitle.set("jBox2D 3.1.1 Samples - Web Wasm")
+        htmlTitle.set("jBox2D $box2dVersion Samples - Web Wasm")
         htmlWidth.set(0)
         htmlHeight.set(0)
         serverPort.set(8082)

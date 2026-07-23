@@ -8,8 +8,8 @@ val box2dRuntimeName = "c"
 val box2dRuntimeProject = ":box2d:desktop:c"
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
 }
 
 val glRuntimeClasspath by configurations.creating {
@@ -26,7 +26,7 @@ val wgpuJniRuntimeClasspath by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
-        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, LibExt.javaFFMTarget.toInt())
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, libs.versions.javaFfm.get().toInt())
     }
 }
 
@@ -37,12 +37,12 @@ val box2dRuntimeClasspath by configurations.creating {
 
 dependencies {
     implementation(project(":samples:fdx:core"))
-    implementation("io.github.libfdx:backend_desktop:${LibExt.fdxVersion}")
-    implementation("io.github.libfdx:wgpu_core:${LibExt.fdxVersion}")
+    implementation(libs.fdxBackendDesktop)
+    implementation(libs.fdxWgpuCore)
 
-    glRuntimeClasspath("io.github.libfdx:gl_desktop:${LibExt.fdxVersion}")
-    vulkanRuntimeClasspath("io.github.libfdx:vulkan_desktop:${LibExt.fdxVersion}")
-    wgpuJniRuntimeClasspath("io.github.libfdx:wgpu_desktop_jni:${LibExt.fdxVersion}")
+    glRuntimeClasspath(libs.fdxGlDesktop)
+    vulkanRuntimeClasspath(libs.fdxVulkanDesktop)
+    wgpuJniRuntimeClasspath(libs.fdxWgpuDesktopJni)
     box2dRuntimeClasspath(project(box2dRuntimeProject))
 }
 

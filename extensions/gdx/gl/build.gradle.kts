@@ -10,15 +10,15 @@ base {
 
 dependencies {
     compileOnly(project(":box2d:core"))
-    api("com.badlogicgames.gdx:gdx:${LibExt.gdxVersion}")
+    api(libs.gdxCore)
 
     testImplementation(project(":box2d:core"))
-    testImplementation("junit:junit:${LibExt.jUnitVersion}")
+    testImplementation(libs.junit)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
     withJavadocJar()
     withSourcesJar()
 }

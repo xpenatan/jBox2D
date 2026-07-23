@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.androidLibrary)
 }
 
 val moduleName = "android-c"
@@ -19,17 +19,17 @@ val stageCJniLibs by tasks.registering(Copy::class) {
 
 android {
     namespace = "com.github.xpenatan.box2d.android.c"
-    compileSdk = 36
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
-    defaultConfig { minSdk = 29 }
+    defaultConfig { minSdk = libs.versions.androidMinSdk.get().toInt() }
 
     sourceSets {
         named("main") { jniLibs.srcDirs(stagedJniLibsDir) }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
-        targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
     }
 
     buildTypes {
@@ -48,11 +48,11 @@ tasks.matching { it.name == "mergeReleaseJniLibFolders" || it.name == "mergeDebu
 
 dependencies {
     api(project(":box2d:shared:c"))
-    api("com.github.xpenatan.jParser:runtime-android-c:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_x86:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_x86_64:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_armeabi_v7a:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android-c_arm64_v8a:${LibExt.jParserVersion}")
+    api(libs.jparserRuntimeAndroidC)
+    runtimeOnly(libs.jparserRuntimeAndroidCX86)
+    runtimeOnly(libs.jparserRuntimeAndroidCX8664)
+    runtimeOnly(libs.jparserRuntimeAndroidCArmeabiV7a)
+    runtimeOnly(libs.jparserRuntimeAndroidCArm64V8a)
 }
 
 publishing {

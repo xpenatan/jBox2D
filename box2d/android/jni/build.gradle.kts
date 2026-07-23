@@ -1,14 +1,14 @@
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.androidLibrary)
 }
 
 val moduleName = "android-jni"
 
 android {
     namespace = "com.github.xpenatan.box2d.android.jni"
-    compileSdk = 36
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
-    defaultConfig { minSdk = 29 }
+    defaultConfig { minSdk = libs.versions.androidMinSdk.get().toInt() }
 
     sourceSets {
         named("main") {
@@ -17,8 +17,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
-        targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
     }
 
     buildTypes {
@@ -33,14 +33,14 @@ android {
 
 dependencies {
     api(project(":box2d:shared:jni"))
-    api("com.github.xpenatan.jParser:runtime-jni:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:runtime-android:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android_x86:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android_x86_64:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android_armeabi_v7a:${LibExt.jParserVersion}")
-    runtimeOnly("com.github.xpenatan.jParser:runtime-android_arm64_v8a:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:api-core:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:loader-core:${LibExt.jParserVersion}")
+    api(libs.jparserRuntimeJni)
+    api(libs.jparserRuntimeAndroid)
+    runtimeOnly(libs.jparserRuntimeAndroidX86)
+    runtimeOnly(libs.jparserRuntimeAndroidX8664)
+    runtimeOnly(libs.jparserRuntimeAndroidArmeabiV7a)
+    runtimeOnly(libs.jparserRuntimeAndroidArm64V8a)
+    api(libs.jparserApiCore)
+    api(libs.jparserLoaderCore)
 }
 
 publishing {

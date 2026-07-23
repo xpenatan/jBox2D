@@ -10,16 +10,16 @@ base {
 
 dependencies {
     compileOnly(project(":box2d:core"))
-    api("io.github.libfdx:graphics:${LibExt.fdxVersion}")
-    api("io.github.libfdx:camera:${LibExt.fdxVersion}")
+    api(libs.fdxGraphics)
+    api(libs.fdxCamera)
 
     testImplementation(project(":box2d:core"))
-    testImplementation("junit:junit:${LibExt.jUnitVersion}")
+    testImplementation(libs.junit)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
     withJavadocJar()
     withSourcesJar()
 }

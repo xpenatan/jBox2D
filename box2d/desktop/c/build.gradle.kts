@@ -30,15 +30,15 @@ tasks.named<Jar>("jar") {
 
 dependencies {
     api(project(":box2d:shared:c"))
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_windows_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_linux_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_mac_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_mac_arm64:${LibExt.jParserVersion}")
+    implementation(libs.jparserRuntimeDesktopCWindowsX64)
+    implementation(libs.jparserRuntimeDesktopCLinuxX64)
+    implementation(libs.jparserRuntimeDesktopCMacX64)
+    implementation(libs.jparserRuntimeDesktopCMacArm64)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
     withJavadocJar()
     withSourcesJar()
 }

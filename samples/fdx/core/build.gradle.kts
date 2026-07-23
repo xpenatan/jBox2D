@@ -7,14 +7,14 @@ dependencies {
     compileOnly(project(":box2d:core"))
     api(project(":extensions:fdx"))
 
-    api("io.github.libfdx:application:${LibExt.fdxVersion}")
-    api("io.github.libfdx:camera:${LibExt.fdxVersion}")
-    api("io.github.libfdx:display:${LibExt.fdxVersion}")
-    api("io.github.libfdx:graphics:${LibExt.fdxVersion}")
-    api("io.github.libfdx:ui_kit:${LibExt.fdxVersion}")
+    api(libs.fdxApplication)
+    api(libs.fdxCamera)
+    api(libs.fdxDisplay)
+    api(libs.fdxGraphics)
+    api(libs.fdxUiKit)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaFFMTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
 }

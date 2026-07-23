@@ -7,7 +7,7 @@ plugins {
     id("java")
 }
 
-val box2dVersion = "3.1.1"
+val box2dVersion = libs.versions.box2d.get()
 
 val box2dSourceRoot = layout.buildDirectory.dir("box2d-source").get().asFile
 val box2dArchiveFile = layout.buildDirectory.file("tmp/box2d-source.zip").get().asFile

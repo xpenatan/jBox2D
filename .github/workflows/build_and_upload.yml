@@ -354,7 +354,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          version="$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties | head -n 1 | tr -d '\r')"
+          version="$(sed -n 's/^jbox2dRelease[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' gradle/libs.versions.toml | head -n 1 | tr -d '\r')"
           test -n "$version"
           echo "value=$version" >> "$GITHUB_OUTPUT"
 

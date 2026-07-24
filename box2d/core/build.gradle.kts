@@ -5,10 +5,10 @@ plugins {
 val moduleName = "core"
 
 dependencies {
-    api("com.github.xpenatan.jParser:loader-core:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:api-core:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:runtime-core:${LibExt.jParserVersion}")
-    testImplementation("junit:junit:${LibExt.jUnitVersion}")
+    api(libs.jparserLoaderCore)
+    api(libs.jparserApiCore)
+    api(libs.jparserRuntimeCore)
+    testImplementation(libs.junit)
 }
 
 sourceSets {
@@ -22,8 +22,8 @@ tasks.named("clean") {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
     withJavadocJar()
     withSourcesJar()
 }
@@ -32,8 +32,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

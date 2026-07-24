@@ -3,16 +3,15 @@ plugins {
 }
 
 val moduleName = "shared-c"
-group = "${LibExt.groupId}.shared"
 val generatedResourcesDir = layout.buildDirectory.dir("generated/jparser/resources/main")
 
 base { archivesName.set(moduleName) }
 
 dependencies {
-    api("com.github.xpenatan.jParser:api-core:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:loader-core:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:runtime-core:${LibExt.jParserVersion}")
-    api("com.github.xpenatan.jParser:runtime-c:${LibExt.jParserVersion}")
+    api(libs.jparserApiCore)
+    api(libs.jparserLoaderCore)
+    api(libs.jparserRuntimeCore)
+    api(libs.jparserRuntimeC)
 }
 
 sourceSets {
@@ -28,8 +27,8 @@ tasks.named("clean") {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
     withJavadocJar()
     withSourcesJar()
 }
@@ -38,8 +37,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

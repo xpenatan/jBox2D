@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "desktop-jni"
-group = "${LibExt.groupId}.desktop"
 val nativeRoot = file("$projectDir/../../builder/build/c++/libs")
 val nativePaths = listOf(
     "$nativeRoot/windows/vc/jni/box2d64.dll",
@@ -41,16 +40,16 @@ tasks.named<Test>("test") {
 
 dependencies {
     api(project(":box2d:shared:jni"))
-    implementation("com.github.xpenatan.jParser:runtime-desktop-jni_windows_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-jni_linux_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-jni_mac_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-jni_mac_arm64:${LibExt.jParserVersion}")
-    testImplementation("junit:junit:${LibExt.jUnitVersion}")
+    implementation(libs.jparserRuntimeDesktopJniWindowsX64)
+    implementation(libs.jparserRuntimeDesktopJniLinuxX64)
+    implementation(libs.jparserRuntimeDesktopJniMacX64)
+    implementation(libs.jparserRuntimeDesktopJniMacArm64)
+    testImplementation(libs.junit)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaMainTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaMain.get())
     withJavadocJar()
     withSourcesJar()
 }
@@ -59,8 +58,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

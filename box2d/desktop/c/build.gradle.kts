@@ -3,7 +3,6 @@ plugins {
 }
 
 val moduleName = "desktop-c"
-group = "${LibExt.groupId}.desktop"
 val nativeResourceRoot = "external_cpp/jparser/box2d/native"
 val nativeRoot = file("$projectDir/../../builder/build/c++/libs")
 data class NativeResource(val sourcePath: String, val platform: String)
@@ -31,15 +30,15 @@ tasks.named<Jar>("jar") {
 
 dependencies {
     api(project(":box2d:shared:c"))
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_windows_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_linux_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_mac_x64:${LibExt.jParserVersion}")
-    implementation("com.github.xpenatan.jParser:runtime-desktop-c_mac_arm64:${LibExt.jParserVersion}")
+    implementation(libs.jparserRuntimeDesktopCWindowsX64)
+    implementation(libs.jparserRuntimeDesktopCLinuxX64)
+    implementation(libs.jparserRuntimeDesktopCMacX64)
+    implementation(libs.jparserRuntimeDesktopCMacArm64)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
-    targetCompatibility = JavaVersion.toVersion(LibExt.javaWebTarget)
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
     withJavadocJar()
     withSourcesJar()
 }
@@ -48,8 +47,6 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = moduleName
-            groupId = LibExt.groupId
-            version = LibExt.libVersion
             from(components["java"])
         }
     }

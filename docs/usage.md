@@ -23,7 +23,8 @@ The Gradle wrapper uses Gradle 9.4.1. The commands below use PowerShell on Windo
 | TeaVM C | `:box2d:shared:c`, `:box2d:desktop:c` | TeaVM C bindings and desktop native packaging. |
 | WebAssembly | `:box2d:web:wasm` | TeaVM web API and the Emscripten side module. |
 | Android | `:box2d:android:jni`, `:box2d:android:c` | Android JNI and TeaVM C runtime packaging. |
-| Samples | `:samples:shared`, `:samples:core`, `:samples:desktop:*`, `:samples:web`, `:samples:android` | Shared scenarios, rendering, and platform launchers. |
+| Integrations | `:extensions:gdx:gl`, `:extensions:fdx` | libGDX and libfdx converters and debug renderers. |
+| Samples | `:samples:shared`, `:samples:gdx:*`, `:samples:fdx:*` | Shared scenarios plus libGDX and libfdx frontends and platform launchers. |
 
 ## Generate the bindings
 
@@ -75,45 +76,69 @@ The builder also exposes `:box2d:builder:jParser_build_ios_jni`, but the reposit
 
 ## Run the samples
 
-The Java ports of the official Box2D scenarios are shared by the desktop, web, and Android launchers.
+The Java ports of the official Box2D scenarios live in `:samples:shared`. The libGDX and libfdx frontends consume that same catalog and provide their own platform launchers.
 
 ### Desktop
 
-Build the matching native target for the current host before launching a desktop sample:
+libGDX:
 
 ```powershell
-.\gradlew.bat :samples:desktop:jni:box2d_sample_jni_run
-.\gradlew.bat :samples:desktop:ffm:box2d_sample_ffm_run
-.\gradlew.bat :samples:desktop:c:gdx_teavm_glfw_run
+.\gradlew.bat :samples:gdx:platforms:desktop-jni:box2d_gdx_desktop_jni_run
+.\gradlew.bat :samples:gdx:platforms:desktop-ffm:box2d_gdx_desktop_ffm_run
+.\gradlew.bat :samples:gdx:platforms:desktop-c:gdx_teavm_glfw_run
 ```
+
+libfdx OpenGL, WGPU, and Vulkan with the JNI runtime:
+
+```powershell
+.\gradlew.bat :samples:fdx:platforms:desktop-jni:box2d_fdx_desktop_gl_jni_run
+.\gradlew.bat :samples:fdx:platforms:desktop-jni:box2d_fdx_desktop_wgpu_jni_run
+.\gradlew.bat :samples:fdx:platforms:desktop-jni:box2d_fdx_desktop_vulkan_jni_run
+```
+
+Replace `desktop-jni`/`jni` with `desktop-ffm`/`ffm` to use the Box2D FFM runtime. The libfdx `desktop-c` module exposes `box2d_fdx_desktop_<graphics>_c_build` tasks for the TeaVM C compile paths.
 
 ### Web
 
-Build or run either browser variant:
+libGDX WebGL:
 
 ```powershell
-.\gradlew.bat :samples:web:gdx_teavm_web_js_build
-.\gradlew.bat :samples:web:gdx_teavm_web_wasm_build
-.\gradlew.bat :samples:web:gdx_teavm_web_js_run
-.\gradlew.bat :samples:web:gdx_teavm_web_wasm_run
+.\gradlew.bat :samples:gdx:platforms:web:gdx_teavm_web_js_run
+.\gradlew.bat :samples:gdx:platforms:web:gdx_teavm_web_wasm_run
 ```
 
-These tasks also build and stage the Emscripten Box2D side module used by both distributions.
+libfdx WebGL and WebGPU:
+
+```powershell
+.\gradlew.bat :samples:fdx:platforms:web:box2d_fdx_webgl_js_run
+.\gradlew.bat :samples:fdx:platforms:web:box2d_fdx_webgl_wasm_run
+.\gradlew.bat :samples:fdx:platforms:web:box2d_fdx_webgpu_js_run
+```
+
+These tasks build and stage the Emscripten Box2D side module used by the browser distributions. libfdx WebGPU uses the JavaScript target; its WasmGC target currently uses WebGL.
 
 ### Android
 
-The build task creates the JNI runtime. The run task installs and starts the debug application through `adb`:
+libGDX with the Box2D JNI runtime:
 
 ```powershell
-.\gradlew.bat :samples:android:box2d_samples_android_build
-.\gradlew.bat :samples:android:box2d_samples_android_run
+.\gradlew.bat :samples:gdx:platforms:android:box2d_gdx_android_jni_build
+.\gradlew.bat :samples:gdx:platforms:android:box2d_gdx_android_jni_run
+```
+
+libfdx OpenGL ES, WGPU, and Vulkan:
+
+```powershell
+.\gradlew.bat :samples:fdx:platforms:android:box2d_fdx_android_gles_run
+.\gradlew.bat :samples:fdx:platforms:android:box2d_fdx_android_wgpu_jni_run
+.\gradlew.bat :samples:fdx:platforms:android:box2d_fdx_android_vulkan_run
 ```
 
 `adb` is resolved from `local.properties`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or `PATH`.
 
 ## Controls and sample selection
 
-Select a scenario from the left panel. The right panel contains global solver and debug settings plus controls for the selected sample.
+Select a scenario from the sample panel. Both frontends expose the global solver settings and controls supplied by the selected shared scenario.
 
 - Drag with the primary pointer to interact with bodies.
 - Use the right or middle mouse button to pan.
@@ -125,5 +150,5 @@ Launchers accept a category and name through `jbox2d.sample.sample`, or a regist
 
 ```powershell
 $env:GRADLE_OPTS = '-Djbox2d.sample.sample=Benchmark/Cast'
-.\gradlew.bat :samples:desktop:jni:box2d_sample_jni_run
+.\gradlew.bat :samples:gdx:platforms:desktop-jni:box2d_gdx_desktop_jni_run
 ```

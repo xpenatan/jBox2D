@@ -5,7 +5,7 @@
 
 Java bindings for [Box2D](https://github.com/erincatto/box2d) across desktop, web, and Android.
 
-jBox2D provides a platform-neutral Java API and native runtimes for JNI, Java FFM, TeaVM C, and WebAssembly. The bindings are generated from a WebIDL contract and stay close to the upstream Box2D API.
+jBox2D provides a platform-neutral Java API and native runtimes for JNI, Java FFM, TeaVM C, and WebAssembly, plus optional libGDX and libfdx integrations and sample frontends. The bindings are generated from a WebIDL contract and stay close to the upstream Box2D API.
 
 **Online samples:** [xpenatan.github.io/jBox2D](https://xpenatan.github.io/jBox2D) | **3D companion project:** [jBox3D](https://github.com/xpenatan/jBox3D)
 
@@ -33,26 +33,47 @@ dependencies {
 
 To use the current development build, set `jbox2dVersion` to `-SNAPSHOT`. The snapshot repository can be removed when using a release.
 
+Add the matching integration artifact when using one of the rendering helpers:
+
+```kotlin
+dependencies {
+    implementation("com.github.xpenatan.jBox2D:gdx-gl:$jbox2dVersion")
+    // Or: implementation("com.github.xpenatan.jBox2D:fdx:$jbox2dVersion")
+}
+```
+
 ### Artifacts
 
-| Artifact | Purpose |
-| --- | --- |
-| `core` | Platform-neutral API for shared-source compilation. |
-| `desktop-jni` | Java 8+ desktop JNI runtime for Windows, Linux, and macOS. |
-| `desktop-ffm` | Java 25 desktop FFM runtime for Windows, Linux, and macOS. |
-| `desktop-c` | TeaVM C desktop runtime. |
-| `web-wasm` | TeaVM web runtime and Box2D WebAssembly side module. |
-| `android-jni` | Android JNI runtime for x86, x86_64, armeabi-v7a, and arm64-v8a. |
-| `android-c` | Android TeaVM C runtime for the same four ABIs. |
+| Artifact | Purpose                                                                   |
+| --- |---------------------------------------------------------------------------|
+| `core` | Platform-neutral API for shared-source compilation.                       |
+| `desktop-jni` | Java 8+ desktop JNI runtime for Windows, Linux, and macOS.                |
+| `desktop-ffm` | Java 25 desktop FFM runtime for Windows, Linux, and macOS.                |
+| `desktop-c` | TeaVM C desktop runtime.                                                  |
+| `web-wasm` | TeaVM web runtime and Box2D WebAssembly side module.                      |
+| `android-jni` | Android JNI runtime for x86, x86_64, armeabi-v7a, and arm64-v8a.          |
+| `android-c` | Android TeaVM C runtime for the same four ABIs.                           |
 | `shared-jni`, `shared-c` | Shared implementation artifacts pulled transitively by platform runtimes. |
+| `gdx-gl` | libGDX math converter and OpenGL debug renderer.                          |
+| `fdx` | libFDX math converter and debug renderer.                                 |
 
 ## API model
 
 The Java API follows Box2D's handle-based ownership model: worlds own bodies, bodies own shapes and chains, and contacts are exposed through buffered events.
 
+The integration converters write into caller-owned output objects, avoiding temporary allocations in render loops:
+
+```java
+GdxBox2DConverter.toGdx(box2dVector, reusableGdxVector);
+GdxBox2DConverter.toBox2D(gdxVector, reusableBox2dVector);
+
+FdxBox2DConverter.toFdx(box2dVector, reusableFdxVector);
+FdxBox2DConverter.toBox2D(fdxVector, reusableBox2dVector);
+```
+
 ## Samples
 
-The sample suite ports the official Box2D scenarios to Java and runs the same catalog on desktop, web, and Android through a shared libGDX interface.
+The sample suite ports the official Box2D scenarios to Java and runs the same catalog through separate libGDX and libfdx frontends on desktop, web, and Android. The libfdx frontend supports OpenGL, WebGPU/WGPU, and Vulkan where the platform provider is available.
 
 ## Documentation
 

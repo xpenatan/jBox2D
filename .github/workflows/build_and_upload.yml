@@ -243,15 +243,17 @@ jobs:
       - build-web
       - build-android
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - name: Checkout
+      - name: Checkout repository with latest changes
         uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
+
+      - name: Pull latest changes
+        run: |
+          git pull origin ${{ github.ref_name }}  # Pulls the latest from the branch
 
       - name: Set up JDK 25
         uses: actions/setup-java@v5
@@ -312,26 +314,8 @@ jobs:
           name: android-natives
           path: box2d/builder/build/c++/libs/
 
-      - name: Generate Java bindings
-        run: ./gradlew --no-daemon :box2d:builder:jParser_generate
-
-      - name: Commit generated code
-        id: generated-code
-        if: ${{ inputs.shouldUpload }}
-        shell: bash
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "bot@github.com"
-          git add -A
-
-          if git diff --cached --quiet; then
-            echo "No generated code changes to commit"
-          else
-            git commit -m "Commit generated code from :box2d:builder:jParser_generate"
-            git push origin HEAD
-          fi
-
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Generate classes
+        run: ./gradlew :box2d:builder:jParser_generate
 
       - name: Verify packaged native inputs
         shell: bash
@@ -372,6 +356,18 @@ jobs:
               exit 1
             }
           done
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "bot@github.com"
+
+      - name: Commit generated code
+        if: ${{ inputs.shouldUpload }}
+        run: |
+          git add .
+          git commit -m "Commit generated code" || echo "No changes to commit"
+          git push origin HEAD
 
       - name: Read release version
         id: version
@@ -434,5 +430,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref,
-              sha: '${{ steps.generated-code.outputs.sha }}'
+              sha: context.sha
             });

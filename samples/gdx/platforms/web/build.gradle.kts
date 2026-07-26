@@ -7,9 +7,18 @@ java {
     targetCompatibility = JavaVersion.toVersion(libs.versions.javaWeb.get())
 }
 
+val useMavenArtifacts = rootProject.extra["jbox2dSamplesUseMavenArtifacts"] as Boolean
+val box2dWebRuntimeClasspath = configurations.create("box2dWebRuntimeClasspath") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+
 dependencies {
     implementation(project(":samples:gdx:core"))
     implementation(project(":box2d:web:wasm"))
+    box2dWebRuntimeClasspath(project(":box2d:web:wasm")) {
+        isTransitive = false
+    }
 }
 
 val sampleMainClass = "com.github.xpenatan.box2d.sample.gdx.web.Box2DGdxWebLauncher"
@@ -37,17 +46,28 @@ gdxTeaVM {
     }
 }
 
-val box2dWebRuntime = listOf(
-    project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.js"),
-    project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.wasm")
-)
+val box2dWebRuntime = if(useMavenArtifacts) {
+    box2dWebRuntimeClasspath.incoming.files.elements.map { files ->
+        files.map { zipTree(it.asFile) }
+    }
+} else {
+    listOf(
+        project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.js"),
+        project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.wasm")
+    )
+}
 
 fun Task.stageBox2DWebRuntime(distribution: String) {
-    dependsOn(":box2d:builder:jParser_build_web_wasm")
+    if(!useMavenArtifacts) {
+        dependsOn(":box2d:builder:jParser_build_web_wasm")
+    }
+    inputs.files(box2dWebRuntime)
     doLast {
         val scriptsDir = layout.buildDirectory.dir("dist/$distribution/webapp/scripts").get().asFile
         project.copy {
-            from(box2dWebRuntime)
+            from(box2dWebRuntime) {
+                include("box2d.js", "box2d.wasm")
+            }
             into(scriptsDir)
         }
         val missing = listOf("box2d.js", "box2d.wasm").filterNot { scriptsDir.resolve(it).isFile }

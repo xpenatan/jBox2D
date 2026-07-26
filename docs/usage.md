@@ -78,6 +78,15 @@ The builder also exposes `:box2d:builder:jParser_build_ios_jni`, but the reposit
 
 The Java ports of the official Box2D scenarios live in `:samples:shared`. The libGDX and libfdx frontends consume that same catalog and provide their own platform launchers.
 
+By default, the samples use the jBox2D projects and native libraries built in this checkout. To run every libGDX and libfdx sample against published artifacts instead, set these versions in `gradle/libs.versions.toml`:
+
+```toml
+jbox2dSamplesUseMavenArtifacts = "true"
+jbox2dSamplesMavenVersion = "-SNAPSHOT"
+```
+
+Set `jbox2dSamplesMavenVersion` to a release such as `3.1.1.0` to test that release instead. Published-artifact mode does not invoke the local native builder; desktop and Android natives and the web side module are taken from the resolved Maven artifacts.
+
 ### Desktop
 
 libGDX:

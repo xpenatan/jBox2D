@@ -8,12 +8,21 @@ java {
     targetCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
 }
 
+val useMavenArtifacts = rootProject.extra["jbox2dSamplesUseMavenArtifacts"] as Boolean
+val box2dWebRuntimeClasspath = configurations.create("box2dWebRuntimeClasspath") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+
 dependencies {
     implementation(project(":samples:fdx:core"))
     implementation(project(":box2d:web:wasm"))
     implementation(libs.fdxBackendWeb)
     implementation(libs.fdxGlWeb)
     implementation(libs.fdxWgpuWeb)
+    box2dWebRuntimeClasspath(project(":box2d:web:wasm")) {
+        isTransitive = false
+    }
 }
 
 libfdx {
@@ -35,10 +44,16 @@ libfdx {
 
 val jsWebappDir = layout.buildDirectory.dir("dist/web-js/webapp")
 val wasmWebappDir = layout.buildDirectory.dir("dist/web-wasm/webapp")
-val box2dWebRuntime = listOf(
-    project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.js"),
-    project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.wasm")
-)
+val box2dWebRuntime = if(useMavenArtifacts) {
+    box2dWebRuntimeClasspath.incoming.files.elements.map { files ->
+        files.map { zipTree(it.asFile) }
+    }
+} else {
+    listOf(
+        project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.js"),
+        project(":box2d:builder").layout.buildDirectory.file("c++/libs/emscripten/box2d.wasm")
+    )
+}
 
 fun registerBox2DRuntimeScriptCopy(
     taskName: String,
@@ -46,7 +61,10 @@ fun registerBox2DRuntimeScriptCopy(
     webappDir: Provider<Directory>
 ): TaskProvider<Task> {
     return tasks.register(taskName) {
-        dependsOn(webBuildTaskName, ":box2d:builder:jParser_build_web_wasm")
+        dependsOn(webBuildTaskName)
+        if(!useMavenArtifacts) {
+            dependsOn(":box2d:builder:jParser_build_web_wasm")
+        }
         inputs.files(box2dWebRuntime)
         outputs.file(webappDir.map { it.file("scripts/box2d.js") })
         outputs.file(webappDir.map { it.file("scripts/box2d.wasm") })
@@ -55,14 +73,21 @@ fun registerBox2DRuntimeScriptCopy(
             val scriptNames = setOf("box2d.js", "box2d.wasm")
             project.delete(scriptNames.map { File(scriptsDir, it) })
             project.copy {
-                from(box2dWebRuntime)
+                from(box2dWebRuntime) {
+                    include("box2d.js", "box2d.wasm")
+                }
                 into(scriptsDir)
             }
             val missing = scriptNames.filterNot { File(scriptsDir, it).isFile }
             if(missing.isNotEmpty()) {
+                val sourceHint = if(useMavenArtifacts) {
+                    "The resolved jBox2D web-wasm Maven artifact does not contain the runtime scripts."
+                } else {
+                    "Run :box2d:builder:jParser_build_web_wasm before building the web sample."
+                }
                 throw GradleException(
                     "Missing jBox2D web runtime scripts: ${missing.joinToString()}. " +
-                            "Run :box2d:builder:jParser_build_web_wasm before building the web sample."
+                            sourceHint
                 )
             }
         }

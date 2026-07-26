@@ -3,6 +3,8 @@ jbox2dGroup = "com.github.xpenatan.jBox2D"
 jbox2dName = "jBox2D"
 jbox2dRelease = "3.1.1.0"
 jbox2dSnapshot = "-SNAPSHOT"
+jbox2dSamplesUseMavenArtifacts = "false"
+jbox2dSamplesMavenVersion = "-SNAPSHOT"
 box2dSource = "3.1.1"
 
 javaMain = "1.8"

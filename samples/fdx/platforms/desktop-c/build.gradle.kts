@@ -6,6 +6,7 @@ plugins {
 
 val box2dRuntimeName = "c"
 val box2dRuntimeProject = ":box2d:desktop:c"
+val useMavenArtifacts = rootProject.extra["jbox2dSamplesUseMavenArtifacts"] as Boolean
 
 java {
     sourceCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
@@ -47,7 +48,9 @@ dependencies {
 }
 
 fun Task.configureRuntimeInputs(providerClasspath: FileCollection) {
-    dependsOn("$box2dRuntimeProject:jar")
+    if(!useMavenArtifacts) {
+        dependsOn("$box2dRuntimeProject:jar")
+    }
     inputs.files(providerClasspath)
     inputs.files(box2dRuntimeClasspath)
 }

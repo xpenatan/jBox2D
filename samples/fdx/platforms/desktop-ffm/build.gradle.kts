@@ -7,6 +7,7 @@ plugins {
 
 val box2dRuntimeName = "ffm"
 val box2dRuntimeProject = ":box2d:desktop:ffm"
+val useMavenArtifacts = rootProject.extra["jbox2dSamplesUseMavenArtifacts"] as Boolean
 
 java {
     sourceCompatibility = JavaVersion.toVersion(libs.versions.javaFfm.get())
@@ -50,7 +51,9 @@ dependencies {
 val sampleMainClass = "com.github.xpenatan.box2d.sample.fdx.desktop.Box2DFdxDesktopLauncher"
 
 fun Task.configureRuntimeInputs(providerClasspath: FileCollection) {
-    dependsOn("$box2dRuntimeProject:jar")
+    if(!useMavenArtifacts) {
+        dependsOn("$box2dRuntimeProject:jar")
+    }
     inputs.files(providerClasspath)
     inputs.files(box2dRuntimeClasspath)
 }

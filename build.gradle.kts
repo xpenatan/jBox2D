@@ -4,6 +4,29 @@ plugins {
 }
 
 val jbox2dGroup = libs.versions.jbox2dGroup.get()
+val jbox2dSamplesUseMavenArtifacts = libs.versions.jbox2dSamplesUseMavenArtifacts.get().let { value ->
+    value.toBooleanStrictOrNull()
+        ?: throw GradleException(
+            "jbox2dSamplesUseMavenArtifacts in gradle/libs.versions.toml must be true or false, but was '$value'."
+        )
+}
+val jbox2dSamplesMavenVersion = libs.versions.jbox2dSamplesMavenVersion.get()
+
+extra["jbox2dSamplesUseMavenArtifacts"] = jbox2dSamplesUseMavenArtifacts
+
+val jbox2dPublishedArtifacts = mapOf(
+    ":box2d:core" to "core",
+    ":box2d:shared:jni" to "shared-jni",
+    ":box2d:shared:c" to "shared-c",
+    ":box2d:desktop:jni" to "desktop-jni",
+    ":box2d:desktop:ffm" to "desktop-ffm",
+    ":box2d:desktop:c" to "desktop-c",
+    ":box2d:web:wasm" to "web-wasm",
+    ":box2d:android:jni" to "android-jni",
+    ":box2d:android:c" to "android-c",
+    ":extensions:gdx:gl" to "gdx-gl",
+    ":extensions:fdx" to "fdx"
+)
 
 allprojects {
     repositories {
@@ -27,6 +50,22 @@ allprojects {
             )
             if(isJParserRuntime) {
                 useVersion(libs.versions.jParser.get())
+            }
+        }
+    }
+}
+
+if(jbox2dSamplesUseMavenArtifacts) {
+    subprojects {
+        if(path.startsWith(":samples:")) {
+            configurations.configureEach {
+                resolutionStrategy.dependencySubstitution {
+                    jbox2dPublishedArtifacts.forEach { (projectPath, artifactId) ->
+                        substitute(project(projectPath))
+                            .using(module("$jbox2dGroup:$artifactId:$jbox2dSamplesMavenVersion"))
+                            .because("the samples are configured to test published jBox2D artifacts")
+                    }
+                }
             }
         }
     }

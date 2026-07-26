@@ -166,7 +166,18 @@ fun writeWebGpuPage(
     if(!loaderSource.contains(defaultArgs)) {
         throw GradleException("Could not configure WebGPU arguments in ${loaderFile.absolutePath}")
     }
+    val loaderWithGraphicsArg = loaderSource.replace(
+        defaultArgs,
+        "mainClassArgs: [\"--graphics=webgpu\"],"
+    )
+    val spreadEntryCall = "return entry.apply(root, config.mainClassArgs);"
+    if(!loaderWithGraphicsArg.contains(spreadEntryCall)) {
+        throw GradleException("Could not configure WebGPU entry arguments in ${loaderFile.absolutePath}")
+    }
     outputLoaderFile.writeText(
-        loaderSource.replace(defaultArgs, "mainClassArgs: [\"--graphics=webgpu\"],")
+        loaderWithGraphicsArg.replace(
+            spreadEntryCall,
+            "return entry(config.mainClassArgs);"
+        )
     )
 }

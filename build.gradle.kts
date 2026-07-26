@@ -19,6 +19,16 @@ allprojects {
 
     configurations.configureEach {
         resolutionStrategy.cacheChangingModulesFor(0, "seconds")
+        resolutionStrategy.eachDependency {
+            val isJParserRuntime = requested.group == "com.github.xpenatan.jParser" && (
+                    requested.name.startsWith("api-") ||
+                    requested.name.startsWith("loader-") ||
+                    requested.name.startsWith("runtime-")
+            )
+            if(isJParserRuntime) {
+                useVersion(libs.versions.jParser.get())
+            }
+        }
     }
 }
 

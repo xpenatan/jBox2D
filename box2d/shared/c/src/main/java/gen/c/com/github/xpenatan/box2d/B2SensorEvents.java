@@ -8,7 +8,7 @@ package gen.c.com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2SensorEvents extends NativeObject {
+public final class B2SensorEvents extends NativeObject {
 
     private B2SensorBeginTouchEvent B2SensorBeginTouchEvent_TEMP_GEN_0;
 

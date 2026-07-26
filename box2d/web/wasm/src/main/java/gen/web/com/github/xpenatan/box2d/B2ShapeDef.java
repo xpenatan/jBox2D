@@ -8,7 +8,7 @@ package gen.web.com.github.xpenatan.box2d;
 
 import gen.web.com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2ShapeDef extends NativeObject {
+public final class B2ShapeDef extends NativeObject {
 
     private B2SurfaceMaterial B2SurfaceMaterial_TEMP_GEN_0;
 

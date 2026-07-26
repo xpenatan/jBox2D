@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2DynamicTree extends NativeObject {
+public final class B2DynamicTree extends NativeObject {
 
     static public final B2DynamicTree NULL = B2DynamicTree.native_new();
 

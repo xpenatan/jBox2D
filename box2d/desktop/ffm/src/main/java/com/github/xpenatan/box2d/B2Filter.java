@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2Filter extends NativeObject {
+public final class B2Filter extends NativeObject {
 
     static public final B2Filter NULL = B2Filter.native_new();
 

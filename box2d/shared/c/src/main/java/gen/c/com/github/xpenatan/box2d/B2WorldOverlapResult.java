@@ -8,7 +8,7 @@ package gen.c.com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2WorldOverlapResult extends NativeObject {
+public final class B2WorldOverlapResult extends NativeObject {
 
     static public final B2WorldOverlapResult NULL = B2WorldOverlapResult.native_new();
 

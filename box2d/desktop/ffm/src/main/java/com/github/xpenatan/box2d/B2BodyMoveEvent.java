@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2BodyMoveEvent extends NativeObject {
+public final class B2BodyMoveEvent extends NativeObject {
 
     private B2Transform B2Transform_TEMP_GEN_0;
 

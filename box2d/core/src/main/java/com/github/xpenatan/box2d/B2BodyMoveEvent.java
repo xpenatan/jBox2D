@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2BodyMoveEvent extends NativeObject {
+public final class B2BodyMoveEvent extends NativeObject {
 
     static public final B2BodyMoveEvent NULL = B2BodyMoveEvent.native_new();
 

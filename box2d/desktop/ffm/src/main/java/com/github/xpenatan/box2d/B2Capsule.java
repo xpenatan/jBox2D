@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2Capsule extends NativeObject {
+public final class B2Capsule extends NativeObject {
 
     private B2Vec2 B2Vec2_TEMP_GEN_0;
 

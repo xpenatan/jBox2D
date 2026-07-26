@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2QueryFilter extends NativeObject {
+public final class B2QueryFilter extends NativeObject {
 
     static public final B2QueryFilter NULL = B2QueryFilter.native_new();
 

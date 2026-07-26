@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2Shape extends NativeObject {
+public final class B2Shape extends NativeObject {
 
     private B2SurfaceMaterial B2SurfaceMaterial_TEMP_GEN_0;
 

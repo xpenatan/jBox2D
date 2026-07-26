@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2RayResult extends NativeObject {
+public final class B2RayResult extends NativeObject {
 
     static public final B2RayResult NULL = B2RayResult.native_new();
 

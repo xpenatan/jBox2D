@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2DynamicTree extends NativeObject {
+public final class B2DynamicTree extends NativeObject {
 
     private B2AABB B2AABB_TEMP_GEN_0;
 

@@ -8,7 +8,7 @@ package gen.web.com.github.xpenatan.box2d;
 
 import gen.web.com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2Vec2 extends NativeObject {
+public final class B2Vec2 extends NativeObject {
 
     static public final B2Vec2 NULL = B2Vec2.native_new();
 

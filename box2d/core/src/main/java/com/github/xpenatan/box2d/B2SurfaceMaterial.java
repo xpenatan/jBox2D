@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2SurfaceMaterial extends NativeObject {
+public final class B2SurfaceMaterial extends NativeObject {
 
     static public final B2SurfaceMaterial NULL = B2SurfaceMaterial.native_new();
 

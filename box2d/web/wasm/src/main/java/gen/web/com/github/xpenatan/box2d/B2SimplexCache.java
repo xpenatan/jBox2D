@@ -8,7 +8,7 @@ package gen.web.com.github.xpenatan.box2d;
 
 import gen.web.com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2SimplexCache extends NativeObject {
+public final class B2SimplexCache extends NativeObject {
 
     static public final B2SimplexCache NULL = B2SimplexCache.native_new();
 

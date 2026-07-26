@@ -8,7 +8,7 @@ package gen.c.com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2 extends NativeObject {
+public final class B2 extends NativeObject {
 
     static public final B2 NULL = B2.native_new();
 

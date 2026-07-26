@@ -8,7 +8,7 @@ package gen.web.com.github.xpenatan.box2d;
 
 import gen.web.com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2TreeResult extends NativeObject {
+public final class B2TreeResult extends NativeObject {
 
     static public final B2TreeResult NULL = B2TreeResult.native_new();
 

@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2WeldJointDef extends NativeObject {
+public final class B2WeldJointDef extends NativeObject {
 
     static public final B2WeldJointDef NULL = B2WeldJointDef.native_new();
 

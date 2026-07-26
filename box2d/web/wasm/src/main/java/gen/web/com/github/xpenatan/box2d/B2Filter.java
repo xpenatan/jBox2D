@@ -8,7 +8,7 @@ package gen.web.com.github.xpenatan.box2d;
 
 import gen.web.com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2Filter extends NativeObject {
+public final class B2Filter extends NativeObject {
 
     static public final B2Filter NULL = B2Filter.native_new();
 

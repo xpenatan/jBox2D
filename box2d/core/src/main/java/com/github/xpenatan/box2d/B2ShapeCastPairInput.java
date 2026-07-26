@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2ShapeCastPairInput extends NativeObject {
+public final class B2ShapeCastPairInput extends NativeObject {
 
     static public final B2ShapeCastPairInput NULL = B2ShapeCastPairInput.native_new();
 

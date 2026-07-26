@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2SensorEndTouchEvent extends NativeObject {
+public final class B2SensorEndTouchEvent extends NativeObject {
 
     static public final B2SensorEndTouchEvent NULL = B2SensorEndTouchEvent.native_new();
 

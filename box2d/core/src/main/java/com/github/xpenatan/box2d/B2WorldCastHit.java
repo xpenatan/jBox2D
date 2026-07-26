@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2WorldCastHit extends NativeObject {
+public final class B2WorldCastHit extends NativeObject {
 
     static public final B2WorldCastHit NULL = B2WorldCastHit.native_new();
 

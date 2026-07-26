@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2WorldCastResult extends NativeObject {
+public final class B2WorldCastResult extends NativeObject {
 
     private B2WorldCastHit B2WorldCastHit_TEMP_GEN_0;
 

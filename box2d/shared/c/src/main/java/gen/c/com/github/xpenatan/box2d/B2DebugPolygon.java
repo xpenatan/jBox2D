@@ -8,7 +8,7 @@ package gen.c.com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2DebugPolygon extends NativeObject {
+public final class B2DebugPolygon extends NativeObject {
 
     private B2Vec2 B2Vec2_TEMP_GEN_0;
 

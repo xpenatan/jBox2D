@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2Sweep extends NativeObject {
+public final class B2Sweep extends NativeObject {
 
     static public final B2Sweep NULL = B2Sweep.native_new();
 

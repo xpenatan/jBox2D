@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2Collision extends NativeObject {
+public final class B2Collision extends NativeObject {
 
     static private B2DistanceOutput B2DistanceOutput_TEMP_STATIC_GEN_0;
 

@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2MotorJointDef extends NativeObject {
+public final class B2MotorJointDef extends NativeObject {
 
     static public final B2MotorJointDef NULL = B2MotorJointDef.native_new();
 

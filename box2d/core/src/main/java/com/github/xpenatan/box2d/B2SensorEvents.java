@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2SensorEvents extends NativeObject {
+public final class B2SensorEvents extends NativeObject {
 
     static public final B2SensorEvents NULL = B2SensorEvents.native_new();
 

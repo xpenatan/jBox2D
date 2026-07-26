@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2ManifoldPoint extends NativeObject {
+public final class B2ManifoldPoint extends NativeObject {
 
     static public final B2ManifoldPoint NULL = B2ManifoldPoint.native_new();
 

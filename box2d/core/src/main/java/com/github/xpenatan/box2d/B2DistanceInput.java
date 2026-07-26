@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2DistanceInput extends NativeObject {
+public final class B2DistanceInput extends NativeObject {
 
     static public final B2DistanceInput NULL = B2DistanceInput.native_new();
 

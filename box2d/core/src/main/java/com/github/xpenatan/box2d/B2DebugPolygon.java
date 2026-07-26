@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2DebugPolygon extends NativeObject {
+public final class B2DebugPolygon extends NativeObject {
 
     static public final B2DebugPolygon NULL = B2DebugPolygon.native_new();
 

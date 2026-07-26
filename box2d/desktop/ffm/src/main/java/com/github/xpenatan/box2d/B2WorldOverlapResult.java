@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2WorldOverlapResult extends NativeObject {
+public final class B2WorldOverlapResult extends NativeObject {
 
     static public final B2WorldOverlapResult NULL = B2WorldOverlapResult.native_new();
 

@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2Polygon extends NativeObject {
+public final class B2Polygon extends NativeObject {
 
     static private B2Polygon B2Polygon_TEMP_STATIC_GEN_0;
 

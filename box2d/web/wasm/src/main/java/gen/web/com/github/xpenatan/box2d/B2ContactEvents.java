@@ -8,7 +8,7 @@ package gen.web.com.github.xpenatan.box2d;
 
 import gen.web.com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2ContactEvents extends NativeObject {
+public final class B2ContactEvents extends NativeObject {
 
     private B2ContactBeginTouchEvent B2ContactBeginTouchEvent_TEMP_GEN_0;
 

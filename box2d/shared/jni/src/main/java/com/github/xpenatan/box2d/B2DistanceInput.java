@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2DistanceInput extends NativeObject {
+public final class B2DistanceInput extends NativeObject {
 
     private B2ShapeProxy B2ShapeProxy_TEMP_GEN_0;
 

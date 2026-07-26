@@ -15,7 +15,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
-public class B2QueryFilter extends NativeObject {
+public final class B2QueryFilter extends NativeObject {
 
     static public final B2QueryFilter NULL = B2QueryFilter.native_new();
 

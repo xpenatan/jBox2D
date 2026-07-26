@@ -8,7 +8,7 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 
-public class B2MouseJointDef extends NativeObject {
+public final class B2MouseJointDef extends NativeObject {
 
     static public final B2MouseJointDef NULL = B2MouseJointDef.native_new();
 

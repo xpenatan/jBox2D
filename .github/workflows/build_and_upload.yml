@@ -243,10 +243,15 @@ jobs:
       - build-web
       - build-android
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
 
       - name: Set up JDK 25
         uses: actions/setup-java@v5
@@ -309,6 +314,24 @@ jobs:
 
       - name: Generate Java bindings
         run: ./gradlew --no-daemon :box2d:builder:jParser_generate
+
+      - name: Commit generated code
+        id: generated-code
+        if: ${{ inputs.shouldUpload }}
+        shell: bash
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "bot@github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No generated code changes to commit"
+          else
+            git commit -m "Commit generated code from :box2d:builder:jParser_generate"
+            git push origin HEAD
+          fi
+
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Verify packaged native inputs
         shell: bash
@@ -411,5 +434,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref,
-              sha: context.sha
+              sha: '${{ steps.generated-code.outputs.sha }}'
             });

@@ -363,11 +363,13 @@ jobs:
           git config user.email "bot@github.com"
 
       - name: Commit generated code
+        id: generated_commit
         if: ${{ inputs.shouldUpload }}
         run: |
           git add .
           git commit -m "Commit generated code" || echo "No changes to commit"
           git push origin HEAD
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Read release version
         id: version
@@ -430,5 +432,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref,
-              sha: context.sha
+              sha: '${{ steps.generated_commit.outputs.sha }}'
             });

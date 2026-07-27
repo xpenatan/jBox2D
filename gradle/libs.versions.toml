@@ -17,10 +17,10 @@ androidTargetSdk = "36"
 desugarJdkLibs = "2.0.3"
 
 easyPublishing = "0.1.2"
-jParser = "-SNAPSHOT"
+jParser = "1.2.8"
 libfdx = "-SNAPSHOT"
 libgdx = "1.14.2"
-gdxTeavm = "1.6.0"
+gdxTeavm = "1.6.1"
 
 junit = "4.13.2"
 androidGradlePlugin = "9.1.1"

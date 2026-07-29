@@ -59,6 +59,7 @@ jparserRuntimeDesktopCLinuxX64 = { module = "com.github.xpenatan.jParser:runtime
 jparserRuntimeDesktopCMacX64 = { module = "com.github.xpenatan.jParser:runtime-desktop-c_mac_x64", version.ref = "jParser" }
 jparserRuntimeDesktopCMacArm64 = { module = "com.github.xpenatan.jParser:runtime-desktop-c_mac_arm64", version.ref = "jParser" }
 fdxApplication = { module = "io.github.libfdx:application", version.ref = "libfdx" }
+fdxBox2dExt = { module = "io.github.libfdx:box2d_ext", version.ref = "libfdx" }
 fdxBackendAndroid = { module = "io.github.libfdx:backend_android", version.ref = "libfdx" }
 fdxBackendDesktop = { module = "io.github.libfdx:backend_desktop", version.ref = "libfdx" }
 fdxBackendWeb = { module = "io.github.libfdx:backend_web", version.ref = "libfdx" }

@@ -5,7 +5,7 @@ plugins {
 dependencies {
     implementation(project(":samples:shared"))
     compileOnly(project(":box2d:core"))
-    api(project(":extensions:fdx"))
+    api(libs.fdxBox2dExt)
 
     api(libs.fdxApplication)
     api(libs.fdxCamera)

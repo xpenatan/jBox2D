@@ -24,8 +24,7 @@ val jbox2dPublishedArtifacts = mapOf(
     ":box2d:web:wasm" to "web-wasm",
     ":box2d:android:jni" to "android-jni",
     ":box2d:android:c" to "android-c",
-    ":extensions:gdx:gl" to "gdx-gl",
-    ":extensions:fdx" to "fdx"
+    ":extensions:gdx:gl" to "gdx-gl"
 )
 
 allprojects {
@@ -82,8 +81,7 @@ easyPublishing {
         ":box2d:web:wasm",
         ":box2d:android:jni",
         ":box2d:android:c",
-        ":extensions:gdx:gl",
-        ":extensions:fdx"
+        ":extensions:gdx:gl"
     )
 
     groupId.set(jbox2dGroup)

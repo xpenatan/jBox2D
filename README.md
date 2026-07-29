@@ -5,7 +5,7 @@
 
 Java bindings for [Box2D](https://github.com/erincatto/box2d) across desktop, web, and Android.
 
-jBox2D provides a platform-neutral Java API and native runtimes for JNI, Java FFM, TeaVM C, and WebAssembly, plus optional libGDX and libfdx integrations and sample frontends. The bindings are generated from a WebIDL contract and stay close to the upstream Box2D API.
+jBox2D provides a platform-neutral Java API and native runtimes for JNI, Java FFM, TeaVM C, and WebAssembly, plus a libGDX integration and libfdx sample frontend. The libfdx adapter is owned and published by [libFDX](https://github.com/libfdx/libfdx). The bindings are generated from a WebIDL contract and stay close to the upstream Box2D API.
 
 **Online samples:** [xpenatan.github.io/jBox2D](https://xpenatan.github.io/jBox2D) | **3D companion project:** [jBox3D](https://github.com/xpenatan/jBox3D)
 
@@ -20,25 +20,29 @@ repositories {
         url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         content {
             includeGroup("com.github.xpenatan.jBox2D")
+            includeGroup("io.github.libfdx")
         }
     }
 }
 
 val jbox2dVersion = "3.1.1.0"
+val libfdxVersion = "-SNAPSHOT"
 
 dependencies {
     implementation("com.github.xpenatan.jBox2D:desktop-jni:$jbox2dVersion")
+    implementation("io.github.libfdx:box2d_ext:$libfdxVersion")
 }
 ```
 
 To use the current development build, set `jbox2dVersion` to `-SNAPSHOT`. The snapshot repository can be removed when using a release.
 
-Add the matching integration artifact when using one of the rendering helpers:
+The libGDX integration remains a jBox2D artifact. The libfdx integration is a
+separately versioned libFDX extension:
 
 ```kotlin
 dependencies {
     implementation("com.github.xpenatan.jBox2D:gdx-gl:$jbox2dVersion")
-    // Or: implementation("com.github.xpenatan.jBox2D:fdx:$jbox2dVersion")
+    implementation("io.github.libfdx:box2d_ext:$libfdxVersion")
 }
 ```
 
@@ -55,7 +59,9 @@ dependencies {
 | `android-c` | Android TeaVM C runtime for the same four ABIs.                           |
 | `shared-jni`, `shared-c` | Shared implementation artifacts pulled transitively by platform runtimes. |
 | `gdx-gl` | libGDX math converter and OpenGL debug renderer.                          |
-| `fdx` | libFDX math converter and debug renderer.                                 |
+
+The libFDX math converter and debug renderer are published as
+`io.github.libfdx:box2d_ext`.
 
 ## API model
 

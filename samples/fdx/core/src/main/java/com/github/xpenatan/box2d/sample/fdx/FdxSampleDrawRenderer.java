@@ -1,6 +1,6 @@
 package com.github.xpenatan.box2d.sample.fdx;
 
-import com.github.xpenatan.box2d.fdx.FdxDebugRenderer;
+import io.github.libfdx.physics.box2d.FdxDebugRenderer;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleDraw;
 import io.github.libfdx.graphics.GraphicsContext;
 

@@ -61,8 +61,9 @@ final class CollisionSampleSupport {
             boolean indices) {
         int count = proxy.GetPointCount();
         float radius = proxy.GetRadius();
-        float c = (float)Math.cos(angle);
-        float s = (float)Math.sin(angle);
+        B2Rot rotation = new B2Rot(angle);
+        float c = rotation.GetCosine();
+        float s = rotation.GetSine();
         float[] px = new float[count];
         float[] py = new float[count];
         for(int i = 0; i < count; i++) {
@@ -83,6 +84,7 @@ final class CollisionSampleSupport {
                 for(int i = 0; i < count; i++) draw.circle(px[i], py[i], radius, color);
             }
         }
+        AbstractBox2DSample.release(rotation);
     }
 
     static void drawAABB(Box2DSampleDraw draw, float lowerX, float lowerY, float upperX, float upperY, int color) {

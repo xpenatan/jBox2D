@@ -8,31 +8,27 @@ import com.github.xpenatan.box2d.B2Filter;
 import com.github.xpenatan.box2d.B2Polygon;
 import com.github.xpenatan.box2d.B2QueryFilter;
 import com.github.xpenatan.box2d.B2RayResult;
-import com.github.xpenatan.box2d.B2SensorBeginTouchEvent;
-import com.github.xpenatan.box2d.B2SensorEndTouchEvent;
-import com.github.xpenatan.box2d.B2SensorEvents;
 import com.github.xpenatan.box2d.B2Shape;
 import com.github.xpenatan.box2d.B2ShapeDef;
 import com.github.xpenatan.box2d.B2Vec2;
+import com.github.xpenatan.box2d.B2WorldOverlapResult;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleDraw;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /** Java port of Box2D 3.1.1's Events / Sensor Types sample. */
 public final class SensorTypesSample extends AbstractBox2DSample {
     private static final long GROUND = 1L;
     private static final long SENSOR = 2L;
     private static final long DEFAULT = 4L;
-    private final long staticSensorId;
-    private final long kinematicSensorId;
-    private final long dynamicSensorId;
+    private final B2Shape staticSensor;
+    private final B2Shape kinematicSensor;
+    private final B2Shape dynamicSensor;
     private final B2Body kinematicBody;
-    private final Set<Long> staticOverlaps = new HashSet<Long>();
-    private final Set<Long> kinematicOverlaps = new HashSet<Long>();
-    private final Set<Long> dynamicOverlaps = new HashSet<Long>();
+    private int staticOverlapCount;
+    private int kinematicOverlapCount;
+    private int dynamicOverlapCount;
     private boolean rayHit;
     private float rayX;
     private float rayY;
@@ -44,17 +40,17 @@ public final class SensorTypesSample extends AbstractBox2DSample {
         addFilteredSegment(ground, 6.0f, 0.0f, 6.0f, 4.0f);
 
         B2Body staticBody = createStaticBody(-3.0f, 0.8f, 0.0f);
-        staticSensorId = createSensor(staticBody, 1.0f).GetId();
+        staticSensor = createSensor(staticBody, 1.0f);
 
         B2BodyDef kinematicDef = new B2BodyDef();
         B2Vec2 velocity = vector(0.0f, 1.0f);
         kinematicDef.SetType(B2.KinematicBody());
         kinematicDef.SetLinearVelocity(velocity);
         kinematicBody = createBody(kinematicDef);
-        kinematicSensorId = createSensor(kinematicBody, 1.0f).GetId();
+        kinematicSensor = createSensor(kinematicBody, 1.0f);
 
         B2Body dynamicBody = createDynamicBody(3.0f, 1.0f, 0.0f);
-        dynamicSensorId = createSensor(dynamicBody, 1.0f).GetId();
+        dynamicSensor = createSensor(dynamicBody, 1.0f);
         B2ShapeDef solidDef = shapeDef(1.0f, 0.6f, 0.0f, 0.0f);
         B2Filter solidFilter = new B2Filter();
         solidFilter.SetCategoryBits(DEFAULT);
@@ -108,18 +104,9 @@ public final class SensorTypesSample extends AbstractBox2DSample {
 
     @Override
     protected void afterStep(float deltaSeconds) {
-        B2SensorEvents events = world().GetSensorEvents();
-        for(int i = 0; i < events.GetBeginCount(); i++) {
-            B2SensorBeginTouchEvent event = events.GetBeginEvent(i);
-            updateOverlap(event.GetSensorShapeId(), event.GetVisitorShapeId(), true);
-            release(event);
-        }
-        for(int i = 0; i < events.GetEndCount(); i++) {
-            B2SensorEndTouchEvent event = events.GetEndEvent(i);
-            updateOverlap(event.GetSensorShapeId(), event.GetVisitorShapeId(), false);
-            release(event);
-        }
-        release(events);
+        staticOverlapCount = sensorOverlapCount(staticSensor);
+        kinematicOverlapCount = sensorOverlapCount(kinematicSensor);
+        dynamicOverlapCount = sensorOverlapCount(dynamicSensor);
 
         B2Vec2 origin = vector(5.0f, 1.0f);
         B2Vec2 translation = vector(-10.0f, 0.0f);
@@ -135,12 +122,11 @@ public final class SensorTypesSample extends AbstractBox2DSample {
         release(result, filter, translation, origin);
     }
 
-    private void updateOverlap(long sensor, long visitor, boolean begin) {
-        Set<Long> overlaps = sensor == staticSensorId ? staticOverlaps
-                : sensor == kinematicSensorId ? kinematicOverlaps
-                : sensor == dynamicSensorId ? dynamicOverlaps : null;
-        if(overlaps == null) return;
-        if(begin) overlaps.add(visitor); else overlaps.remove(visitor);
+    private int sensorOverlapCount(B2Shape sensor) {
+        B2WorldOverlapResult overlaps = sensor.GetSensorOverlaps();
+        int count = overlaps.GetShapeCount();
+        release(overlaps);
+        return count;
     }
 
     @Override
@@ -152,8 +138,8 @@ public final class SensorTypesSample extends AbstractBox2DSample {
     @Override
     public List<Box2DSampleControl> controls() {
         return Arrays.asList(
-                Box2DSampleControl.dynamicText(() -> "static: " + staticOverlaps.size() + " overlap(s)"),
-                Box2DSampleControl.dynamicText(() -> "kinematic: " + kinematicOverlaps.size() + " overlap(s)"),
-                Box2DSampleControl.dynamicText(() -> "dynamic: " + dynamicOverlaps.size() + " overlap(s)"));
+                Box2DSampleControl.dynamicText(() -> "static: " + staticOverlapCount + " overlap(s)"),
+                Box2DSampleControl.dynamicText(() -> "kinematic: " + kinematicOverlapCount + " overlap(s)"),
+                Box2DSampleControl.dynamicText(() -> "dynamic: " + dynamicOverlapCount + " overlap(s)"));
     }
 }

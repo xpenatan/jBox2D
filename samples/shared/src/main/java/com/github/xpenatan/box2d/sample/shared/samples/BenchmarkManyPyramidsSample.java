@@ -6,7 +6,7 @@ import com.github.xpenatan.box2d.B2Shape;
 /** Java port of Box2D 3.1.1's Benchmark / Many Pyramids sample. */
 public final class BenchmarkManyPyramidsSample extends AbstractBox2DSample {
     public BenchmarkManyPyramidsSample() {
-        world().EnableSleeping(false);
+        setInitialSleepEnabled(false);
         int baseCount = 10;
         float extent = 0.5f;
         int rowCount = BenchmarkSampleSupport.DEBUG_SIZE ? 5 : 20;

@@ -15,6 +15,8 @@ public final class BridgeSample extends AbstractBox2DSample {
     private static final int COUNT = 160;
     private final List<B2Joint> bridgeJoints = new ArrayList<B2Joint>();
     private float frictionTorque = 200.0f;
+    private float constraintHertz = 60.0f;
+    private float constraintDampingRatio;
     private float springHertz = 2.0f;
     private float springDampingRatio = 0.7f;
 
@@ -69,6 +71,10 @@ public final class BridgeSample extends AbstractBox2DSample {
                 Box2DSampleControl.slider("Spring hertz", 0, 30, .1f, () -> springHertz,
                         value -> { springHertz = value; forEachJoint(j -> j.RevoluteSetSpringHertz(value)); }),
                 Box2DSampleControl.slider("Spring damping", 0, 2, .1f, () -> springDampingRatio,
-                        value -> { springDampingRatio = value; forEachJoint(j -> j.RevoluteSetSpringDampingRatio(value)); }));
+                        value -> { springDampingRatio = value; forEachJoint(j -> j.RevoluteSetSpringDampingRatio(value)); }),
+                Box2DSampleControl.slider("Constraint hertz", 15, 240, 1, () -> constraintHertz,
+                        value -> { constraintHertz = value; forEachJoint(j -> j.SetConstraintTuning(value, constraintDampingRatio)); }),
+                Box2DSampleControl.slider("Constraint damping", 0, 10, .1f, () -> constraintDampingRatio,
+                        value -> { constraintDampingRatio = value; forEachJoint(j -> j.SetConstraintTuning(constraintHertz, value)); }));
     }
 }

@@ -18,11 +18,14 @@ interface B2Vec2 {
 interface B2Rot {
     void B2Rot();
     void B2Rot(float radians);
+    void B2Rot(float cosine, float sine);
     float GetCosine();
     float GetSine();
     float GetAngle();
     void Set(float radians);
     void SetIdentity();
+    void PreMultiply([Const, Ref] B2Rot rotation);
+    float RelativeAngle([Const, Ref] B2Rot other);
     [Value] B2Vec2 RotateVector([Const, Ref] B2Vec2 vector);
     [Value] B2Vec2 InverseRotateVector([Const, Ref] B2Vec2 vector);
 };
@@ -875,6 +878,9 @@ interface B2Body {
     void SetAngularDamping(float damping);
     float GetGravityScale();
     void SetGravityScale(float scale);
+    float GetSleepThreshold();
+    void SetSleepThreshold(float threshold);
+    boolean HasSupportingContact(float minimumNormalY, long capacity);
     boolean IsAwake();
     void SetAwake(boolean awake);
     boolean IsSleepEnabled();
@@ -936,6 +942,8 @@ interface B2Shape {
     void SetSegment([Const, Ref] B2Segment segment);
     B2Polygon GetPolygon(); //[-NEW_OBJECT]
     void SetPolygon([Const, Ref] B2Polygon polygon);
+    void Scale(float ratio);
+    B2WorldOverlapResult GetSensorOverlaps(); //[-NEW_OBJECT]
     [Value] B2AABB GetAABB();
     [Value] B2MassData GetMassData();
     [Value] B2Vec2 GetClosestPoint([Const, Ref] B2Vec2 target);
@@ -970,6 +978,9 @@ interface B2Joint {
     void SetLocalAnchorA([Const, Ref] B2Vec2 anchor);
     [Value] B2Vec2 GetLocalAnchorB();
     void SetLocalAnchorB([Const, Ref] B2Vec2 anchor);
+    float GetReferenceAngle();
+    void SetReferenceAngle(float angle);
+    void SetConstraintTuning(float hertz, float dampingRatio);
     boolean GetCollideConnected();
     void SetCollideConnected(boolean collide);
     void WakeBodies();
@@ -1005,7 +1016,9 @@ interface B2Joint {
     void PrismaticEnableMotor(boolean enabled);
     void PrismaticSetMotorSpeed(float speed);
     void PrismaticSetMaxMotorForce(float force);
+    float PrismaticGetMotorForce();
     float PrismaticGetTranslation();
+    float PrismaticGetSpeed();
     void RevoluteEnableSpring(boolean enabled);
     void RevoluteSetSpringHertz(float hertz);
     void RevoluteSetSpringDampingRatio(float ratio);
@@ -1015,7 +1028,12 @@ interface B2Joint {
     void RevoluteEnableMotor(boolean enabled);
     void RevoluteSetMotorSpeed(float speed);
     void RevoluteSetMaxMotorTorque(float torque);
+    float RevoluteGetMotorTorque();
     float RevoluteGetAngle();
+    void WeldSetLinearHertz(float hertz);
+    void WeldSetLinearDampingRatio(float ratio);
+    void WeldSetAngularHertz(float hertz);
+    void WeldSetAngularDampingRatio(float ratio);
     void WheelEnableSpring(boolean enabled);
     void WheelSetSpringHertz(float hertz);
     void WheelSetSpringDampingRatio(float ratio);
@@ -1024,6 +1042,7 @@ interface B2Joint {
     void WheelEnableMotor(boolean enabled);
     void WheelSetMotorSpeed(float speed);
     void WheelSetMaxMotorTorque(float torque);
+    float WheelGetMotorTorque();
 };
 
 [Prefix="JBox2D::"]
@@ -1042,6 +1061,7 @@ interface B2World {
     void EnableWarmStarting(boolean enabled);
     boolean IsContinuousEnabled();
     void EnableContinuous(boolean enabled);
+    void EnableSpeculative(boolean enabled);
     float GetRestitutionThreshold();
     void SetRestitutionThreshold(float threshold);
     float GetHitEventThreshold();
@@ -1049,6 +1069,9 @@ interface B2World {
     float GetMaximumLinearSpeed();
     void SetMaximumLinearSpeed(float speed);
     void SetContactTuning(float hertz, float dampingRatio, float pushSpeed);
+    void Explode([Const, Ref] B2Vec2 position, float radius, float falloff, float impulsePerLength);
+    void EnableParityCustomFilter(boolean enabled);
+    void EnableOneSidedPlatform(long long playerShapeId, float radius);
     void RebuildStaticTree();
     long GetAwakeBodyCount();
     B2Body CreateBody([Const, Ref] B2BodyDef def); //[-NEW_OBJECT]
@@ -1066,10 +1089,14 @@ interface B2World {
     [Value] B2RayResult CastRayClosest([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter);
     B2WorldCastResult CastRay([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
     B2WorldCastResult CastShape([Const, Ref] B2ShapeProxy proxy, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
+    B2WorldCastResult CastRayMode([Const, Ref] B2Vec2 origin, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter, long mode, long long ignoredShapeId, long maxHits); //[-NEW_OBJECT]
+    B2WorldCastResult CastShapeMode([Const, Ref] B2ShapeProxy proxy, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter, long mode, long long ignoredShapeId, long maxHits); //[-NEW_OBJECT]
+    B2WorldCastResult CastShapeClosest([Const, Ref] B2ShapeProxy proxy, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
     B2WorldOverlapResult OverlapAABB([Const, Ref] B2AABB aabb, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
     B2WorldOverlapResult OverlapShape([Const, Ref] B2ShapeProxy proxy, [Const, Ref] B2QueryFilter filter); //[-NEW_OBJECT]
     float CastMover([Const, Ref] B2Capsule mover, [Const, Ref] B2Vec2 translation, [Const, Ref] B2QueryFilter filter);
     B2MoverResult SolveMover([Const, Ref] B2Capsule mover, [Const, Ref] B2Vec2 translation, [Const, Ref] B2Vec2 velocity, [Const, Ref] B2QueryFilter collideFilter, [Const, Ref] B2QueryFilter castFilter, long maxIterations); //[-NEW_OBJECT]
+    B2MoverResult SolveMoverWithSurfaceOverrides([Const, Ref] B2Capsule mover, [Const, Ref] B2Vec2 translation, [Const, Ref] B2Vec2 velocity, [Const, Ref] B2QueryFilter collideFilter, [Const, Ref] B2QueryFilter castFilter, long long shapeIdA, float maxPushA, boolean clipVelocityA, long long shapeIdB, float maxPushB, boolean clipVelocityB, long maxIterations); //[-NEW_OBJECT]
 };
 
 [Prefix="JBox2D::"]
@@ -1144,6 +1171,8 @@ interface B2 {
     static long VersionMajor();
     static long VersionMinor();
     static long VersionRevision();
+    static float Cos(float radians);
+    static float Sin(float radians);
     static void SetLengthUnitsPerMeter(float lengthUnits);
     static float GetLengthUnitsPerMeter();
 };

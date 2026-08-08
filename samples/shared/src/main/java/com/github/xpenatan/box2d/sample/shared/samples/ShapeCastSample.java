@@ -16,8 +16,8 @@ import java.util.List;
 
 /** Java port of Box2D 3.1.1's Collision / Shape Cast sample. */
 public final class ShapeCastSample extends AbstractBox2DSample {
-    private B2ShapeProxy proxyA=own(CollisionSampleSupport.makeProxy(CollisionSampleSupport.BOX,0));
-    private B2ShapeProxy proxyB=own(CollisionSampleSupport.makeProxy(CollisionSampleSupport.POINT,0.2f));
+    private B2ShapeProxy proxyA=own(makeProxy(CollisionSampleSupport.BOX,0));
+    private B2ShapeProxy proxyB=own(makeProxy(CollisionSampleSupport.POINT,0.2f));
     private int typeA=CollisionSampleSupport.BOX,typeB=CollisionSampleSupport.POINT;
     private float radiusA,radiusB=0.2f;
     private float x=-0.6f,y,angle,translationX=2,translationY;
@@ -75,8 +75,16 @@ public final class ShapeCastSample extends AbstractBox2DSample {
         }
     }
 
-    private void setTypeA(float v){typeA=(int)v;release(proxyA);proxyA=own(CollisionSampleSupport.makeProxy(typeA,radiusA));}
-    private void setTypeB(float v){typeB=(int)v;release(proxyB);proxyB=own(CollisionSampleSupport.makeProxy(typeB,radiusB));}
+    private B2ShapeProxy makeProxy(int type,float radius){
+        if(type!=CollisionSampleSupport.SEGMENT)return CollisionSampleSupport.makeProxy(type,radius);
+        B2ShapeProxy proxy=new B2ShapeProxy();
+        CollisionSampleSupport.add(proxy,0.0f,0.0f);
+        CollisionSampleSupport.add(proxy,0.5f,0.0f);
+        proxy.SetRadius(radius);
+        return proxy;
+    }
+    private void setTypeA(float v){typeA=(int)v;release(proxyA);proxyA=own(makeProxy(typeA,radiusA));}
+    private void setTypeB(float v){typeB=(int)v;release(proxyB);proxyB=own(makeProxy(typeB,radiusB));}
     @Override public List<Box2DSampleControl> controls(){return Arrays.asList(
             Box2DSampleControl.combo("shape A",CollisionSampleSupport.SHAPE_NAMES,()->typeA,this::setTypeA),
             Box2DSampleControl.slider("radius A",0,0.5f,0.01f,()->radiusA,v->radiusA=v),

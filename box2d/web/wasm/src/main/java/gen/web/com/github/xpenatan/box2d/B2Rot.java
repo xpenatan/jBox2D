@@ -32,6 +32,14 @@ public final class B2Rot extends NativeObject {
     @org.teavm.jso.JSBody(params = {"radians"}, script = "var jsObj = new box2d.B2Rot(radians);return box2d.getPointer(jsObj);")
     public static native int internal_native_create_float_addr(float radians);
 
+    public B2Rot(float cosine, float sine) {
+        int addr = internal_native_create_float_float_addr(cosine, sine);
+        internal_reset(addr, true);
+    }
+
+    @org.teavm.jso.JSBody(params = {"cosine", "sine"}, script = "var jsObj = new box2d.B2Rot(cosine, sine);return box2d.getPointer(jsObj);")
+    public static native int internal_native_create_float_float_addr(float cosine, float sine);
+
     /**
      * Dummy constructor, used internally to creates objects without C++ pointer
      */
@@ -87,6 +95,20 @@ public final class B2Rot extends NativeObject {
 
     @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Rot);jsObj.SetIdentity();")
     public static native void internal_native_SetIdentity(int this_addr);
+
+    public void PreMultiply(B2Rot rotation) {
+        internal_native_PreMultiply(native_address, rotation.native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "rotation_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Rot);jsObj.PreMultiply(rotation_addr);")
+    public static native void internal_native_PreMultiply(int this_addr, int rotation_addr);
+
+    public float RelativeAngle(B2Rot other) {
+        return internal_native_RelativeAngle(native_address, other.native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "other_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Rot);var returnedJSObj = jsObj.RelativeAngle(other_addr);return returnedJSObj;")
+    public static native float internal_native_RelativeAngle(int this_addr, int other_addr);
 
     public B2Vec2 RotateVector(B2Vec2 vector) {
         int addr = internal_native_RotateVector_addr(native_address, vector.native_address);

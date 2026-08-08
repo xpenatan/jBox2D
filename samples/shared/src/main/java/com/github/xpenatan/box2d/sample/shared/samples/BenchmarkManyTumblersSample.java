@@ -46,7 +46,6 @@ public final class BenchmarkManyTumblersSample extends AbstractBox2DSample {
             x += 8.0f;
         }
         bodyLimit = (BenchmarkSampleSupport.DEBUG_SIZE ? 8 : 50) * count;
-        stepCount = 0;
     }
 
     private void createTumbler(float x, float y) {

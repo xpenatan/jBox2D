@@ -9,7 +9,6 @@ import com.github.xpenatan.box2d.B2Shape;
 import com.github.xpenatan.box2d.B2ShapeDef;
 import com.github.xpenatan.box2d.B2Vec2;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +25,12 @@ public final class SensorFunnelSample extends AbstractBox2DSample {
             -8.2682514f, -5.953125f, -16.8672504f, -0.661377f, -16.8672504f, 11.906374f,
             -8.2682514f, 11.906374f, -16.8672504f, 17.1978741f
     };
-    private final Map<Long, B2Body> visitors = new HashMap<Long, B2Body>();
-    private final List<B2Body> elements = new ArrayList<B2Body>();
+    private static final int ELEMENT_COUNT = 32;
+    private final Map<Long, Integer> visitors = new HashMap<Long, Integer>();
+    private final DonutAssembly[] donuts = new DonutAssembly[ELEMENT_COUNT];
+    private final HumanRagdoll[] humans = new HumanRagdoll[ELEMENT_COUNT];
+    private final long[][] visitorShapeIds = new long[ELEMENT_COUNT][];
+    private final boolean[] spawned = new boolean[ELEMENT_COUNT];
     private final long sensorId;
     private int type = 1;
     private float wait = 0.5f;
@@ -68,53 +71,68 @@ public final class SensorFunnelSample extends AbstractBox2DSample {
     }
 
     private void createElement() {
-        if(elements.size() >= 32) return;
-        B2Body body;
-        B2Shape shape;
+        int index = -1;
+        for(int i = 0; i < ELEMENT_COUNT; i++) {
+            if(!spawned[i]) { index = i; break; }
+        }
+        if(index < 0) return;
+
         if(type == 0) {
-            body = addDynamicCircle(side, 29.5f, 1.0f, 1, .4f, 0, .1f);
-            shape = body.GetShape(0);
+            donuts[index] = new DonutAssembly(this, side, 29.5f, 1.0f, 0, true);
+            visitorShapeIds[index] = donuts[index].shapeIds();
         }
         else {
-            body = createDynamicBody(side, 29.5f, 0);
-            shape = addCapsuleShape(body, 0, -1.2f, 0, 1.2f, .45f, 1, .4f, 0, .1f);
+            humans[index] = new HumanRagdoll(this, side, 29.5f, 2.0f, 0.05f, 6.0f, 0.5f,
+                    index + 1, true);
+            humans[index].enableSensorEvents(true);
+            visitorShapeIds[index] = new long[] { humans[index].sensorShapeId() };
         }
-        shape.EnableSensorEvents(true);
-        visitors.put(shape.GetId(), body);
-        elements.add(body);
-        if(shape.native_hasOwnership()) release(shape);
+        for(long shapeId : visitorShapeIds[index]) visitors.put(shapeId, index);
+        spawned[index] = true;
         side = -side;
     }
 
+    private void destroyElement(int index) {
+        if(!spawned[index]) return;
+        for(long shapeId : visitorShapeIds[index]) visitors.remove(shapeId);
+        if(type == 0) {
+            donuts[index].destroy();
+            donuts[index] = null;
+        }
+        else {
+            humans[index].destroy();
+            humans[index] = null;
+        }
+        visitorShapeIds[index] = null;
+        spawned[index] = false;
+    }
+
     private void clear() {
-        for(B2Body body : elements) destroyBody(body);
-        elements.clear();
-        visitors.clear();
-        wait = 0.0f;
+        for(int i = 0; i < ELEMENT_COUNT; i++) if(spawned[i]) destroyElement(i);
     }
 
     @Override protected void afterStep(float deltaSeconds) {
-        ArrayList<B2Body> destroy = new ArrayList<B2Body>();
+        boolean[] destroy = new boolean[ELEMENT_COUNT];
         B2SensorEvents events = world().GetSensorEvents();
         for(int i = 0; i < events.GetBeginCount(); i++) {
             B2SensorBeginTouchEvent event = events.GetBeginEvent(i);
             if(event.GetSensorShapeId() == sensorId) {
-                B2Body body = visitors.remove(event.GetVisitorShapeId());
-                if(body != null && !destroy.contains(body)) destroy.add(body);
+                Integer index = visitors.get(event.GetVisitorShapeId());
+                if(index != null) destroy[index.intValue()] = true;
             }
             release(event);
         }
         release(events);
-        for(B2Body body : destroy) { elements.remove(body); destroyBody(body); }
+        for(int i = 0; i < ELEMENT_COUNT; i++) if(destroy[i]) destroyElement(i);
         wait -= deltaSeconds;
-        if(wait <= 0.0f) { createElement(); wait += 0.5f; }
+        if(wait < 0.0f) { createElement(); wait += 0.5f; }
     }
 
     @Override public List<Box2DSampleControl> controls() {
         return Arrays.asList(
                 Box2DSampleControl.radio("donut", () -> type == 0 ? 1 : 0,
-                        () -> { clear(); type = 0; createElement(); }),
+                        () -> { clear(); type = 0; }),
                 Box2DSampleControl.radio("human", () -> type == 1 ? 1 : 0,
-                        () -> { clear(); type = 1; createElement(); }));
+                        () -> { clear(); type = 1; }));
     }
 }

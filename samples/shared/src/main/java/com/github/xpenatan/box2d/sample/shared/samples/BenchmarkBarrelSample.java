@@ -86,7 +86,8 @@ public final class BenchmarkBarrelSample extends AbstractBox2DSample {
                 float bodyX = x + side;
                 side = -side;
                 if(shapeType == HUMAN) {
-                    humans.add(new HumanRagdoll(this, bodyX, y, 3.5f, 0.05f, 5.0f, 0.5f));
+                    humans.add(new HumanRagdoll(this, bodyX, y, 3.5f, 0.05f, 5.0f, 0.5f,
+                            index + 1, false));
                 }
                 else {
                     createBody(bodyX, y, index);
@@ -102,7 +103,7 @@ public final class BenchmarkBarrelSample extends AbstractBox2DSample {
         bodies.add(body);
         if(shapeType == CIRCLE || (shapeType == MIX && index % 3 == 0)) {
             float radius = randomFloat(0.25f, 0.75f);
-            B2ShapeDef def = shapeDef(1.0f, 0.5f, 0.0f, 0.2f);
+            B2ShapeDef def = shapeDef(1.0f, 0.5f, 0.0f, shapeType == CIRCLE ? 0.2f : 0.0f);
             B2Vec2 center = new B2Vec2(0.0f, 0.0f);
             B2Circle circle = new B2Circle(center, radius);
             B2Shape shape = createCircleShape(body, def, circle);
@@ -112,7 +113,7 @@ public final class BenchmarkBarrelSample extends AbstractBox2DSample {
         else if(shapeType == CAPSULE || (shapeType == MIX && index % 3 == 1)) {
             float radius = randomFloat(0.25f, 0.5f);
             float length = randomFloat(0.25f, 1.0f);
-            B2ShapeDef def = shapeDef(1.0f, 0.5f, 0.0f, 0.2f);
+            B2ShapeDef def = shapeDef(1.0f, 0.5f, 0.0f, shapeType == CAPSULE ? 0.2f : 0.0f);
             B2Vec2 centerOne = new B2Vec2(0.0f, -0.5f * length);
             B2Vec2 centerTwo = new B2Vec2(0.0f, 0.5f * length);
             B2Capsule capsule = new B2Capsule(centerOne, centerTwo, radius);

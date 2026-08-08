@@ -62,9 +62,6 @@ fun registerBox2DRuntimeScriptCopy(
 ): TaskProvider<Task> {
     return tasks.register(taskName) {
         dependsOn(webBuildTaskName)
-        if(!useMavenArtifacts) {
-            dependsOn(":box2d:builder:jParser_build_web_wasm")
-        }
         inputs.files(box2dWebRuntime)
         outputs.file(webappDir.map { it.file("scripts/box2d.js") })
         outputs.file(webappDir.map { it.file("scripts/box2d.wasm") })

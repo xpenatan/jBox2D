@@ -137,6 +137,27 @@ public final class B2Joint extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_setlocalanchorb")
     public static native void internal_native_SetLocalAnchorB(long this_addr, long anchor_addr);
 
+    public float GetReferenceAngle() {
+        return internal_native_GetReferenceAngle(native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_getreferenceangle")
+    public static native float internal_native_GetReferenceAngle(long this_addr);
+
+    public void SetReferenceAngle(float angle) {
+        internal_native_SetReferenceAngle(native_address, angle);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_setreferenceangle")
+    public static native void internal_native_SetReferenceAngle(long this_addr, float angle);
+
+    public void SetConstraintTuning(float hertz, float dampingRatio) {
+        internal_native_SetConstraintTuning(native_address, hertz, dampingRatio);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_setconstrainttuning")
+    public static native void internal_native_SetConstraintTuning(long this_addr, float hertz, float dampingRatio);
+
     public boolean GetCollideConnected() {
         return internal_native_GetCollideConnected(native_address);
     }
@@ -388,12 +409,26 @@ public final class B2Joint extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_prismaticsetmaxmotorforce")
     public static native void internal_native_PrismaticSetMaxMotorForce(long this_addr, float force);
 
+    public float PrismaticGetMotorForce() {
+        return internal_native_PrismaticGetMotorForce(native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_prismaticgetmotorforce")
+    public static native float internal_native_PrismaticGetMotorForce(long this_addr);
+
     public float PrismaticGetTranslation() {
         return internal_native_PrismaticGetTranslation(native_address);
     }
 
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_prismaticgettranslation")
     public static native float internal_native_PrismaticGetTranslation(long this_addr);
+
+    public float PrismaticGetSpeed() {
+        return internal_native_PrismaticGetSpeed(native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_prismaticgetspeed")
+    public static native float internal_native_PrismaticGetSpeed(long this_addr);
 
     public void RevoluteEnableSpring(boolean enabled) {
         internal_native_RevoluteEnableSpring(native_address, enabled);
@@ -458,12 +493,47 @@ public final class B2Joint extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_revolutesetmaxmotortorque")
     public static native void internal_native_RevoluteSetMaxMotorTorque(long this_addr, float torque);
 
+    public float RevoluteGetMotorTorque() {
+        return internal_native_RevoluteGetMotorTorque(native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_revolutegetmotortorque")
+    public static native float internal_native_RevoluteGetMotorTorque(long this_addr);
+
     public float RevoluteGetAngle() {
         return internal_native_RevoluteGetAngle(native_address);
     }
 
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_revolutegetangle")
     public static native float internal_native_RevoluteGetAngle(long this_addr);
+
+    public void WeldSetLinearHertz(float hertz) {
+        internal_native_WeldSetLinearHertz(native_address, hertz);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_weldsetlinearhertz")
+    public static native void internal_native_WeldSetLinearHertz(long this_addr, float hertz);
+
+    public void WeldSetLinearDampingRatio(float ratio) {
+        internal_native_WeldSetLinearDampingRatio(native_address, ratio);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_weldsetlineardampingratio")
+    public static native void internal_native_WeldSetLinearDampingRatio(long this_addr, float ratio);
+
+    public void WeldSetAngularHertz(float hertz) {
+        internal_native_WeldSetAngularHertz(native_address, hertz);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_weldsetangularhertz")
+    public static native void internal_native_WeldSetAngularHertz(long this_addr, float hertz);
+
+    public void WeldSetAngularDampingRatio(float ratio) {
+        internal_native_WeldSetAngularDampingRatio(native_address, ratio);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_weldsetangulardampingratio")
+    public static native void internal_native_WeldSetAngularDampingRatio(long this_addr, float ratio);
 
     public void WheelEnableSpring(boolean enabled) {
         internal_native_WheelEnableSpring(native_address, enabled);
@@ -520,4 +590,11 @@ public final class B2Joint extends NativeObject {
 
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_wheelsetmaxmotortorque")
     public static native void internal_native_WheelSetMaxMotorTorque(long this_addr, float torque);
+
+    public float WheelGetMotorTorque() {
+        return internal_native_WheelGetMotorTorque(native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2joint_wheelgetmotortorque")
+    public static native float internal_native_WheelGetMotorTorque(long this_addr);
 }

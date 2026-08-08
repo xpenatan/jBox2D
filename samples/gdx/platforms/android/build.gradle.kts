@@ -15,7 +15,6 @@ abstract class StageGdxJniLibsTask : Sync() {
 group = "com.github.xpenatan.box2d.sample.gdx.android"
 
 val box2dVersion = libs.versions.box2dSource.get()
-val useMavenArtifacts = rootProject.extra["jbox2dSamplesUseMavenArtifacts"] as Boolean
 val gdxNativeClassifiers = linkedMapOf(
     "armeabi-v7a" to "natives-armeabi-v7a",
     "arm64-v8a" to "natives-arm64-v8a",
@@ -90,14 +89,6 @@ androidComponents {
             stageGdxJniLibs,
             StageGdxJniLibsTask::outputDirectory
         )
-    }
-}
-
-tasks.matching { task ->
-    task.name == "mergeDebugJniLibFolders" || task.name == "mergeReleaseJniLibFolders"
-}.configureEach {
-    if(!useMavenArtifacts) {
-        dependsOn(":box2d:builder:jParser_build_android_jni")
     }
 }
 

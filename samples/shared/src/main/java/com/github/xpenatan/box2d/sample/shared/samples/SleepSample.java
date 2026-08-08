@@ -137,7 +137,8 @@ public final class SleepSample extends AbstractBox2DSample {
         return Arrays.asList(
                 Box2DSampleControl.text("Pendulum Tuning"),
                 Box2DSampleControl.slider("sleep velocity", 0.0f, 1.0f, 0.01f,
-                        () -> sleepThreshold, value -> { sleepThreshold = value; pendulum.SetAwake(true); }),
+                        pendulum::GetSleepThreshold,
+                        value -> { sleepThreshold = value; pendulum.SetSleepThreshold(value); pendulum.SetAwake(true); }),
                 Box2DSampleControl.slider("angular damping", 0.0f, 2.0f, 0.01f,
                         pendulum::GetAngularDamping, pendulum::SetAngularDamping),
                 Box2DSampleControl.button(invoker == null ? "Create" : "Destroy", this::toggleInvoker),

@@ -19,7 +19,6 @@ public final class PrismaticJointSample extends AbstractBox2DSample {
     private boolean enableSpring;
     private boolean enableMotor;
     private boolean enableLimit = true;
-    private float constraintForce;
 
     public PrismaticJointSample() {
         B2Body ground = createStaticBody(0.0f, 0.0f, 0.0f);
@@ -36,13 +35,6 @@ public final class PrismaticJointSample extends AbstractBox2DSample {
         def.SetEnableSpring(enableSpring); def.SetHertz(hertz); def.SetDampingRatio(dampingRatio);
         joint = createPrismaticJoint(def);
         release(axis, localB, localA, pivot, def);
-    }
-
-    @Override
-    protected void afterStep(float deltaSeconds) {
-        B2Vec2 force = joint.GetConstraintForce();
-        constraintForce = force.Length();
-        release(force);
     }
 
     @Override
@@ -68,8 +60,9 @@ public final class PrismaticJointSample extends AbstractBox2DSample {
             c.add(Box2DSampleControl.slider("Translation", -5, 5, .1f, () -> translation,
                     value -> { translation = value; joint.PrismaticSetTargetTranslation(value); joint.WakeBodies(); }));
         }
-        c.add(Box2DSampleControl.dynamicText(() -> String.format("Constraint force = %.1f", constraintForce)));
+        c.add(Box2DSampleControl.dynamicText(() -> String.format("Motor Force = %.1f", joint.PrismaticGetMotorForce())));
         c.add(Box2DSampleControl.dynamicText(() -> String.format("Translation = %.1f", joint.PrismaticGetTranslation())));
+        c.add(Box2DSampleControl.dynamicText(() -> String.format("Speed = %.1f", joint.PrismaticGetSpeed())));
         return c;
     }
 }

@@ -309,6 +309,30 @@ public final class B2 extends NativeObject {
         }
     }
 
+    public static float Cos(float radians) {
+        return internal_native_Cos(radians);
+    }
+
+    public static float internal_native_Cos(float radians) {
+        try {
+            return (float) FFMHandles.internal_native_Cos__F.invokeExact(radians);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public static float Sin(float radians) {
+        return internal_native_Sin(radians);
+    }
+
+    public static float internal_native_Sin(float radians) {
+        try {
+            return (float) FFMHandles.internal_native_Sin__F.invokeExact(radians);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     public static void SetLengthUnitsPerMeter(float lengthUnits) {
         internal_native_SetLengthUnitsPerMeter(lengthUnits);
     }
@@ -380,6 +404,10 @@ public final class B2 extends NativeObject {
         static final java.lang.invoke.MethodHandle internal_native_VersionMinor__ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2_versionminor", FunctionDescriptor.of(ValueLayout.JAVA_INT));
 
         static final java.lang.invoke.MethodHandle internal_native_VersionRevision__ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2_versionrevision", FunctionDescriptor.of(ValueLayout.JAVA_INT));
+
+        static final java.lang.invoke.MethodHandle internal_native_Cos__F = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2_cos", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT));
+
+        static final java.lang.invoke.MethodHandle internal_native_Sin__F = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2_sin", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT));
 
         static final java.lang.invoke.MethodHandle internal_native_SetLengthUnitsPerMeter__F = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2_setlengthunitspermeter", FunctionDescriptor.ofVoid(ValueLayout.JAVA_FLOAT));
 

@@ -5,7 +5,9 @@ import com.github.xpenatan.box2d.B2Body;
 import com.github.xpenatan.box2d.B2BodyDef;
 import com.github.xpenatan.box2d.B2Capsule;
 import com.github.xpenatan.box2d.B2Circle;
+import com.github.xpenatan.box2d.B2Polygon;
 import com.github.xpenatan.box2d.B2QueryFilter;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Shape;
 import com.github.xpenatan.box2d.B2ShapeProxy;
 import com.github.xpenatan.box2d.B2Vec2;
@@ -84,7 +86,8 @@ public final class OverlapWorldSample extends AbstractBox2DSample {
 
     private B2ShapeProxy queryProxy() {
         B2ShapeProxy proxy = new B2ShapeProxy();
-        float c = (float)Math.cos(angle), s = (float)Math.sin(angle);
+        B2Rot rotation = new B2Rot(angle);
+        float c = rotation.GetCosine(), s = rotation.GetSine();
         if(queryType == 0) {
             B2Vec2 center = new B2Vec2(queryX, queryY);
             B2Circle circle = new B2Circle(center, 1.0f);
@@ -97,12 +100,12 @@ public final class OverlapWorldSample extends AbstractBox2DSample {
             proxy.SetCapsule(capsule); release(capsule, p2, p1);
         }
         else {
-            float[][] local = {{-2,-0.5f},{2,-0.5f},{2,0.5f},{-2,0.5f}};
-            for(float[] p : local) {
-                B2Vec2 point = new B2Vec2(queryX + c*p[0] - s*p[1], queryY + s*p[0] + c*p[1]);
-                proxy.AddPoint(point); release(point);
-            }
+            B2Vec2 center = new B2Vec2(queryX, queryY);
+            B2Polygon box = B2Polygon.CreateOffsetBox(2.0f, 0.5f, center, rotation);
+            proxy.SetPolygon(box);
+            release(box, center);
         }
+        release(rotation);
         return proxy;
     }
 
@@ -120,7 +123,9 @@ public final class OverlapWorldSample extends AbstractBox2DSample {
     @Override public void draw(Box2DSampleDraw draw) {
         if(queryType == 0) draw.circle(queryX, queryY, 1.0f, 0xFFFFFFFF);
         else if(queryType == 1) {
-            float c = (float)Math.cos(angle), s = (float)Math.sin(angle);
+            B2Rot rotation = new B2Rot(angle);
+            float c = rotation.GetCosine(), s = rotation.GetSine();
+            release(rotation);
             draw.segment(queryX-c, queryY-s, queryX+c, queryY+s, 0xFFFFFFFF);
             draw.circle(queryX-c, queryY-s, 0.5f, 0xFFFFFFFF);
             draw.circle(queryX+c, queryY+s, 0.5f, 0xFFFFFFFF);

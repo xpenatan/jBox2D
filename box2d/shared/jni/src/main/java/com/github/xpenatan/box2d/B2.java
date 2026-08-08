@@ -210,6 +210,22 @@ public final class B2 extends NativeObject {
         return com.github.xpenatan.box2d.natives.JNI_B2.internal_native_VersionRevision();
     }
 
+    public static float Cos(float radians) {
+        return internal_native_Cos(radians);
+    }
+
+    public static float internal_native_Cos(float radians) {
+        return com.github.xpenatan.box2d.natives.JNI_B2.internal_native_Cos(radians);
+    }
+
+    public static float Sin(float radians) {
+        return internal_native_Sin(radians);
+    }
+
+    public static float internal_native_Sin(float radians) {
+        return com.github.xpenatan.box2d.natives.JNI_B2.internal_native_Sin(radians);
+    }
+
     public static void SetLengthUnitsPerMeter(float lengthUnits) {
         internal_native_SetLengthUnitsPerMeter(lengthUnits);
     }

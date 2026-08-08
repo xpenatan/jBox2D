@@ -11,7 +11,8 @@ public final class RestitutionThresholdSample extends AbstractBox2DSample {
     private final B2Body ball; private float px,vy;
     public RestitutionThresholdSample(){
         float ppm=30; world().SetRestitutionThreshold(.1f);
-        addStaticBox(205/ppm,120/ppm,50/ppm,5/ppm,radians(70));
+        B2Body ramp=createStaticBody(205/ppm,120/ppm,70.0f*3.14f/180.0f);
+        addBoxShape(ramp,50/ppm,5/ppm,0,0,0,0);
         ball=addDynamicCircle(200/ppm,250/ppm,5/ppm,1,0,1,0); ball.SetFixedRotation(true); setLinearVelocity(ball,0,-2.9f);
     }
     @Override protected void afterStep(float dt){B2Vec2 p=ball.GetPosition(),v=ball.GetLinearVelocity();px=p.GetX();vy=v.GetY();release(v,p);}

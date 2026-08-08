@@ -49,6 +49,19 @@ public final class B2Rot extends NativeObject {
         }
     }
 
+    public B2Rot(float cosine, float sine) {
+        long addr = internal_native_create_float_float_addr(cosine, sine);
+        internal_reset(addr, true);
+    }
+
+    public static long internal_native_create_float_float_addr(float cosine, float sine) {
+        try {
+            return (long) FFMHandles.internal_native_create_float_float_addr__FF.invokeExact(cosine, sine);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     /**
      * Dummy constructor, used internally to creates objects without C++ pointer
      */
@@ -135,6 +148,30 @@ public final class B2Rot extends NativeObject {
         }
     }
 
+    public void PreMultiply(B2Rot rotation) {
+        internal_native_PreMultiply(native_address, rotation.native_address);
+    }
+
+    public static void internal_native_PreMultiply(long this_addr, long rotation_addr) {
+        try {
+            FFMHandles.internal_native_PreMultiply__JJ.invokeExact(this_addr, rotation_addr);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public float RelativeAngle(B2Rot other) {
+        return internal_native_RelativeAngle(native_address, other.native_address);
+    }
+
+    public static float internal_native_RelativeAngle(long this_addr, long other_addr) {
+        try {
+            return (float) FFMHandles.internal_native_RelativeAngle__JJ.invokeExact(this_addr, other_addr);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     public B2Vec2 RotateVector(B2Vec2 vector) {
         long addr = internal_native_RotateVector_addr(native_address, vector.native_address);
         if (addr == 0)
@@ -177,6 +214,8 @@ public final class B2Rot extends NativeObject {
 
         static final java.lang.invoke.MethodHandle internal_native_create_float_addr__F = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2rot_create_float_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
 
+        static final java.lang.invoke.MethodHandle internal_native_create_float_float_addr__FF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2rot_create_float_float_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT));
+
         static final java.lang.invoke.MethodHandle internal_native_deleteNative__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2rot_deletenative", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_GetCosine__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2rot_getcosine", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG));
@@ -188,6 +227,10 @@ public final class B2Rot extends NativeObject {
         static final java.lang.invoke.MethodHandle internal_native_Set__JF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2rot_set", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
 
         static final java.lang.invoke.MethodHandle internal_native_SetIdentity__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2rot_setidentity", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG));
+
+        static final java.lang.invoke.MethodHandle internal_native_PreMultiply__JJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2rot_premultiply", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
+
+        static final java.lang.invoke.MethodHandle internal_native_RelativeAngle__JJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2rot_relativeangle", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_RotateVector_addr__JJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2rot_rotatevector_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 

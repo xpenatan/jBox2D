@@ -30,12 +30,15 @@ bool B2Vec2::IsValid() const { return b2IsValidVec2(value); }
 
 B2Rot::B2Rot() : value(b2Rot_identity) {}
 B2Rot::B2Rot(float radians) : value(b2MakeRot(radians)) {}
+B2Rot::B2Rot(float cosine, float sine) : value{cosine, sine} {}
 B2Rot::B2Rot(b2Rot value) : value(value) {}
 float B2Rot::GetCosine() const { return value.c; }
 float B2Rot::GetSine() const { return value.s; }
 float B2Rot::GetAngle() const { return b2Rot_GetAngle(value); }
 void B2Rot::Set(float radians) { value = b2MakeRot(radians); }
 void B2Rot::SetIdentity() { value = b2Rot_identity; }
+void B2Rot::PreMultiply(const B2Rot& rotation) { value = b2MulRot(rotation.value, value); }
+float B2Rot::RelativeAngle(const B2Rot& other) const { return b2RelativeAngle(value, other.value); }
 B2Vec2 B2Rot::RotateVector(const B2Vec2& vector) const { return B2Vec2(b2RotateVector(value, vector.value)); }
 B2Vec2 B2Rot::InverseRotateVector(const B2Vec2& vector) const { return B2Vec2(b2InvRotateVector(value, vector.value)); }
 
@@ -996,6 +999,22 @@ float B2Body::GetAngularDamping() const { return b2Body_GetAngularDamping(m_body
 void B2Body::SetAngularDamping(float v) { b2Body_SetAngularDamping(m_bodyId, v); }
 float B2Body::GetGravityScale() const { return b2Body_GetGravityScale(m_bodyId); }
 void B2Body::SetGravityScale(float v) { b2Body_SetGravityScale(m_bodyId, v); }
+float B2Body::GetSleepThreshold() const { return b2Body_GetSleepThreshold(m_bodyId); }
+void B2Body::SetSleepThreshold(float v) { b2Body_SetSleepThreshold(m_bodyId, v); }
+bool B2Body::HasSupportingContact(float minimumNormalY, int capacity) const {
+    int available = b2Body_GetContactCapacity(m_bodyId);
+    int requested = std::max(0, std::min(capacity, available));
+    if(requested == 0) return false;
+
+    std::vector<b2ContactData> contacts(requested);
+    int count = b2Body_GetContactData(m_bodyId, contacts.data(), requested);
+    for(int i = 0; i < count; ++i) {
+        b2BodyId bodyA = b2Shape_GetBody(contacts[i].shapeIdA);
+        float sign = B2_ID_EQUALS(bodyA, m_bodyId) ? -1.0f : 1.0f;
+        if(sign * contacts[i].manifold.normal.y > minimumNormalY) return true;
+    }
+    return false;
+}
 bool B2Body::IsAwake() const { return b2Body_IsAwake(m_bodyId); }
 void B2Body::SetAwake(bool v) { b2Body_SetAwake(m_bodyId, v); }
 bool B2Body::IsSleepEnabled() const { return b2Body_IsSleepEnabled(m_bodyId); }
@@ -1077,6 +1096,47 @@ void B2Shape::SetPolygon(const B2Polygon& polygon) {
     b2Polygon value = polygon.GetHandle();
     b2Shape_SetPolygon(m_shapeId, &value);
 }
+void B2Shape::Scale(float ratio) {
+    b2ShapeType type = b2Shape_GetType(m_shapeId);
+    if(type == b2_circleShape) {
+        b2Circle circle = b2Shape_GetCircle(m_shapeId);
+        circle.center = b2MulSV(ratio, circle.center);
+        circle.radius *= ratio;
+        b2Shape_SetCircle(m_shapeId, &circle);
+    }
+    else if(type == b2_capsuleShape) {
+        b2Capsule capsule = b2Shape_GetCapsule(m_shapeId);
+        capsule.center1 = b2MulSV(ratio, capsule.center1);
+        capsule.center2 = b2MulSV(ratio, capsule.center2);
+        capsule.radius *= ratio;
+        b2Shape_SetCapsule(m_shapeId, &capsule);
+    }
+    else if(type == b2_segmentShape) {
+        b2Segment segment = b2Shape_GetSegment(m_shapeId);
+        segment.point1 = b2MulSV(ratio, segment.point1);
+        segment.point2 = b2MulSV(ratio, segment.point2);
+        b2Shape_SetSegment(m_shapeId, &segment);
+    }
+    else if(type == b2_polygonShape) {
+        b2Polygon polygon = b2Shape_GetPolygon(m_shapeId);
+        for(int i = 0; i < polygon.count; ++i) polygon.vertices[i] = b2MulSV(ratio, polygon.vertices[i]);
+        polygon.centroid = b2MulSV(ratio, polygon.centroid);
+        polygon.radius *= ratio;
+        b2Shape_SetPolygon(m_shapeId, &polygon);
+    }
+}
+B2WorldOverlapResult* B2Shape::GetSensorOverlaps() const {
+    B2WorldOverlapResult* result = new B2WorldOverlapResult();
+    int capacity = b2Shape_GetSensorCapacity(m_shapeId);
+    if(capacity <= 0) return result;
+    std::vector<b2ShapeId> overlaps(capacity);
+    int count = b2Shape_GetSensorOverlaps(m_shapeId, overlaps.data(), capacity);
+    result->shapeIds.reserve(count);
+    for(int i = 0; i < count; ++i) {
+        result->shapeIds.push_back(static_cast<long long>(b2StoreShapeId(overlaps[i])));
+    }
+    return result;
+}
 B2AABB B2Shape::GetAABB() const { return B2AABB(b2Shape_GetAABB(m_shapeId)); }
 B2MassData B2Shape::GetMassData() const { return B2MassData(b2Shape_GetMassData(m_shapeId)); }
 B2Vec2 B2Shape::GetClosestPoint(const B2Vec2& target) const { return B2Vec2(b2Shape_GetClosestPoint(m_shapeId, target.value)); }
@@ -1113,6 +1173,11 @@ B2Vec2 B2Joint::GetLocalAnchorA() const { return B2Vec2(b2Joint_GetLocalAnchorA(
 void B2Joint::SetLocalAnchorA(const B2Vec2& v) { b2Joint_SetLocalAnchorA(m_jointId, v.value); }
 B2Vec2 B2Joint::GetLocalAnchorB() const { return B2Vec2(b2Joint_GetLocalAnchorB(m_jointId)); }
 void B2Joint::SetLocalAnchorB(const B2Vec2& v) { b2Joint_SetLocalAnchorB(m_jointId, v.value); }
+float B2Joint::GetReferenceAngle() const { return b2Joint_GetReferenceAngle(m_jointId); }
+void B2Joint::SetReferenceAngle(float v) { b2Joint_SetReferenceAngle(m_jointId, v); }
+void B2Joint::SetConstraintTuning(float hertz, float dampingRatio) {
+    b2Joint_SetConstraintTuning(m_jointId, hertz, dampingRatio);
+}
 bool B2Joint::GetCollideConnected() const { return b2Joint_GetCollideConnected(m_jointId); }
 void B2Joint::SetCollideConnected(bool v) { b2Joint_SetCollideConnected(m_jointId, v); }
 void B2Joint::WakeBodies() { b2Joint_WakeBodies(m_jointId); }
@@ -1148,7 +1213,9 @@ void B2Joint::PrismaticSetLimits(float lower, float upper) { b2PrismaticJoint_Se
 void B2Joint::PrismaticEnableMotor(bool v) { b2PrismaticJoint_EnableMotor(m_jointId, v); }
 void B2Joint::PrismaticSetMotorSpeed(float v) { b2PrismaticJoint_SetMotorSpeed(m_jointId, v); }
 void B2Joint::PrismaticSetMaxMotorForce(float v) { b2PrismaticJoint_SetMaxMotorForce(m_jointId, v); }
+float B2Joint::PrismaticGetMotorForce() const { return b2PrismaticJoint_GetMotorForce(m_jointId); }
 float B2Joint::PrismaticGetTranslation() const { return b2PrismaticJoint_GetTranslation(m_jointId); }
+float B2Joint::PrismaticGetSpeed() const { return b2PrismaticJoint_GetSpeed(m_jointId); }
 void B2Joint::RevoluteEnableSpring(bool v) { b2RevoluteJoint_EnableSpring(m_jointId, v); }
 void B2Joint::RevoluteSetSpringHertz(float v) { b2RevoluteJoint_SetSpringHertz(m_jointId, v); }
 void B2Joint::RevoluteSetSpringDampingRatio(float v) { b2RevoluteJoint_SetSpringDampingRatio(m_jointId, v); }
@@ -1158,7 +1225,12 @@ void B2Joint::RevoluteSetLimits(float lower, float upper) { b2RevoluteJoint_SetL
 void B2Joint::RevoluteEnableMotor(bool v) { b2RevoluteJoint_EnableMotor(m_jointId, v); }
 void B2Joint::RevoluteSetMotorSpeed(float v) { b2RevoluteJoint_SetMotorSpeed(m_jointId, v); }
 void B2Joint::RevoluteSetMaxMotorTorque(float v) { b2RevoluteJoint_SetMaxMotorTorque(m_jointId, v); }
+float B2Joint::RevoluteGetMotorTorque() const { return b2RevoluteJoint_GetMotorTorque(m_jointId); }
 float B2Joint::RevoluteGetAngle() const { return b2RevoluteJoint_GetAngle(m_jointId); }
+void B2Joint::WeldSetLinearHertz(float v) { b2WeldJoint_SetLinearHertz(m_jointId, v); }
+void B2Joint::WeldSetLinearDampingRatio(float v) { b2WeldJoint_SetLinearDampingRatio(m_jointId, v); }
+void B2Joint::WeldSetAngularHertz(float v) { b2WeldJoint_SetAngularHertz(m_jointId, v); }
+void B2Joint::WeldSetAngularDampingRatio(float v) { b2WeldJoint_SetAngularDampingRatio(m_jointId, v); }
 void B2Joint::WheelEnableSpring(bool v) { b2WheelJoint_EnableSpring(m_jointId, v); }
 void B2Joint::WheelSetSpringHertz(float v) { b2WheelJoint_SetSpringHertz(m_jointId, v); }
 void B2Joint::WheelSetSpringDampingRatio(float v) { b2WheelJoint_SetSpringDampingRatio(m_jointId, v); }
@@ -1167,6 +1239,7 @@ void B2Joint::WheelSetLimits(float lower, float upper) { b2WheelJoint_SetLimits(
 void B2Joint::WheelEnableMotor(bool v) { b2WheelJoint_EnableMotor(m_jointId, v); }
 void B2Joint::WheelSetMotorSpeed(float v) { b2WheelJoint_SetMotorSpeed(m_jointId, v); }
 void B2Joint::WheelSetMaxMotorTorque(float v) { b2WheelJoint_SetMaxMotorTorque(m_jointId, v); }
+float B2Joint::WheelGetMotorTorque() const { return b2WheelJoint_GetMotorTorque(m_jointId); }
 b2JointId B2Joint::GetHandle() const { return m_jointId; }
 
 static B2DebugDrawEm* debugDraw(void* context) { return static_cast<B2DebugDrawEm*>(context); }
@@ -1247,7 +1320,9 @@ void B2DebugDrawEm::DrawTransform(const B2Transform&) {}
 void B2DebugDrawEm::DrawPoint(const B2Vec2&, float, int) {}
 
 B2World::B2World() : B2World(B2WorldDef()) {}
-B2World::B2World(const B2WorldDef& def) : m_worldId(b2CreateWorld(&def.value)), m_destroyed(false) {}
+B2World::B2World(const B2WorldDef& def)
+    : m_worldId(b2CreateWorld(&def.value)), m_destroyed(false),
+      m_oneSidedPlayerShapeId(b2_nullShapeId), m_oneSidedRadius(0.0f) {}
 B2World::~B2World() { Destroy(); }
 long long B2World::GetId() const { return static_cast<long long>(b2StoreWorldId(m_worldId)); }
 bool B2World::IsValid() const { return !m_destroyed && b2World_IsValid(m_worldId); }
@@ -1265,6 +1340,7 @@ bool B2World::IsWarmStartingEnabled() const { return b2World_IsWarmStartingEnabl
 void B2World::EnableWarmStarting(bool v) { b2World_EnableWarmStarting(m_worldId, v); }
 bool B2World::IsContinuousEnabled() const { return b2World_IsContinuousEnabled(m_worldId); }
 void B2World::EnableContinuous(bool v) { b2World_EnableContinuous(m_worldId, v); }
+void B2World::EnableSpeculative(bool v) { b2World_EnableSpeculative(m_worldId, v); }
 float B2World::GetRestitutionThreshold() const { return b2World_GetRestitutionThreshold(m_worldId); }
 void B2World::SetRestitutionThreshold(float v) { b2World_SetRestitutionThreshold(m_worldId, v); }
 float B2World::GetHitEventThreshold() const { return b2World_GetHitEventThreshold(m_worldId); }
@@ -1272,6 +1348,55 @@ void B2World::SetHitEventThreshold(float v) { b2World_SetHitEventThreshold(m_wor
 float B2World::GetMaximumLinearSpeed() const { return b2World_GetMaximumLinearSpeed(m_worldId); }
 void B2World::SetMaximumLinearSpeed(float v) { b2World_SetMaximumLinearSpeed(m_worldId, v); }
 void B2World::SetContactTuning(float hertz, float ratio, float speed) { b2World_SetContactTuning(m_worldId, hertz, ratio, speed); }
+void B2World::Explode(const B2Vec2& position, float radius, float falloff, float impulsePerLength) {
+    b2ExplosionDef def = b2DefaultExplosionDef();
+    def.position = position.value;
+    def.radius = radius;
+    def.falloff = falloff;
+    def.impulsePerLength = impulsePerLength;
+    b2World_Explode(m_worldId, &def);
+}
+
+bool B2World::ParityCustomFilterCallback(b2ShapeId shapeIdA, b2ShapeId shapeIdB, void*) {
+    int indexA = b2Shape_GetSurfaceMaterial(shapeIdA).userMaterialId;
+    int indexB = b2Shape_GetSurfaceMaterial(shapeIdB).userMaterialId;
+    if(indexA == 0 || indexB == 0) return true;
+    return ((indexA & 1) + (indexB & 1)) != 1;
+}
+
+void B2World::EnableParityCustomFilter(bool enabled) {
+    b2World_SetCustomFilterCallback(m_worldId, enabled ? ParityCustomFilterCallback : nullptr,
+                                    enabled ? this : nullptr);
+}
+
+bool B2World::OneSidedPlatformCallback(b2ShapeId shapeIdA, b2ShapeId shapeIdB,
+                                       b2Manifold* manifold, void* context) {
+    B2World* world = static_cast<B2World*>(context);
+    float sign;
+    if(B2_ID_EQUALS(shapeIdA, world->m_oneSidedPlayerShapeId)) sign = -1.0f;
+    else if(B2_ID_EQUALS(shapeIdB, world->m_oneSidedPlayerShapeId)) sign = 1.0f;
+    else return true;
+
+    if(sign * manifold->normal.y > 0.95f) return true;
+
+    float separation = 0.0f;
+    for(int i = 0; i < manifold->pointCount; ++i) {
+        separation = std::min(separation, manifold->points[i].separation);
+    }
+    return separation > 0.1f * world->m_oneSidedRadius;
+}
+
+void B2World::EnableOneSidedPlatform(long long playerShapeId, float radius) {
+    if(playerShapeId == 0) {
+        m_oneSidedPlayerShapeId = b2_nullShapeId;
+        m_oneSidedRadius = 0.0f;
+        b2World_SetPreSolveCallback(m_worldId, nullptr, nullptr);
+        return;
+    }
+    m_oneSidedPlayerShapeId = loadShapeId(playerShapeId);
+    m_oneSidedRadius = radius;
+    b2World_SetPreSolveCallback(m_worldId, OneSidedPlatformCallback, this);
+}
 void B2World::RebuildStaticTree() { b2World_RebuildStaticTree(m_worldId); }
 int B2World::GetAwakeBodyCount() const { return b2World_GetAwakeBodyCount(m_worldId); }
 B2Body* B2World::CreateBody(const B2BodyDef& def) { return new B2Body(b2CreateBody(m_worldId, &def.value)); }
@@ -1322,6 +1447,91 @@ B2WorldCastResult* B2World::CastShape(const B2ShapeProxy& proxy, const B2Vec2& t
     return result;
 }
 
+struct WorldCastModeContext {
+    B2WorldCastResult* result;
+    long long ignoredShapeId;
+    int mode;
+    int maxHits;
+};
+
+static float worldCastModeCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal,
+                                   float fraction, void* context) {
+    WorldCastModeContext* cast = static_cast<WorldCastModeContext*>(context);
+    long long storedShapeId = static_cast<long long>(b2StoreShapeId(shapeId));
+    if(fraction == 0.0f || (cast->ignoredShapeId != 0 && storedShapeId == cast->ignoredShapeId)) {
+        return -1.0f;
+    }
+
+    B2WorldCastHit hit(storedShapeId, point, normal, fraction);
+    std::vector<B2WorldCastHit>& hits = cast->result->hits;
+    if(cast->mode == 0) {
+        hits.clear();
+        hits.push_back(hit);
+        return 0.0f;
+    }
+    if(cast->mode == 1) {
+        hits.clear();
+        hits.push_back(hit);
+        return fraction;
+    }
+    if(cast->mode == 2) {
+        hits.push_back(hit);
+        return static_cast<int>(hits.size()) >= cast->maxHits ? 0.0f : 1.0f;
+    }
+
+    auto position = std::lower_bound(hits.begin(), hits.end(), fraction,
+        [](const B2WorldCastHit& value, float candidate) { return value.GetFraction() < candidate; });
+    if(position != hits.end() || static_cast<int>(hits.size()) < cast->maxHits) {
+        hits.insert(position, hit);
+        if(static_cast<int>(hits.size()) > cast->maxHits) hits.pop_back();
+    }
+    return static_cast<int>(hits.size()) == cast->maxHits ? hits.back().GetFraction() : 1.0f;
+}
+
+static B2WorldCastResult* finishWorldCastMode(B2WorldCastResult* result, b2TreeStats stats) {
+    result->nodeVisits = stats.nodeVisits;
+    result->leafVisits = stats.leafVisits;
+    return result;
+}
+
+B2WorldCastResult* B2World::CastRayMode(const B2Vec2& origin, const B2Vec2& translation,
+                                        const B2QueryFilter& filter, int mode,
+                                        long long ignoredShapeId, int maxHits) const {
+    B2WorldCastResult* result = new B2WorldCastResult();
+    WorldCastModeContext context{result, ignoredShapeId, std::max(0, std::min(mode, 3)),
+                                 std::max(1, maxHits)};
+    b2TreeStats stats = b2World_CastRay(m_worldId, origin.value, translation.value, filter.value,
+                                        worldCastModeCallback, &context);
+    return finishWorldCastMode(result, stats);
+}
+
+B2WorldCastResult* B2World::CastShapeMode(const B2ShapeProxy& proxy, const B2Vec2& translation,
+                                          const B2QueryFilter& filter, int mode,
+                                          long long ignoredShapeId, int maxHits) const {
+    B2WorldCastResult* result = new B2WorldCastResult();
+    WorldCastModeContext context{result, ignoredShapeId, std::max(0, std::min(mode, 3)),
+                                 std::max(1, maxHits)};
+    b2TreeStats stats = b2World_CastShape(m_worldId, &proxy.value, translation.value, filter.value,
+                                          worldCastModeCallback, &context);
+    return finishWorldCastMode(result, stats);
+}
+
+static float worldCastClosestCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal,
+                                      float fraction, void* context) {
+    B2WorldCastResult* result = static_cast<B2WorldCastResult*>(context);
+    result->hits.clear();
+    result->hits.emplace_back(static_cast<long long>(b2StoreShapeId(shapeId)), point, normal, fraction);
+    return fraction;
+}
+
+B2WorldCastResult* B2World::CastShapeClosest(const B2ShapeProxy& proxy, const B2Vec2& translation,
+                                             const B2QueryFilter& filter) const {
+    B2WorldCastResult* result = new B2WorldCastResult();
+    b2TreeStats stats = b2World_CastShape(m_worldId, &proxy.value, translation.value, filter.value,
+                                          worldCastClosestCallback, result);
+    return finishWorldCastMode(result, stats);
+}
+
 B2WorldOverlapResult* B2World::OverlapAABB(const B2AABB& aabb, const B2QueryFilter& filter) const {
     B2WorldOverlapResult* result = new B2WorldOverlapResult();
     b2TreeStats stats = b2World_OverlapAABB(m_worldId, aabb.value, filter.value, worldOverlapCallback, result);
@@ -1345,12 +1555,29 @@ float B2World::CastMover(const B2Capsule& mover, const B2Vec2& translation, cons
 struct MoverPlaneContext {
     std::vector<b2CollisionPlane>* planes;
     int capacity;
+    long long shapeIdA;
+    float maxPushA;
+    bool clipVelocityA;
+    long long shapeIdB;
+    float maxPushB;
+    bool clipVelocityB;
 };
 
-static bool moverPlaneCallback(b2ShapeId, const b2PlaneResult* planeResult, void* context) {
+static bool moverPlaneCallback(b2ShapeId shapeId, const b2PlaneResult* planeResult, void* context) {
     MoverPlaneContext* planeContext = static_cast<MoverPlaneContext*>(context);
     if(planeResult->hit && static_cast<int>(planeContext->planes->size()) < planeContext->capacity) {
-        planeContext->planes->push_back({planeResult->plane, FLT_MAX, 0.0f, true});
+        float maxPush = FLT_MAX;
+        bool clipVelocity = true;
+        long long storedShapeId = static_cast<long long>(b2StoreShapeId(shapeId));
+        if(planeContext->shapeIdA != 0 && storedShapeId == planeContext->shapeIdA) {
+            maxPush = planeContext->maxPushA;
+            clipVelocity = planeContext->clipVelocityA;
+        }
+        else if(planeContext->shapeIdB != 0 && storedShapeId == planeContext->shapeIdB) {
+            maxPush = planeContext->maxPushB;
+            clipVelocity = planeContext->clipVelocityB;
+        }
+        planeContext->planes->push_back({planeResult->plane, maxPush, 0.0f, clipVelocity});
     }
     return true;
 }
@@ -1358,6 +1585,15 @@ static bool moverPlaneCallback(b2ShapeId, const b2PlaneResult* planeResult, void
 B2MoverResult* B2World::SolveMover(const B2Capsule& mover, const B2Vec2& translation,
                                    const B2Vec2& velocity, const B2QueryFilter& collideFilter,
                                    const B2QueryFilter& castFilter, int maxIterations) const {
+    return SolveMoverWithSurfaceOverrides(mover, translation, velocity, collideFilter, castFilter,
+                                          0, FLT_MAX, true, 0, FLT_MAX, true, maxIterations);
+}
+
+B2MoverResult* B2World::SolveMoverWithSurfaceOverrides(
+    const B2Capsule& mover, const B2Vec2& translation, const B2Vec2& velocity,
+    const B2QueryFilter& collideFilter, const B2QueryFilter& castFilter,
+    long long shapeIdA, float maxPushA, bool clipVelocityA,
+    long long shapeIdB, float maxPushB, bool clipVelocityB, int maxIterations) const {
     B2MoverResult* result = new B2MoverResult();
     b2Capsule current = mover.value;
     b2Vec2 start = current.center1;
@@ -1367,7 +1603,9 @@ B2MoverResult* B2World::SolveMover(const B2Capsule& mover, const B2Vec2& transla
 
     for(int iteration = 0; iteration < iterationLimit; ++iteration) {
         result->planes.clear();
-        MoverPlaneContext context{&result->planes, planeCapacity};
+        MoverPlaneContext context{&result->planes, planeCapacity,
+                                  shapeIdA, maxPushA, clipVelocityA,
+                                  shapeIdB, maxPushB, clipVelocityB};
         b2World_CollideMover(m_worldId, &current, collideFilter.value, moverPlaneCallback, &context);
 
         b2Vec2 desired = b2Sub(target, current.center1);
@@ -1414,6 +1652,8 @@ long long B2::DefaultMaskBits() { return static_cast<long long>(b2DefaultFilter(
 int B2::VersionMajor() { return b2GetVersion().major; }
 int B2::VersionMinor() { return b2GetVersion().minor; }
 int B2::VersionRevision() { return b2GetVersion().revision; }
+float B2::Cos(float radians) { return cosf(radians); }
+float B2::Sin(float radians) { return sinf(radians); }
 void B2::SetLengthUnitsPerMeter(float units) { b2SetLengthUnitsPerMeter(units); }
 float B2::GetLengthUnitsPerMeter() { return b2GetLengthUnitsPerMeter(); }
 

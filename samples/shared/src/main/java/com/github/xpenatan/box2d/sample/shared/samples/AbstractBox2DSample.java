@@ -40,13 +40,17 @@ import java.util.List;
 public abstract class AbstractBox2DSample implements Box2DSample {
     protected static final float PI = (float)Math.PI;
 
-    private final B2World world;
+    private static final int DEFAULT_SUB_STEP_COUNT = 4;
+    private static int randomState = 12345;
+
+    private B2World world;
     private final int fallbackSubStepCount;
     private final List<NativeObject> ownedHandles = new ArrayList<NativeObject>();
     private B2Body mouseBody;
     private B2Body mouseGroundBody;
     private B2Joint mouseJoint;
-    private int randomState = 0x1234ABCD;
+    private Boolean initialSleepEnabled;
+    private boolean settingsInitialized;
     private int bodyCount;
     private int shapeCount;
     private int jointCount;
@@ -76,6 +80,15 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         }
         int subSteps = fallbackSubStepCount;
         if(settings != null) {
+            if(!settingsInitialized) {
+                if(fallbackSubStepCount != DEFAULT_SUB_STEP_COUNT) {
+                    settings.setSubStepCount(fallbackSubStepCount);
+                }
+                if(initialSleepEnabled != null) {
+                    settings.setSleepEnabled(initialSleepEnabled.booleanValue());
+                }
+                settingsInitialized = true;
+            }
             world.EnableSleeping(settings.sleepEnabled());
             world.EnableWarmStarting(settings.warmStartingEnabled());
             world.EnableContinuous(settings.continuousEnabled());
@@ -84,7 +97,9 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         float step = Math.max(1.0f / Box2DSampleSettings.MAX_HERTZ,
                 Math.min(deltaSeconds, 1.0f / Box2DSampleSettings.MIN_HERTZ));
         beforeStep(step);
-        world.Step(step, subSteps);
+        if(shouldStepWorld(step)) {
+            world.Step(step, subSteps);
+        }
         afterStep(step);
     }
 
@@ -94,9 +109,46 @@ public abstract class AbstractBox2DSample implements Box2DSample {
     protected void afterStep(float deltaSeconds) {
     }
 
+    /** Allows samples such as Continuous/Drop to reproduce testbed frame skipping. */
+    protected boolean shouldStepWorld(float deltaSeconds) {
+        return true;
+    }
+
+    /** Applies a sample-specific initial sleep setting to both the world and shared testbed controls. */
+    protected final void setInitialSleepEnabled(boolean enabled) {
+        initialSleepEnabled = Boolean.valueOf(enabled);
+        world.EnableSleeping(enabled);
+    }
+
     @Override
     public final B2World world() {
         return world;
+    }
+
+    /** Recreates the Box2D world exactly like samples that call b2DestroyWorld/b2CreateWorld. */
+    protected final void recreateWorld() {
+        recreateWorld(0.0f, -10.0f);
+    }
+
+    protected final void recreateWorld(float gravityX, float gravityY) {
+        endMouseDrag();
+        if(world != null && world.IsValid()) {
+            world.Destroy();
+        }
+        for(int i = ownedHandles.size() - 1; i >= 0; i--) {
+            release(ownedHandles.get(i));
+        }
+        ownedHandles.clear();
+        release(world);
+
+        B2WorldDef worldDef = new B2WorldDef();
+        B2Vec2 gravity = new B2Vec2(gravityX, gravityY);
+        worldDef.SetGravity(gravity);
+        world = new B2World(worldDef);
+        bodyCount = 0;
+        shapeCount = 0;
+        jointCount = 0;
+        release(gravity, worldDef);
     }
 
     @Override
@@ -363,15 +415,27 @@ public abstract class AbstractBox2DSample implements Box2DSample {
     }
 
     protected B2Chain addChain(B2Body body, float[] points, boolean loop, float friction) {
+        B2SurfaceMaterial material = new B2SurfaceMaterial();
+        material.SetFriction(friction);
+        B2Chain chain = addChain(body, points, loop, new B2SurfaceMaterial[]{material});
+        release(material);
+        return chain;
+    }
+
+    protected B2Chain addChain(B2Body body, float[] points, boolean loop, B2SurfaceMaterial[] materials) {
         if(points == null || points.length < 8 || (points.length & 1) != 0) {
             throw new IllegalArgumentException("A Box2D chain requires at least four x/y points");
         }
+        if(materials == null || materials.length == 0) {
+            throw new IllegalArgumentException("A Box2D chain requires at least one material");
+        }
         B2ChainDef chainDef = new B2ChainDef();
         chainDef.SetIsLoop(loop);
-        B2SurfaceMaterial material = new B2SurfaceMaterial();
-        material.SetFriction(friction);
         chainDef.ClearMaterials();
-        chainDef.AddMaterial(material);
+        for(B2SurfaceMaterial material : materials) {
+            if(material == null) throw new IllegalArgumentException("Chain materials cannot contain null");
+            chainDef.AddMaterial(material);
+        }
         for(int i = 0; i < points.length; i += 2) {
             B2Vec2 point = new B2Vec2(points[i], points[i + 1]);
             chainDef.AddPoint(point);
@@ -379,7 +443,7 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         }
         B2Chain chain = own(body.CreateChain(chainDef));
         shapeCount += Math.max(0, points.length / 2 - (loop ? 0 : 3));
-        release(material, chainDef);
+        release(chainDef);
         return chain;
     }
 
@@ -409,15 +473,15 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         B2Vec2 anchor = new B2Vec2(worldX, worldY);
         B2Vec2 localA = copyLocalPoint(bodyA, anchor);
         B2Vec2 localB = copyLocalPoint(bodyB, anchor);
-        float angleA = bodyA.GetRotation().GetAngle();
-        float angleB = bodyB.GetRotation().GetAngle();
+        B2Rot rotationA = bodyA.GetRotation();
+        B2Rot rotationB = bodyB.GetRotation();
         def.SetLocalAnchorA(localA);
         def.SetLocalAnchorB(localB);
-        def.SetReferenceAngle(angleB - angleA);
+        def.SetReferenceAngle(rotationB.RelativeAngle(rotationA));
         def.SetCollideConnected(collideConnected);
         B2Joint joint = own(world.CreateRevoluteJoint(def));
         jointCount++;
-        release(localB, localA, anchor, def);
+        release(rotationB, rotationA, localB, localA, anchor, def);
         return joint;
     }
 
@@ -429,18 +493,18 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         B2Vec2 anchor = new B2Vec2(worldX, worldY);
         B2Vec2 localA = copyLocalPoint(bodyA, anchor);
         B2Vec2 localB = copyLocalPoint(bodyB, anchor);
-        float angleA = bodyA.GetRotation().GetAngle();
-        float angleB = bodyB.GetRotation().GetAngle();
+        B2Rot rotationA = bodyA.GetRotation();
+        B2Rot rotationB = bodyB.GetRotation();
         def.SetLocalAnchorA(localA);
         def.SetLocalAnchorB(localB);
-        def.SetReferenceAngle(angleB - angleA);
+        def.SetReferenceAngle(rotationB.RelativeAngle(rotationA));
         def.SetLinearHertz(hertz);
         def.SetAngularHertz(hertz);
         def.SetLinearDampingRatio(dampingRatio);
         def.SetAngularDampingRatio(dampingRatio);
         B2Joint joint = own(world.CreateWeldJoint(def));
         jointCount++;
-        release(localB, localA, anchor, def);
+        release(rotationB, rotationA, localB, localA, anchor, def);
         return joint;
     }
 
@@ -454,19 +518,18 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         B2Vec2 localB = copyLocalPoint(bodyB, anchor);
         B2Vec2 axis = new B2Vec2(axisX, axisY);
         B2Rot rotationA = bodyA.GetRotation();
+        B2Rot rotationB = bodyB.GetRotation();
         B2Vec2 localAxis = rotationA.InverseRotateVector(axis);
-        float angleA = rotationA.GetAngle();
-        float angleB = bodyB.GetRotation().GetAngle();
         def.SetLocalAnchorA(localA);
         def.SetLocalAnchorB(localB);
         def.SetLocalAxisA(localAxis);
-        def.SetReferenceAngle(angleB - angleA);
+        def.SetReferenceAngle(rotationB.RelativeAngle(rotationA));
         def.SetEnableLimit(enableLimit);
         def.SetLowerTranslation(lower);
         def.SetUpperTranslation(upper);
         B2Joint joint = own(world.CreatePrismaticJoint(def));
         jointCount++;
-        release(localAxis, rotationA, axis, localB, localA, anchor, def);
+        release(localAxis, rotationB, rotationA, axis, localB, localA, anchor, def);
         return joint;
     }
 
@@ -498,18 +561,12 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         B2MotorJointDef def = new B2MotorJointDef();
         def.SetBodyIdA(bodyA.GetId());
         def.SetBodyIdB(bodyB.GetId());
-        B2Vec2 positionB = bodyB.GetPosition();
-        B2Vec2 localOffset = copyLocalPoint(bodyA, positionB);
-        float angleA = bodyA.GetRotation().GetAngle();
-        float angleB = bodyB.GetRotation().GetAngle();
-        def.SetLinearOffset(localOffset);
-        def.SetAngularOffset(angleB - angleA);
         def.SetMaxForce(maxForce);
         def.SetMaxTorque(maxTorque);
         def.SetCorrectionFactor(correctionFactor);
         B2Joint joint = own(world.CreateMotorJoint(def));
         jointCount++;
-        release(localOffset, positionB, def);
+        release(def);
         return joint;
     }
 
@@ -587,6 +644,13 @@ public abstract class AbstractBox2DSample implements Box2DSample {
         }
     }
 
+    protected void destroyShape(B2Shape shape, boolean updateBodyMass) {
+        if(shape != null && shape.IsValid()) {
+            shape.Destroy(updateBodyMass);
+            shapeCount = Math.max(0, shapeCount - 1);
+        }
+    }
+
     private void endMouseDrag() {
         if(mouseJoint != null) {
             if(mouseJoint.IsValid()) {
@@ -651,11 +715,17 @@ public abstract class AbstractBox2DSample implements Box2DSample {
     }
 
     protected float randomFloat(float minimum, float maximum) {
+        int value = randomIntRaw();
+        float unit = (float)(value & 32767);
+        unit /= 32767.0f;
+        return (maximum - minimum) * unit + minimum;
+    }
+
+    private static int randomIntRaw() {
         randomState ^= randomState << 13;
         randomState ^= randomState >>> 17;
         randomState ^= randomState << 5;
-        float unit = (randomState & 0x7FFFFFFF) / (float)0x7FFFFFFF;
-        return minimum + (maximum - minimum) * unit;
+        return randomState & 32767;
     }
 
     protected void setRandomSeed(int seed) {
@@ -663,7 +733,33 @@ public abstract class AbstractBox2DSample implements Box2DSample {
     }
 
     protected int randomInt(int minimum, int maximumInclusive) {
-        return minimum + (int)(randomFloat(0.0f, 0.999999f) * (maximumInclusive - minimum + 1));
+        return minimum + randomIntRaw() % (maximumInclusive - minimum + 1);
+    }
+
+    /** Matches shared/random.c::RandomPolygon, including its deterministic random-call order. */
+    protected B2Polygon randomPolygon(float extent) {
+        int count = 3 + randomIntRaw() % 6;
+        B2Hull hull = new B2Hull();
+        for(int i = 0; i < count; i++) {
+            B2Vec2 point = new B2Vec2(randomFloat(-extent, extent), randomFloat(-extent, extent));
+            hull.AddPoint(point);
+            release(point);
+        }
+        B2Polygon polygon;
+        if(hull.Compute() && hull.GetPointCount() > 0) {
+            polygon = B2Polygon.CreateFromHull(hull, 0.0f);
+        }
+        else {
+            polygon = B2Polygon.CreateSquare(extent);
+        }
+        release(hull);
+        return polygon;
+    }
+
+    protected void explode(float x, float y, float radius, float falloff, float impulsePerLength) {
+        B2Vec2 position = new B2Vec2(x, y);
+        world.Explode(position, radius, falloff, impulsePerLength);
+        release(position);
     }
 
     protected static float radians(float degrees) {

@@ -88,9 +88,9 @@ public final class RevoluteJointSample extends AbstractBox2DSample {
             c.add(Box2DSampleControl.slider("Degrees", -180, 180, 1, () -> targetDegrees,
                     value -> { targetDegrees = value; joint1.RevoluteSetTargetAngle(radians(value)); joint1.WakeBodies(); }));
         }
-        c.add(Box2DSampleControl.dynamicText(() -> String.format("Angle (Deg) 1 = %.1f", joint1.RevoluteGetAngle() * 180.0f / PI)));
-        c.add(Box2DSampleControl.dynamicText(() -> String.format("Constraint torque 1 = %.1f", joint1.GetConstraintTorque())));
-        c.add(Box2DSampleControl.dynamicText(() -> String.format("Constraint torque 2 = %.1f", joint2.GetConstraintTorque())));
+        c.add(Box2DSampleControl.dynamicText(() -> String.format("Angle (Deg) 1 = %.1f", joint1.RevoluteGetAngle())));
+        c.add(Box2DSampleControl.dynamicText(() -> String.format("Motor torque 1 = %.1f", joint1.RevoluteGetMotorTorque())));
+        c.add(Box2DSampleControl.dynamicText(() -> String.format("Motor torque 2 = %.1f", joint2.RevoluteGetMotorTorque())));
         return c;
     }
 }

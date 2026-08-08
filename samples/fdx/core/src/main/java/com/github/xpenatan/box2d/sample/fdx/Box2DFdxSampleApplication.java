@@ -122,6 +122,7 @@ public final class Box2DFdxSampleApplication extends ApplicationAdapter implemen
 
         try {
             controller.update(deltaSeconds);
+            syncSimulationControls();
             Box2DSample sample = controller.sample();
             if(sample != null) {
                 if(sample.tracksCameraX()) {
@@ -152,6 +153,7 @@ public final class Box2DFdxSampleApplication extends ApplicationAdapter implemen
     public void onSampleChanged(Box2DSampleEntry entry, Box2DSample sample) {
         if(drawRenderer == null) drawRenderer = new FdxSampleDrawRenderer(graphics);
         worldDragging = false;
+        subStepState.set(controller.settings().subStepCount());
         if(!preserveCameraOnSampleChange) configureCamera(entry.camera());
         rebuildControlBindings(sample.controls());
         activeSampleName.set(entry.displayName());
@@ -314,6 +316,11 @@ public final class Box2DFdxSampleApplication extends ApplicationAdapter implemen
         settings.setWarmStartingEnabled(warmStartingEnabledState.get());
         settings.setContinuousEnabled(continuousEnabledState.get());
         settings.setPaused(pausedState.get());
+    }
+
+    private void syncSimulationControls() {
+        int subStepCount = controller.settings().subStepCount();
+        if(Math.round(subStepState.get()) != subStepCount) subStepState.set(subStepCount);
     }
 
     private void rebuildControlBindings(List<Box2DSampleControl> controls) {

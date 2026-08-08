@@ -10,7 +10,8 @@ import java.util.List;
 public final class PixelImperfectSample extends AbstractBox2DSample {
     private final B2Body ball; private float px,vy;
     public PixelImperfectSample(){
-        float ppm=30; addStaticBox(175/ppm,150/ppm,20/ppm,10/ppm,0);
+        float ppm=30; B2Body block=createStaticBody(175/ppm,150/ppm,0);
+        addBoxShape(block,20/ppm,10/ppm,0,0,0,0);
         ball=createDynamicBody(200/ppm,275/ppm,0); ball.SetGravityScale(0); ball.SetFixedRotation(true);
         addRoundedBoxShape(ball,4/ppm,4/ppm,.9f/ppm,1,0,0,0); setLinearVelocity(ball,0,-5);
     }

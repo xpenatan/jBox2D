@@ -114,6 +114,14 @@ public final class B2 extends NativeObject {
         return 0;
     }
 
+    public static float Cos(float radians) {
+        return 0;
+    }
+
+    public static float Sin(float radians) {
+        return 0;
+    }
+
     public static void SetLengthUnitsPerMeter(float lengthUnits) {
     }
 

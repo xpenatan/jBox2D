@@ -54,7 +54,7 @@ public final class BenchmarkCastSample extends AbstractBox2DSample {
     private float drawFraction;
 
     public BenchmarkCastSample() {
-        super(1, 0.0f, 0.0f);
+        super();
         int sampleCount = BenchmarkSampleSupport.DEBUG_SIZE ? 100 : 10000;
         originsX = new float[sampleCount];
         originsY = new float[sampleCount];
@@ -76,7 +76,7 @@ public final class BenchmarkCastSample extends AbstractBox2DSample {
     }
 
     private void buildScene() {
-        for(B2Body body : bodies) BenchmarkSampleSupport.destroyAndDiscard(this, body);
+        recreateWorld();
         bodies.clear();
         setRandomSeed(1234);
         long start = System.nanoTime();
@@ -157,7 +157,7 @@ public final class BenchmarkCastSample extends AbstractBox2DSample {
             B2Vec2 translation = new B2Vec2(translationsX[i], translationsY[i]);
             proxy.AddPoint(origin);
             proxy.SetRadius(radius);
-            B2WorldCastResult result = world().CastShape(proxy, translation, filter);
+            B2WorldCastResult result = world().CastShapeClosest(proxy, translation, filter);
             nodeVisits += result.GetNodeVisits();
             leafVisits += result.GetLeafVisits();
             float closest = 1.0f;
@@ -172,7 +172,9 @@ public final class BenchmarkCastSample extends AbstractBox2DSample {
                     closest = candidate.GetFraction();
                     pointX = point.GetX();
                     pointY = point.GetY();
+                    release(point);
                 }
+                release(candidate);
             }
             if(hit) {
                 hitCount++;

@@ -398,6 +398,27 @@ public final class B2Body extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2body_setgravityscale")
     public static native void internal_native_SetGravityScale(long this_addr, float scale);
 
+    public float GetSleepThreshold() {
+        return internal_native_GetSleepThreshold(native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2body_getsleepthreshold")
+    public static native float internal_native_GetSleepThreshold(long this_addr);
+
+    public void SetSleepThreshold(float threshold) {
+        internal_native_SetSleepThreshold(native_address, threshold);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2body_setsleepthreshold")
+    public static native void internal_native_SetSleepThreshold(long this_addr, float threshold);
+
+    public boolean HasSupportingContact(float minimumNormalY, int capacity) {
+        return internal_native_HasSupportingContact(native_address, minimumNormalY, capacity);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2body_hassupportingcontact")
+    public static native boolean internal_native_HasSupportingContact(long this_addr, float minimumNormalY, int capacity);
+
     public boolean IsAwake() {
         return internal_native_IsAwake(native_address);
     }

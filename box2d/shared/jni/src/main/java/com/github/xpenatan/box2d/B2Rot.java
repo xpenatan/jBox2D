@@ -34,6 +34,15 @@ public final class B2Rot extends NativeObject {
         return com.github.xpenatan.box2d.natives.JNI_B2Rot.internal_native_create_float_addr(radians);
     }
 
+    public B2Rot(float cosine, float sine) {
+        long addr = internal_native_create_float_float_addr(cosine, sine);
+        internal_reset(addr, true);
+    }
+
+    public static long internal_native_create_float_float_addr(float cosine, float sine) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Rot.internal_native_create_float_float_addr(cosine, sine);
+    }
+
     /**
      * Dummy constructor, used internally to creates objects without C++ pointer
      */
@@ -94,6 +103,22 @@ public final class B2Rot extends NativeObject {
 
     public static void internal_native_SetIdentity(long this_addr) {
         com.github.xpenatan.box2d.natives.JNI_B2Rot.internal_native_SetIdentity(this_addr);
+    }
+
+    public void PreMultiply(B2Rot rotation) {
+        internal_native_PreMultiply(native_address, rotation.native_address);
+    }
+
+    public static void internal_native_PreMultiply(long this_addr, long rotation_addr) {
+        com.github.xpenatan.box2d.natives.JNI_B2Rot.internal_native_PreMultiply(this_addr, rotation_addr);
+    }
+
+    public float RelativeAngle(B2Rot other) {
+        return internal_native_RelativeAngle(native_address, other.native_address);
+    }
+
+    public static float internal_native_RelativeAngle(long this_addr, long other_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Rot.internal_native_RelativeAngle(this_addr, other_addr);
     }
 
     public B2Vec2 RotateVector(B2Vec2 vector) {

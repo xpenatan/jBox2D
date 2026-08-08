@@ -54,7 +54,8 @@ public final class BenchmarkRainSample extends AbstractBox2DSample {
         float x = -0.5f * span + groupDistance * (column + 0.5f);
         float y = 40.0f + 45.0f * row;
         for(int i = 0; i < groupSize; i++) {
-            groups[row][column][i] = new HumanRagdoll(this, x, y, 1.0f, 0.05f, 5.0f, 0.5f);
+            groups[row][column][i] = new HumanRagdoll(this, x, y, 1.0f, 0.05f, 5.0f, 0.5f,
+                    i + 1, false);
             x += 0.5f;
         }
     }

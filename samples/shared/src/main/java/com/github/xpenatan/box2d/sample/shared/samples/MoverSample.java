@@ -61,6 +61,8 @@ public final class MoverSample extends AbstractBox2DSample {
             "H 2.6458334 l -10e-8,47.625";
 
     private final B2Body elevator;
+    private B2Shape friendlyShape;
+    private B2Shape elevatorShape;
     private float moverX = 2.0f;
     private float moverY = 8.0f;
     private float velocityX;
@@ -162,7 +164,7 @@ public final class MoverSample extends AbstractBox2DSample {
         B2Vec2 centerOne = new B2Vec2(0.0f, -CAPSULE_HALF_LENGTH);
         B2Vec2 centerTwo = new B2Vec2(0.0f, CAPSULE_HALF_LENGTH);
         B2Capsule capsule = new B2Capsule(centerOne, centerTwo, CAPSULE_RADIUS);
-        createCapsuleShape(body, shapeDef, capsule);
+        friendlyShape = createCapsuleShape(body, shapeDef, capsule);
         release(capsule, centerTwo, centerOne, shapeDef);
     }
 
@@ -179,7 +181,7 @@ public final class MoverSample extends AbstractBox2DSample {
         B2Body body = createKinematicBody(ELEVATOR_X, ELEVATOR_Y - ELEVATOR_AMPLITUDE, 0.0f);
         B2ShapeDef shapeDef = filteredShapeDef(1.0f, 0.6f, 0.0f, 0.0f, DYNAMIC_BIT, ALL_BITS);
         B2Polygon box = B2Polygon.CreateBox(2.0f, 0.1f);
-        createPolygonShape(body, shapeDef, box);
+        elevatorShape = createPolygonShape(body, shapeDef, box);
         release(box, shapeDef);
         return body;
     }
@@ -197,7 +199,7 @@ public final class MoverSample extends AbstractBox2DSample {
 
     @Override
     protected void beforeStep(float deltaSeconds) {
-        float y = ELEVATOR_AMPLITUDE * (float)Math.cos(time + PI) + ELEVATOR_Y;
+        float y = ELEVATOR_AMPLITUDE * B2.Cos(time + PI) + ELEVATOR_Y;
         B2Vec2 position = new B2Vec2(ELEVATOR_X, y);
         B2Rot rotation = new B2Rot(0.0f);
         B2Transform target = new B2Transform(position, rotation);
@@ -264,7 +266,10 @@ public final class MoverSample extends AbstractBox2DSample {
         B2Vec2 velocity = new B2Vec2(velocityX, velocityY);
         B2QueryFilter collideFilter = queryFilter(MOVER_BIT, STATIC_BIT | DYNAMIC_BIT | MOVER_BIT);
         B2QueryFilter castFilter = queryFilter(MOVER_BIT, STATIC_BIT | DYNAMIC_BIT);
-        B2MoverResult result = world().SolveMover(mover, translation, velocity, collideFilter, castFilter, 5);
+        B2MoverResult result = world().SolveMoverWithSurfaceOverrides(
+                mover, translation, velocity, collideFilter, castFilter,
+                friendlyShape.GetId(), 0.025f, false,
+                elevatorShape.GetId(), 0.1f, true, 5);
 
         B2Vec2 actualTranslation = result.GetTranslation();
         B2Vec2 clippedVelocity = result.GetClippedVelocity();
@@ -314,7 +319,7 @@ public final class MoverSample extends AbstractBox2DSample {
         pogoDeltaY = pogoShape == POGO_CIRCLE ? -rayLength + 0.5f * CAPSULE_RADIUS : -rayLength;
         B2Vec2 castTranslation = new B2Vec2(pogoDeltaX, pogoDeltaY);
         B2QueryFilter filter = queryFilter(MOVER_BIT, STATIC_BIT | DYNAMIC_BIT);
-        B2WorldCastResult result = world().CastShape(proxy, castTranslation, filter);
+        B2WorldCastResult result = world().CastShapeClosest(proxy, castTranslation, filter);
         float fraction = 1.0f;
         long hitShapeId = 0L;
         float hitPointX = 0.0f;
@@ -329,7 +334,9 @@ public final class MoverSample extends AbstractBox2DSample {
                 hitPointX = point.GetX();
                 hitPointY = point.GetY();
                 pogoHit = true;
+                release(point);
             }
+            release(hit);
         }
 
         if(!onGround) onGround = pogoHit && velocityY <= 0.01f;

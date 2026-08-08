@@ -143,6 +143,13 @@ public final class B2World extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_enablecontinuous")
     public static native void internal_native_EnableContinuous(long this_addr, boolean enabled);
 
+    public void EnableSpeculative(boolean enabled) {
+        internal_native_EnableSpeculative(native_address, enabled);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_enablespeculative")
+    public static native void internal_native_EnableSpeculative(long this_addr, boolean enabled);
+
     public float GetRestitutionThreshold() {
         return internal_native_GetRestitutionThreshold(native_address);
     }
@@ -191,6 +198,27 @@ public final class B2World extends NativeObject {
 
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_setcontacttuning")
     public static native void internal_native_SetContactTuning(long this_addr, float hertz, float dampingRatio, float pushSpeed);
+
+    public void Explode(B2Vec2 position, float radius, float falloff, float impulsePerLength) {
+        internal_native_Explode(native_address, position.native_address, radius, falloff, impulsePerLength);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_explode")
+    public static native void internal_native_Explode(long this_addr, long position_addr, float radius, float falloff, float impulsePerLength);
+
+    public void EnableParityCustomFilter(boolean enabled) {
+        internal_native_EnableParityCustomFilter(native_address, enabled);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_enableparitycustomfilter")
+    public static native void internal_native_EnableParityCustomFilter(long this_addr, boolean enabled);
+
+    public void EnableOneSidedPlatform(long playerShapeId, float radius) {
+        internal_native_EnableOneSidedPlatform(native_address, playerShapeId, radius);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_enableonesidedplatform")
+    public static native void internal_native_EnableOneSidedPlatform(long this_addr, long playerShapeId, float radius);
 
     public void RebuildStaticTree() {
         internal_native_RebuildStaticTree(native_address);
@@ -387,6 +415,42 @@ public final class B2World extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_castshape_addr")
     public static native long internal_native_CastShape_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr);
 
+    public B2WorldCastResult CastRayMode(B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        long addr = internal_native_CastRayMode_addr(native_address, origin.native_address, translation.native_address, filter.native_address, mode, ignoredShapeId, maxHits);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_castraymode_addr")
+    public static native long internal_native_CastRayMode_addr(long this_addr, long origin_addr, long translation_addr, long filter_addr, int mode, long ignoredShapeId, int maxHits);
+
+    public B2WorldCastResult CastShapeMode(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        long addr = internal_native_CastShapeMode_addr(native_address, proxy.native_address, translation.native_address, filter.native_address, mode, ignoredShapeId, maxHits);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_castshapemode_addr")
+    public static native long internal_native_CastShapeMode_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr, int mode, long ignoredShapeId, int maxHits);
+
+    public B2WorldCastResult CastShapeClosest(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter) {
+        long addr = internal_native_CastShapeClosest_addr(native_address, proxy.native_address, translation.native_address, filter.native_address);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_castshapeclosest_addr")
+    public static native long internal_native_CastShapeClosest_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr);
+
     public B2WorldOverlapResult OverlapAABB(B2AABB aabb, B2QueryFilter filter) {
         long addr = internal_native_OverlapAABB_addr(native_address, aabb.native_address, filter.native_address);
         if (addr == 0)
@@ -429,4 +493,16 @@ public final class B2World extends NativeObject {
 
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_solvemover_addr")
     public static native long internal_native_SolveMover_addr(long this_addr, long mover_addr, long translation_addr, long velocity_addr, long collideFilter_addr, long castFilter_addr, int maxIterations);
+
+    public B2MoverResult SolveMoverWithSurfaceOverrides(B2Capsule mover, B2Vec2 translation, B2Vec2 velocity, B2QueryFilter collideFilter, B2QueryFilter castFilter, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations) {
+        long addr = internal_native_SolveMoverWithSurfaceOverrides_addr(native_address, mover.native_address, translation.native_address, velocity.native_address, collideFilter.native_address, castFilter.native_address, shapeIdA, maxPushA, clipVelocityA, shapeIdB, maxPushB, clipVelocityB, maxIterations);
+        if (addr == 0)
+            return B2MoverResult.NULL;
+        B2MoverResult B2MoverResult_NEW = B2MoverResult.native_new();
+        B2MoverResult_NEW.internal_reset(addr, true);
+        return B2MoverResult_NEW;
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2world_solvemoverwithsurfaceoverrides_addr")
+    public static native long internal_native_SolveMoverWithSurfaceOverrides_addr(long this_addr, long mover_addr, long translation_addr, long velocity_addr, long collideFilter_addr, long castFilter_addr, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations);
 }

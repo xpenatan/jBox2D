@@ -605,6 +605,42 @@ public final class B2Body extends NativeObject {
         }
     }
 
+    public float GetSleepThreshold() {
+        return internal_native_GetSleepThreshold(native_address);
+    }
+
+    public static float internal_native_GetSleepThreshold(long this_addr) {
+        try {
+            return (float) FFMHandles.internal_native_GetSleepThreshold__J.invokeExact(this_addr);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public void SetSleepThreshold(float threshold) {
+        internal_native_SetSleepThreshold(native_address, threshold);
+    }
+
+    public static void internal_native_SetSleepThreshold(long this_addr, float threshold) {
+        try {
+            FFMHandles.internal_native_SetSleepThreshold__JF.invokeExact(this_addr, threshold);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public boolean HasSupportingContact(float minimumNormalY, int capacity) {
+        return internal_native_HasSupportingContact(native_address, minimumNormalY, capacity);
+    }
+
+    public static boolean internal_native_HasSupportingContact(long this_addr, float minimumNormalY, int capacity) {
+        try {
+            return (boolean) FFMHandles.internal_native_HasSupportingContact__JFI.invokeExact(this_addr, minimumNormalY, capacity);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     public boolean IsAwake() {
         return internal_native_IsAwake(native_address);
     }
@@ -979,6 +1015,12 @@ public final class B2Body extends NativeObject {
         static final java.lang.invoke.MethodHandle internal_native_GetGravityScale__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2body_getgravityscale", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_SetGravityScale__JF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2body_setgravityscale", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
+
+        static final java.lang.invoke.MethodHandle internal_native_GetSleepThreshold__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2body_getsleepthreshold", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG));
+
+        static final java.lang.invoke.MethodHandle internal_native_SetSleepThreshold__JF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2body_setsleepthreshold", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
+
+        static final java.lang.invoke.MethodHandle internal_native_HasSupportingContact__JFI = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2body_hassupportingcontact", FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN, ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_INT));
 
         static final java.lang.invoke.MethodHandle internal_native_IsAwake__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2body_isawake", FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN, ValueLayout.JAVA_LONG));
 

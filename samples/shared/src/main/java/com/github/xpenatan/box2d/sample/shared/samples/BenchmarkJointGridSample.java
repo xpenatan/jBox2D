@@ -11,7 +11,7 @@ import com.github.xpenatan.box2d.B2Vec2;
 /** Java port of Box2D 3.1.1's Benchmark / Joint Grid sample. */
 public final class BenchmarkJointGridSample extends AbstractBox2DSample {
     public BenchmarkJointGridSample() {
-        world().EnableSleeping(false);
+        setInitialSleepEnabled(false);
         int size = BenchmarkSampleSupport.DEBUG_SIZE ? 10 : 100;
         B2Body[] bodies = new B2Body[size * size];
         B2ShapeDef shapeDef = BenchmarkSampleSupport.filteredShapeDef(this, 1.0f, 0.6f,

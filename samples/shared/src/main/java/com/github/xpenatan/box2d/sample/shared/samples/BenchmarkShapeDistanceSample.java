@@ -5,6 +5,7 @@ import com.github.xpenatan.box2d.B2DistanceInput;
 import com.github.xpenatan.box2d.B2DistanceOutput;
 import com.github.xpenatan.box2d.B2ShapeProxy;
 import com.github.xpenatan.box2d.B2SimplexCache;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Transform;
 import com.github.xpenatan.box2d.B2Vec2;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
@@ -36,13 +37,16 @@ public final class BenchmarkShapeDistanceSample extends AbstractBox2DSample {
 
     public BenchmarkShapeDistanceSample() {
         super(1, 0.0f, 0.0f);
+        B2Rot rotation = new B2Rot(2.0f * PI / 8.0f);
+        B2Vec2 point = new B2Vec2(0.5f, 0.0f);
         for(int i = 0; i < 8; i++) {
-            float angle = 2.0f * PI * i / 8.0f;
-            B2Vec2 point = new B2Vec2(0.5f * (float)Math.cos(angle), 0.5f * (float)Math.sin(angle));
             proxyA.AddPoint(point);
             proxyB.AddPoint(point);
+            B2Vec2 next = rotation.RotateVector(point);
             release(point);
+            point = next;
         }
+        release(point, rotation);
         proxyB.SetRadius(0.1f);
         ax = new float[count];
         ay = new float[count];

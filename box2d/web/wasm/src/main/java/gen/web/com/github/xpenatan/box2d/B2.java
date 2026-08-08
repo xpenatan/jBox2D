@@ -187,6 +187,20 @@ public final class B2 extends NativeObject {
     @org.teavm.jso.JSBody(script = "var returnedJSObj = box2d.B2.prototype.VersionRevision();return returnedJSObj;")
     public static native int internal_native_VersionRevision();
 
+    public static float Cos(float radians) {
+        return internal_native_Cos(radians);
+    }
+
+    @org.teavm.jso.JSBody(params = {"radians"}, script = "var returnedJSObj = box2d.B2.prototype.Cos(radians);return returnedJSObj;")
+    public static native float internal_native_Cos(float radians);
+
+    public static float Sin(float radians) {
+        return internal_native_Sin(radians);
+    }
+
+    @org.teavm.jso.JSBody(params = {"radians"}, script = "var returnedJSObj = box2d.B2.prototype.Sin(radians);return returnedJSObj;")
+    public static native float internal_native_Sin(float radians);
+
     public static void SetLengthUnitsPerMeter(float lengthUnits) {
         internal_native_SetLengthUnitsPerMeter(lengthUnits);
     }

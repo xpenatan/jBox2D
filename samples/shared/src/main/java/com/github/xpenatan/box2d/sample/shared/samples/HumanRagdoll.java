@@ -3,9 +3,13 @@ package com.github.xpenatan.box2d.sample.shared.samples;
 import com.github.xpenatan.box2d.B2;
 import com.github.xpenatan.box2d.B2Body;
 import com.github.xpenatan.box2d.B2BodyDef;
+import com.github.xpenatan.box2d.B2Capsule;
 import com.github.xpenatan.box2d.B2Filter;
+import com.github.xpenatan.box2d.B2Hull;
 import com.github.xpenatan.box2d.B2Joint;
+import com.github.xpenatan.box2d.B2Polygon;
 import com.github.xpenatan.box2d.B2RevoluteJointDef;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Shape;
 import com.github.xpenatan.box2d.B2ShapeDef;
 import com.github.xpenatan.box2d.B2Vec2;
@@ -35,38 +39,66 @@ final class HumanRagdoll {
     private final List<B2Joint> joints = new ArrayList<B2Joint>();
     private float originX;
     private float originY;
+    private float originalScale;
     private float scale;
     private float frictionTorque;
     private float hertz;
     private float dampingRatio;
+    private int groupIndex;
+    private boolean colorize;
 
     HumanRagdoll(AbstractBox2DSample sample, float x, float y, float scale, float frictionTorque, float hertz,
             float dampingRatio) {
-        this.sample = sample;
-        spawn(x, y, scale, frictionTorque, hertz, dampingRatio);
+        this(sample, x, y, scale, frictionTorque, hertz, dampingRatio, 1, false);
     }
 
-    void spawn(float x, float y, float scale, float frictionTorque, float hertz, float dampingRatio) {
-        this.originX = x; this.originY = y; this.scale = scale;
-        this.frictionTorque = frictionTorque; this.hertz = hertz; this.dampingRatio = dampingRatio;
+    HumanRagdoll(AbstractBox2DSample sample, float x, float y, float scale, float frictionTorque, float hertz,
+            float dampingRatio, int groupIndex, boolean colorize) {
+        this.sample = sample;
+        spawn(x, y, scale, frictionTorque, hertz, dampingRatio, groupIndex, colorize);
+    }
+
+    private void spawn(float x, float y, float scale, float frictionTorque, float hertz, float dampingRatio,
+            int groupIndex, boolean colorize) {
+        this.originX = x;
+        this.originY = y;
+        this.originalScale = scale;
+        this.scale = scale;
+        this.frictionTorque = frictionTorque;
+        this.hertz = hertz;
+        this.dampingRatio = dampingRatio;
+        this.groupIndex = groupIndex;
+        this.colorize = colorize;
+
         B2ShapeDef shapeDef = sample.shapeDef(1.0f, 0.2f, 0.0f, 0.0f);
         B2Filter filter = new B2Filter();
-        filter.SetGroupIndex(-1); filter.SetCategoryBits(2); filter.SetMaskBits(3); shapeDef.SetFilter(filter);
+        filter.SetGroupIndex(-groupIndex);
+        filter.SetCategoryBits(2);
+        filter.SetMaskBits(3);
+        shapeDef.SetFilter(filter);
+
+        B2ShapeDef footShapeDef = sample.shapeDef(1.0f, 0.05f, 0.0f, 0.0f);
+        B2Filter footFilter = new B2Filter();
+        footFilter.SetGroupIndex(-groupIndex);
+        footFilter.SetCategoryBits(2);
+        footFilter.SetMaskBits(1);
+        footShapeDef.SetFilter(footFilter);
+
         for(int i = 0; i < 11; i++) {
             B2BodyDef bodyDef = new B2BodyDef();
             B2Vec2 position = new B2Vec2(x, y + BODY_Y[i] * scale);
             bodyDef.SetType(B2.DynamicBody()); bodyDef.SetPosition(position); bodyDef.SetSleepThreshold(0.1f);
             bodyDef.SetLinearDamping(i == HEAD || i == LOWER_LEFT_ARM || i == LOWER_RIGHT_ARM ? 0.1f : 0.0f);
             B2Body body = sample.createBody(bodyDef);
-            createBoneShape(body, i, scale, shapeDef);
+            createBoneShape(body, i, scale, shapeDef, footShapeDef);
             bodies.add(body);
             AbstractBox2DSample.release(position, bodyDef);
         }
         for(int i = 1; i < 11; i++) joints.add(createJoint(i));
-        AbstractBox2DSample.release(filter, shapeDef);
+        AbstractBox2DSample.release(footFilter, footShapeDef, filter, shapeDef);
     }
 
-    private void createBoneShape(B2Body body, int index, float s, B2ShapeDef def) {
+    private void createBoneShape(B2Body body, int index, float s, B2ShapeDef def, B2ShapeDef footDef) {
         float y1, y2, radius;
         switch(index) {
             case HIP: y1 = -.02f; y2 = .02f; radius = .095f; break;
@@ -78,12 +110,22 @@ final class HumanRagdoll {
             default: y1 = -.125f; y2 = .125f; radius = .03f; break;
         }
         B2Vec2 center1 = new B2Vec2(0, y1 * s), center2 = new B2Vec2(0, y2 * s);
-        com.github.xpenatan.box2d.B2Capsule capsule = new com.github.xpenatan.box2d.B2Capsule(center1, center2, radius * s);
+        B2Capsule capsule = new B2Capsule(center1, center2, radius * s);
         shapes.add(sample.createCapsuleShape(body, def, capsule));
         AbstractBox2DSample.release(capsule, center2, center1);
         if(index == LOWER_LEFT_LEG || index == LOWER_RIGHT_LEG) {
-            shapes.add(sample.addPolygonShape(body, new float[] {-.03f * s, -.185f * s, .11f * s, -.185f * s,
-                    .11f * s, -.16f * s, -.03f * s, -.14f * s}, .015f * s, 1.0f, .05f, 0, 0));
+            B2Hull hull = new B2Hull();
+            float[] points = {-.03f * s, -.185f * s, .11f * s, -.185f * s,
+                    .11f * s, -.16f * s, -.03f * s, -.14f * s};
+            for(int i = 0; i < points.length; i += 2) {
+                B2Vec2 point = new B2Vec2(points[i], points[i + 1]);
+                hull.AddPoint(point);
+                AbstractBox2DSample.release(point);
+            }
+            hull.Compute();
+            B2Polygon polygon = B2Polygon.CreateFromHull(hull, .015f * s);
+            shapes.add(sample.createPolygonShape(body, footDef, polygon));
+            AbstractBox2DSample.release(polygon, hull);
         }
     }
 
@@ -115,8 +157,51 @@ final class HumanRagdoll {
         joints.clear(); shapes.clear(); bodies.clear();
     }
 
-    void respawn() { destroy(); spawn(originX, originY, scale, frictionTorque, hertz, dampingRatio); }
-    void setScale(float value) { destroy(); spawn(originX, originY, value, frictionTorque, hertz, dampingRatio); }
+    void respawn() {
+        float currentScale = scale;
+        destroy();
+        spawn(originX, originY, currentScale, frictionTorque, hertz, dampingRatio, groupIndex, colorize);
+    }
+
+    void setScale(float value) {
+        float ratio = value / scale;
+        float originalRatio = value / originalScale;
+        float scaledFrictionTorque = originalRatio * originalRatio * originalRatio * frictionTorque;
+        B2Vec2 origin = bodies.get(HIP).GetPosition();
+
+        for(int boneIndex = 0; boneIndex < bodies.size(); boneIndex++) {
+            B2Body body = bodies.get(boneIndex);
+            if(boneIndex > 0) {
+                B2Vec2 position = body.GetPosition();
+                B2Vec2 scaledPosition = new B2Vec2(
+                        origin.GetX() + ratio * (position.GetX() - origin.GetX()),
+                        origin.GetY() + ratio * (position.GetY() - origin.GetY()));
+                B2Rot rotation = body.GetRotation();
+                body.SetTransform(scaledPosition, rotation);
+
+                B2Joint joint = joints.get(boneIndex - 1);
+                B2Vec2 anchorA = joint.GetLocalAnchorA();
+                B2Vec2 anchorB = joint.GetLocalAnchorB();
+                anchorA.Set(anchorA.GetX() * ratio, anchorA.GetY() * ratio);
+                anchorB.Set(anchorB.GetX() * ratio, anchorB.GetY() * ratio);
+                joint.SetLocalAnchorA(anchorA);
+                joint.SetLocalAnchorB(anchorB);
+                joint.RevoluteSetMaxMotorTorque(FRICTION_SCALE[boneIndex] * scaledFrictionTorque);
+                AbstractBox2DSample.release(anchorB, anchorA, rotation, scaledPosition, position);
+            }
+
+            int shapeCount = body.GetShapeCount();
+            for(int shapeIndex = 0; shapeIndex < shapeCount; shapeIndex++) {
+                B2Shape shape = body.GetShape(shapeIndex);
+                shape.Scale(ratio);
+                AbstractBox2DSample.release(shape);
+            }
+            body.ApplyMassFromShapes();
+        }
+
+        scale = value;
+        AbstractBox2DSample.release(origin);
+    }
     void setFrictionTorque(float value) {
         frictionTorque = value;
         for(int i = 0; i < joints.size(); i++) {
@@ -131,4 +216,21 @@ final class HumanRagdoll {
     }
     void setDampingRatio(float value) { dampingRatio = value; for(B2Joint joint : joints) joint.RevoluteSetSpringDampingRatio(value); }
     void applyAngularImpulse(float magnitude) { bodies.get(TORSO).ApplyAngularImpulse(magnitude, true); }
+    void applyRandomAngularImpulse(float magnitude) {
+        bodies.get(TORSO).ApplyAngularImpulse(sample.randomFloat(-magnitude, magnitude), true);
+    }
+    void setVelocity(float x, float y) {
+        for(B2Body body : bodies) sample.setLinearVelocity(body, x, y);
+    }
+    void enableSensorEvents(boolean enabled) {
+        B2Shape torsoShape = bodies.get(TORSO).GetShape(0);
+        torsoShape.EnableSensorEvents(enabled);
+        AbstractBox2DSample.release(torsoShape);
+    }
+    long sensorShapeId() {
+        B2Shape torsoShape = bodies.get(TORSO).GetShape(0);
+        long id = torsoShape.GetId();
+        AbstractBox2DSample.release(torsoShape);
+        return id;
+    }
 }

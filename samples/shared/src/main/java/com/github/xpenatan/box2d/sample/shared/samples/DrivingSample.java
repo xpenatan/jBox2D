@@ -17,6 +17,10 @@ public final class DrivingSample extends AbstractBox2DSample {
     private float torque = 5.0f;
     private float speed = 35.0f;
     private float kph;
+    private float cameraX;
+    private boolean driveLeft;
+    private boolean brake;
+    private boolean driveRight;
 
     public DrivingSample() {
         B2Body ground = createStaticBody(0, 0, 0);
@@ -67,23 +71,30 @@ public final class DrivingSample extends AbstractBox2DSample {
         release(lb, la, pivot); return def;
     }
 
-    @Override protected void afterStep(float deltaSeconds) {
+    @Override protected void beforeStep(float deltaSeconds) {
+        if(driveLeft) { throttle = 1.0f; car.setSpeed(speed); }
+        if(brake) { throttle = 0.0f; car.setSpeed(0.0f); }
+        if(driveRight) { throttle = -1.0f; car.setSpeed(-speed); }
         B2Vec2 velocity = car.chassis.GetLinearVelocity(); kph = velocity.GetX() * 3.6f; release(velocity);
+        B2Vec2 position = car.chassis.GetPosition(); cameraX = position.GetX(); release(position);
     }
 
     @Override public boolean tracksCameraX() { return true; }
 
     @Override public float cameraCenterX() {
-        B2Vec2 position = car.chassis.GetPosition();
-        float x = position.GetX();
-        release(position);
-        return x;
+        return cameraX;
     }
 
     @Override public void keyDown(int key) {
-        if(key == 'A') { throttle = 1; car.setSpeed(speed); }
-        else if(key == 'S') { throttle = 0; car.setSpeed(0); }
-        else if(key == 'D') { throttle = -1; car.setSpeed(-speed); }
+        if(key == 'A') driveLeft = true;
+        else if(key == 'S') brake = true;
+        else if(key == 'D') driveRight = true;
+    }
+
+    @Override public void keyUp(int key) {
+        if(key == 'A') driveLeft = false;
+        else if(key == 'S') brake = false;
+        else if(key == 'D') driveRight = false;
     }
 
     @Override public List<Box2DSampleControl> controls() {

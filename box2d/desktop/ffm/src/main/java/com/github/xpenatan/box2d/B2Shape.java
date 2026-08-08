@@ -538,6 +538,35 @@ public final class B2Shape extends NativeObject {
         }
     }
 
+    public void Scale(float ratio) {
+        internal_native_Scale(native_address, ratio);
+    }
+
+    public static void internal_native_Scale(long this_addr, float ratio) {
+        try {
+            FFMHandles.internal_native_Scale__JF.invokeExact(this_addr, ratio);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public B2WorldOverlapResult GetSensorOverlaps() {
+        long addr = internal_native_GetSensorOverlaps_addr(native_address);
+        if (addr == 0)
+            return B2WorldOverlapResult.NULL;
+        B2WorldOverlapResult B2WorldOverlapResult_NEW = B2WorldOverlapResult.native_new();
+        B2WorldOverlapResult_NEW.internal_reset(addr, true);
+        return B2WorldOverlapResult_NEW;
+    }
+
+    public static long internal_native_GetSensorOverlaps_addr(long this_addr) {
+        try {
+            return (long) FFMHandles.internal_native_GetSensorOverlaps_addr__J.invokeExact(this_addr);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     public B2AABB GetAABB() {
         long addr = internal_native_GetAABB_addr(native_address);
         if (addr == 0)
@@ -667,6 +696,10 @@ public final class B2Shape extends NativeObject {
         static final java.lang.invoke.MethodHandle internal_native_GetPolygon_addr__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2shape_getpolygon_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_SetPolygon__JJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2shape_setpolygon", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
+
+        static final java.lang.invoke.MethodHandle internal_native_Scale__JF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2shape_scale", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
+
+        static final java.lang.invoke.MethodHandle internal_native_GetSensorOverlaps_addr__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2shape_getsensoroverlaps_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_GetAABB_addr__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2shape_getaabb_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 

@@ -36,6 +36,7 @@ public:
 
     B2Rot();
     explicit B2Rot(float radians);
+    B2Rot(float cosine, float sine);
     explicit B2Rot(b2Rot value);
 
     float GetCosine() const;
@@ -43,6 +44,8 @@ public:
     float GetAngle() const;
     void Set(float radians);
     void SetIdentity();
+    void PreMultiply(const B2Rot& rotation);
+    float RelativeAngle(const B2Rot& other) const;
     B2Vec2 RotateVector(const B2Vec2& vector) const;
     B2Vec2 InverseRotateVector(const B2Vec2& vector) const;
 };
@@ -1087,6 +1090,9 @@ public:
     void SetAngularDamping(float damping);
     float GetGravityScale() const;
     void SetGravityScale(float scale);
+    float GetSleepThreshold() const;
+    void SetSleepThreshold(float threshold);
+    bool HasSupportingContact(float minimumNormalY, int capacity) const;
     bool IsAwake() const;
     void SetAwake(bool awake);
     bool IsSleepEnabled() const;
@@ -1152,6 +1158,8 @@ public:
     void SetSegment(const B2Segment& segment);
     B2Polygon* GetPolygon() const;
     void SetPolygon(const B2Polygon& polygon);
+    void Scale(float ratio);
+    B2WorldOverlapResult* GetSensorOverlaps() const;
     B2AABB GetAABB() const;
     B2MassData GetMassData() const;
     B2Vec2 GetClosestPoint(const B2Vec2& target) const;
@@ -1192,6 +1200,9 @@ public:
     void SetLocalAnchorA(const B2Vec2& anchor);
     B2Vec2 GetLocalAnchorB() const;
     void SetLocalAnchorB(const B2Vec2& anchor);
+    float GetReferenceAngle() const;
+    void SetReferenceAngle(float angle);
+    void SetConstraintTuning(float hertz, float dampingRatio);
     bool GetCollideConnected() const;
     void SetCollideConnected(bool collide);
     void WakeBodies();
@@ -1227,7 +1238,9 @@ public:
     void PrismaticEnableMotor(bool enabled);
     void PrismaticSetMotorSpeed(float speed);
     void PrismaticSetMaxMotorForce(float force);
+    float PrismaticGetMotorForce() const;
     float PrismaticGetTranslation() const;
+    float PrismaticGetSpeed() const;
     void RevoluteEnableSpring(bool enabled);
     void RevoluteSetSpringHertz(float hertz);
     void RevoluteSetSpringDampingRatio(float ratio);
@@ -1237,7 +1250,12 @@ public:
     void RevoluteEnableMotor(bool enabled);
     void RevoluteSetMotorSpeed(float speed);
     void RevoluteSetMaxMotorTorque(float torque);
+    float RevoluteGetMotorTorque() const;
     float RevoluteGetAngle() const;
+    void WeldSetLinearHertz(float hertz);
+    void WeldSetLinearDampingRatio(float ratio);
+    void WeldSetAngularHertz(float hertz);
+    void WeldSetAngularDampingRatio(float ratio);
     void WheelEnableSpring(bool enabled);
     void WheelSetSpringHertz(float hertz);
     void WheelSetSpringDampingRatio(float ratio);
@@ -1246,6 +1264,7 @@ public:
     void WheelEnableMotor(bool enabled);
     void WheelSetMotorSpeed(float speed);
     void WheelSetMaxMotorTorque(float torque);
+    float WheelGetMotorTorque() const;
     b2JointId GetHandle() const;
 private:
     b2JointId m_jointId;
@@ -1315,6 +1334,7 @@ public:
     void EnableWarmStarting(bool enabled);
     bool IsContinuousEnabled() const;
     void EnableContinuous(bool enabled);
+    void EnableSpeculative(bool enabled);
     float GetRestitutionThreshold() const;
     void SetRestitutionThreshold(float threshold);
     float GetHitEventThreshold() const;
@@ -1322,6 +1342,9 @@ public:
     float GetMaximumLinearSpeed() const;
     void SetMaximumLinearSpeed(float speed);
     void SetContactTuning(float hertz, float dampingRatio, float pushSpeed);
+    void Explode(const B2Vec2& position, float radius, float falloff, float impulsePerLength);
+    void EnableParityCustomFilter(bool enabled);
+    void EnableOneSidedPlatform(long long playerShapeId, float radius);
     void RebuildStaticTree();
     int GetAwakeBodyCount() const;
     B2Body* CreateBody(const B2BodyDef& def);
@@ -1341,16 +1364,34 @@ public:
                                const B2QueryFilter& filter) const;
     B2WorldCastResult* CastShape(const B2ShapeProxy& proxy, const B2Vec2& translation,
                                  const B2QueryFilter& filter) const;
+    B2WorldCastResult* CastRayMode(const B2Vec2& origin, const B2Vec2& translation,
+                                  const B2QueryFilter& filter, int mode, long long ignoredShapeId,
+                                  int maxHits) const;
+    B2WorldCastResult* CastShapeMode(const B2ShapeProxy& proxy, const B2Vec2& translation,
+                                    const B2QueryFilter& filter, int mode, long long ignoredShapeId,
+                                    int maxHits) const;
+    B2WorldCastResult* CastShapeClosest(const B2ShapeProxy& proxy, const B2Vec2& translation,
+                                       const B2QueryFilter& filter) const;
     B2WorldOverlapResult* OverlapAABB(const B2AABB& aabb, const B2QueryFilter& filter) const;
     B2WorldOverlapResult* OverlapShape(const B2ShapeProxy& proxy, const B2QueryFilter& filter) const;
     float CastMover(const B2Capsule& mover, const B2Vec2& translation, const B2QueryFilter& filter) const;
     B2MoverResult* SolveMover(const B2Capsule& mover, const B2Vec2& translation, const B2Vec2& velocity,
                              const B2QueryFilter& collideFilter, const B2QueryFilter& castFilter,
                              int maxIterations) const;
+    B2MoverResult* SolveMoverWithSurfaceOverrides(
+        const B2Capsule& mover, const B2Vec2& translation, const B2Vec2& velocity,
+        const B2QueryFilter& collideFilter, const B2QueryFilter& castFilter,
+        long long shapeIdA, float maxPushA, bool clipVelocityA,
+        long long shapeIdB, float maxPushB, bool clipVelocityB, int maxIterations) const;
     b2WorldId GetHandle() const;
 private:
+    static bool ParityCustomFilterCallback(b2ShapeId shapeIdA, b2ShapeId shapeIdB, void* context);
+    static bool OneSidedPlatformCallback(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold,
+                                         void* context);
     b2WorldId m_worldId;
     bool m_destroyed;
+    b2ShapeId m_oneSidedPlayerShapeId;
+    float m_oneSidedRadius;
 };
 
 class B2 {
@@ -1377,6 +1418,8 @@ public:
     static int VersionMajor();
     static int VersionMinor();
     static int VersionRevision();
+    static float Cos(float radians);
+    static float Sin(float radians);
     static void SetLengthUnitsPerMeter(float lengthUnits);
     static float GetLengthUnitsPerMeter();
 };

@@ -36,6 +36,12 @@ final public class JNI_B2Joint {
 
     public static native void internal_native_SetLocalAnchorB(long this_addr, long anchor_addr);
 
+    public static native float internal_native_GetReferenceAngle(long this_addr);
+
+    public static native void internal_native_SetReferenceAngle(long this_addr, float angle);
+
+    public static native void internal_native_SetConstraintTuning(long this_addr, float hertz, float dampingRatio);
+
     public static native boolean internal_native_GetCollideConnected(long this_addr);
 
     public static native void internal_native_SetCollideConnected(long this_addr, boolean collide);
@@ -106,7 +112,11 @@ final public class JNI_B2Joint {
 
     public static native void internal_native_PrismaticSetMaxMotorForce(long this_addr, float force);
 
+    public static native float internal_native_PrismaticGetMotorForce(long this_addr);
+
     public static native float internal_native_PrismaticGetTranslation(long this_addr);
+
+    public static native float internal_native_PrismaticGetSpeed(long this_addr);
 
     public static native void internal_native_RevoluteEnableSpring(long this_addr, boolean enabled);
 
@@ -126,7 +136,17 @@ final public class JNI_B2Joint {
 
     public static native void internal_native_RevoluteSetMaxMotorTorque(long this_addr, float torque);
 
+    public static native float internal_native_RevoluteGetMotorTorque(long this_addr);
+
     public static native float internal_native_RevoluteGetAngle(long this_addr);
+
+    public static native void internal_native_WeldSetLinearHertz(long this_addr, float hertz);
+
+    public static native void internal_native_WeldSetLinearDampingRatio(long this_addr, float ratio);
+
+    public static native void internal_native_WeldSetAngularHertz(long this_addr, float hertz);
+
+    public static native void internal_native_WeldSetAngularDampingRatio(long this_addr, float ratio);
 
     public static native void internal_native_WheelEnableSpring(long this_addr, boolean enabled);
 
@@ -143,4 +163,6 @@ final public class JNI_B2Joint {
     public static native void internal_native_WheelSetMotorSpeed(long this_addr, float speed);
 
     public static native void internal_native_WheelSetMaxMotorTorque(long this_addr, float torque);
+
+    public static native float internal_native_WheelGetMotorTorque(long this_addr);
 }

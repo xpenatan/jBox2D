@@ -1,6 +1,7 @@
 package com.github.xpenatan.box2d.sample.shared.samples;
 
 import com.github.xpenatan.box2d.B2Body;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Shape;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleDraw;
 import java.util.ArrayList;
@@ -29,10 +30,16 @@ public final class BounceHumansSample extends AbstractBox2DSample {
             humans.add(new HumanRagdoll(this, 0, 5, 1, 0, 1, .1f));
             countdown = 2;
         }
-        gravityX = 10 * (float)Math.sin(.5f * time);
-        gravityY = 10 * (float)Math.cos(time);
+        B2Rot halfTimeRotation = new B2Rot(0.5f * time);
+        B2Rot timeRotation = new B2Rot(time);
+        gravityX = 10.0f * halfTimeRotation.GetSine();
+        gravityY = 10.0f * timeRotation.GetCosine();
+        release(timeRotation, halfTimeRotation);
         setGravity(gravityX, gravityY);
-        time += deltaSeconds; countdown -= deltaSeconds;
+        // The upstream stress test intentionally advances its animation at a
+        // fixed 60 Hz, independently of the testbed's selected simulation rate.
+        time += 1.0f / 60.0f;
+        countdown -= 1.0f / 60.0f;
     }
 
     @Override public void draw(Box2DSampleDraw draw) {

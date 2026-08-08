@@ -11,7 +11,6 @@ val nativePaths = listOf(
 base { archivesName.set(moduleName) }
 
 tasks.named<Jar>("jar") {
-    dependsOn(":box2d:builder:jParser_build_web_wasm")
     from(provider { nativePaths.map(::file).filter { it.exists() } })
 }
 

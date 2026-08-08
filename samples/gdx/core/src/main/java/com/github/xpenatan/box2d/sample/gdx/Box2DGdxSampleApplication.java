@@ -75,6 +75,7 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
     private Label titleLabel;
     private Label statsLabel;
     private TextButton pauseButton;
+    private Slider subStepSlider;
     private boolean controlsUpdating;
     private int highlightedSampleIndex = -1;
     private int controlsSignature = Integer.MIN_VALUE;
@@ -110,6 +111,7 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
                 Box2DSampleCamera camera = entry.camera();
                 setCamera(camera.centerX, camera.centerY, camera.zoom);
                 if(titleLabel == null) buildApplicationUi();
+                syncSimulationControls();
                 refreshDynamicControls(true);
                 updateHeader();
             }
@@ -232,7 +234,7 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
                 settings.setHertz(value);
             }
         });
-        addSlider(table, "Sub-steps", Box2DSampleSettings.MIN_SUB_STEPS, 16f, 1f,
+        subStepSlider = addSlider(table, "Sub-steps", Box2DSampleSettings.MIN_SUB_STEPS, 16f, 1f,
                 settings.subStepCount(), new FloatSetter() {
             @Override
             public void set(float value) {
@@ -285,7 +287,7 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
         table.add(controlsTable).growX().pad(0f, 7f, 14f, 7f).row();
     }
 
-    private void addSlider(Table parent, String name, float minimum, float maximum, float step,
+    private Slider addSlider(Table parent, String name, float minimum, float maximum, float step,
                            float value, final FloatSetter setter) {
         final Label valueLabel = new Label(formatValue(value, step), skin, "small");
         Table labelRow = new Table(skin);
@@ -302,6 +304,7 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
             }
         });
         parent.add(slider).height(22f).growX().padBottom(3f).row();
+        return slider;
     }
 
     private void addCheckBox(Table parent, String text, boolean checked, final BooleanSetter setter) {
@@ -514,6 +517,7 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
         if(controller != null) {
             try {
                 controller.update(Gdx.graphics.getDeltaTime());
+                syncSimulationControls();
                 if(currentSample != null) {
                     if(currentSample.tracksCameraX()) {
                         cameraCenterX = currentSample.cameraCenterX();
@@ -558,6 +562,14 @@ public final class Box2DGdxSampleApplication extends ApplicationAdapter {
         pauseButton.setText(controller.settings().paused() ? "Resume" : "Pause");
         if(highlightedSampleIndex < 0) highlightedSampleIndex = selected;
         updateSampleButtonSelection();
+    }
+
+    private void syncSimulationControls() {
+        if(controller == null || subStepSlider == null) return;
+        int subStepCount = controller.settings().subStepCount();
+        if(Math.round(subStepSlider.getValue()) != subStepCount) {
+            subStepSlider.setValue(subStepCount);
+        }
     }
 
     private void syncCamera() {

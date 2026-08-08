@@ -41,7 +41,7 @@ public final class BenchmarkSleepSample extends AbstractBox2DSample {
     }
 
     @Override
-    protected void afterStep(float deltaSeconds) {
+    protected void beforeStep(float deltaSeconds) {
         if(bodies.isEmpty()) return;
         for(int i = 0; i < iterations; i++) {
             long start = System.nanoTime();

@@ -1,6 +1,7 @@
 package com.github.xpenatan.box2d.sample.shared.samples;
 
 import com.github.xpenatan.box2d.B2Body;
+import com.github.xpenatan.box2d.B2Joint;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ public final class CartSample extends AbstractBox2DSample {
     private B2Body chassis;
     private B2Body wheel1;
     private B2Body wheel2;
+    private B2Joint joint1;
+    private B2Joint joint2;
     private float contactHertz = 30.0f;
     private float contactDampingRatio = 10.0f;
     private float contactSpeed = 3.0f;
@@ -33,8 +36,10 @@ public final class CartSample extends AbstractBox2DSample {
                 100.0f, 0.6f, 0.0f, 0.0f);
         wheel1 = addDynamicCircle(-0.4f, y - 0.15f, 0.1f, 10.0f, 0.6f, 0.0f, 0.02f);
         wheel2 = addDynamicCircle(0.4f, y - 0.15f, 0.1f, 10.0f, 0.6f, 0.0f, 0.02f);
-        addRevoluteJoint(chassis, wheel1, -0.4f, y - 0.15f, false);
-        addRevoluteJoint(chassis, wheel2, 0.4f, y - 0.15f, false);
+        joint1 = addRevoluteJoint(chassis, wheel1, -0.4f, y - 0.15f, false);
+        joint1.SetConstraintTuning(jointHertz, jointDampingRatio);
+        joint2 = addRevoluteJoint(chassis, wheel2, 0.4f, y - 0.15f, false);
+        joint2.SetConstraintTuning(jointHertz, jointDampingRatio);
     }
 
     @Override

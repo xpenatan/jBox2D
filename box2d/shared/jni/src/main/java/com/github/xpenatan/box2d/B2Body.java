@@ -438,6 +438,30 @@ public final class B2Body extends NativeObject {
         com.github.xpenatan.box2d.natives.JNI_B2Body.internal_native_SetGravityScale(this_addr, scale);
     }
 
+    public float GetSleepThreshold() {
+        return internal_native_GetSleepThreshold(native_address);
+    }
+
+    public static float internal_native_GetSleepThreshold(long this_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Body.internal_native_GetSleepThreshold(this_addr);
+    }
+
+    public void SetSleepThreshold(float threshold) {
+        internal_native_SetSleepThreshold(native_address, threshold);
+    }
+
+    public static void internal_native_SetSleepThreshold(long this_addr, float threshold) {
+        com.github.xpenatan.box2d.natives.JNI_B2Body.internal_native_SetSleepThreshold(this_addr, threshold);
+    }
+
+    public boolean HasSupportingContact(float minimumNormalY, int capacity) {
+        return internal_native_HasSupportingContact(native_address, minimumNormalY, capacity);
+    }
+
+    public static boolean internal_native_HasSupportingContact(long this_addr, float minimumNormalY, int capacity) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Body.internal_native_HasSupportingContact(this_addr, minimumNormalY, capacity);
+    }
+
     public boolean IsAwake() {
         return internal_native_IsAwake(native_address);
     }

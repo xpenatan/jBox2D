@@ -74,6 +74,9 @@ public final class B2World extends NativeObject {
     public void EnableContinuous(boolean enabled) {
     }
 
+    public void EnableSpeculative(boolean enabled) {
+    }
+
     public float GetRestitutionThreshold() {
         return 0;
     }
@@ -96,6 +99,15 @@ public final class B2World extends NativeObject {
     }
 
     public void SetContactTuning(float hertz, float dampingRatio, float pushSpeed) {
+    }
+
+    public void Explode(B2Vec2 position, float radius, float falloff, float impulsePerLength) {
+    }
+
+    public void EnableParityCustomFilter(boolean enabled) {
+    }
+
+    public void EnableOneSidedPlatform(long playerShapeId, float radius) {
     }
 
     public void RebuildStaticTree() {
@@ -165,6 +177,18 @@ public final class B2World extends NativeObject {
         return null;
     }
 
+    public B2WorldCastResult CastRayMode(B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        return null;
+    }
+
+    public B2WorldCastResult CastShapeMode(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        return null;
+    }
+
+    public B2WorldCastResult CastShapeClosest(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter) {
+        return null;
+    }
+
     public B2WorldOverlapResult OverlapAABB(B2AABB aabb, B2QueryFilter filter) {
         return null;
     }
@@ -178,6 +202,10 @@ public final class B2World extends NativeObject {
     }
 
     public B2MoverResult SolveMover(B2Capsule mover, B2Vec2 translation, B2Vec2 velocity, B2QueryFilter collideFilter, B2QueryFilter castFilter, int maxIterations) {
+        return null;
+    }
+
+    public B2MoverResult SolveMoverWithSurfaceOverrides(B2Capsule mover, B2Vec2 translation, B2Vec2 velocity, B2QueryFilter collideFilter, B2QueryFilter castFilter, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations) {
         return null;
     }
 }

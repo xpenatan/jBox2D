@@ -1,9 +1,12 @@
 package com.github.xpenatan.box2d.sample.shared.samples;
 
+import com.github.xpenatan.box2d.B2Body;
+
 /** Java port of Box2D 3.1.1's Stacking / Card House sample (originally from PEEL). */
 public final class CardHouseSample extends AbstractBox2DSample {
     public CardHouseSample() {
-        addStaticBox(0.0f, -2.0f, 40.0f, 2.0f, 0.0f);
+        B2Body ground = createStaticBody(0.0f, -2.0f, 0.0f);
+        addBoxShape(ground, 40.0f, 2.0f, 0.0f, 0.7f, 0.0f, 0.0f);
         final float height = 0.2f;
         final float thickness = 0.001f;
         final float angle0 = radians(25.0f);

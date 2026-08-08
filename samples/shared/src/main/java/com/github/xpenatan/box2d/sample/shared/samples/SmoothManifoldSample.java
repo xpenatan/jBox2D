@@ -113,11 +113,11 @@ public final class SmoothManifoldSample extends AbstractBox2DSample {
         }
     }
 
-    private void reset(){x=0;y=20;angle=0;}
+    private void reset(){x=0;y=0;angle=0;}
     @Override public List<Box2DSampleControl> controls(){return Arrays.asList(
             Box2DSampleControl.combo("Shape",new String[]{"Circle","Box"},()->shapeType,v->shapeType=(int)v),
-            Box2DSampleControl.slider("x Offset",-30,30,0.01f,()->x,v->x=v),
-            Box2DSampleControl.slider("y Offset",0,35,0.01f,()->y,v->y=v),
+            Box2DSampleControl.slider("x Offset",-2,2,0.01f,()->x,v->x=v),
+            Box2DSampleControl.slider("y Offset",-2,2,0.01f,()->y,v->y=v),
             Box2DSampleControl.slider("Angle",-PI,PI,0.01f,()->angle,v->angle=v),
             Box2DSampleControl.slider("Round",0,0.4f,0.1f,()->round,v->round=v),
             Box2DSampleControl.checkbox("Show Ids",()->showIds?1:0,v->showIds=v!=0),

@@ -18,6 +18,9 @@ public final class B2Rot extends NativeObject {
     public B2Rot(float radians) {
     }
 
+    public B2Rot(float cosine, float sine) {
+    }
+
     /**
      * Dummy constructor, used internally to creates objects without C++ pointer
      */
@@ -48,6 +51,13 @@ public final class B2Rot extends NativeObject {
     }
 
     public void SetIdentity() {
+    }
+
+    public void PreMultiply(B2Rot rotation) {
+    }
+
+    public float RelativeAngle(B2Rot other) {
+        return 0;
     }
 
     public B2Vec2 RotateVector(B2Vec2 vector) {

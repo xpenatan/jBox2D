@@ -143,6 +143,13 @@ public final class B2World extends NativeObject {
     @org.teavm.jso.JSBody(params = {"this_addr", "enabled"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);jsObj.EnableContinuous(enabled);")
     public static native void internal_native_EnableContinuous(int this_addr, boolean enabled);
 
+    public void EnableSpeculative(boolean enabled) {
+        internal_native_EnableSpeculative(native_address, enabled);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "enabled"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);jsObj.EnableSpeculative(enabled);")
+    public static native void internal_native_EnableSpeculative(int this_addr, boolean enabled);
+
     public float GetRestitutionThreshold() {
         return internal_native_GetRestitutionThreshold(native_address);
     }
@@ -191,6 +198,27 @@ public final class B2World extends NativeObject {
 
     @org.teavm.jso.JSBody(params = {"this_addr", "hertz", "dampingRatio", "pushSpeed"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);jsObj.SetContactTuning(hertz, dampingRatio, pushSpeed);")
     public static native void internal_native_SetContactTuning(int this_addr, float hertz, float dampingRatio, float pushSpeed);
+
+    public void Explode(B2Vec2 position, float radius, float falloff, float impulsePerLength) {
+        internal_native_Explode(native_address, position.native_address, radius, falloff, impulsePerLength);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "position_addr", "radius", "falloff", "impulsePerLength"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);jsObj.Explode(position_addr, radius, falloff, impulsePerLength);")
+    public static native void internal_native_Explode(int this_addr, int position_addr, float radius, float falloff, float impulsePerLength);
+
+    public void EnableParityCustomFilter(boolean enabled) {
+        internal_native_EnableParityCustomFilter(native_address, enabled);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "enabled"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);jsObj.EnableParityCustomFilter(enabled);")
+    public static native void internal_native_EnableParityCustomFilter(int this_addr, boolean enabled);
+
+    public void EnableOneSidedPlatform(long playerShapeId, float radius) {
+        internal_native_EnableOneSidedPlatform(native_address, playerShapeId, radius);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "playerShapeId", "radius"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);jsObj.EnableOneSidedPlatform(playerShapeId, radius);")
+    public static native void internal_native_EnableOneSidedPlatform(int this_addr, long playerShapeId, float radius);
 
     public void RebuildStaticTree() {
         internal_native_RebuildStaticTree(native_address);
@@ -387,6 +415,42 @@ public final class B2World extends NativeObject {
     @org.teavm.jso.JSBody(params = {"this_addr", "proxy_addr", "translation_addr", "filter_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);var returnedJSObj = jsObj.CastShape(proxy_addr, translation_addr, filter_addr);if(!returnedJSObj.hasOwnProperty('ptr')) return 0; return box2d.getPointer(returnedJSObj);")
     public static native int internal_native_CastShape_addr(int this_addr, int proxy_addr, int translation_addr, int filter_addr);
 
+    public B2WorldCastResult CastRayMode(B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        int addr = internal_native_CastRayMode_addr(native_address, origin.native_address, translation.native_address, filter.native_address, mode, ignoredShapeId, maxHits);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "origin_addr", "translation_addr", "filter_addr", "mode", "ignoredShapeId", "maxHits"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);var returnedJSObj = jsObj.CastRayMode(origin_addr, translation_addr, filter_addr, mode, ignoredShapeId, maxHits);if(!returnedJSObj.hasOwnProperty('ptr')) return 0; return box2d.getPointer(returnedJSObj);")
+    public static native int internal_native_CastRayMode_addr(int this_addr, int origin_addr, int translation_addr, int filter_addr, int mode, long ignoredShapeId, int maxHits);
+
+    public B2WorldCastResult CastShapeMode(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        int addr = internal_native_CastShapeMode_addr(native_address, proxy.native_address, translation.native_address, filter.native_address, mode, ignoredShapeId, maxHits);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "proxy_addr", "translation_addr", "filter_addr", "mode", "ignoredShapeId", "maxHits"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);var returnedJSObj = jsObj.CastShapeMode(proxy_addr, translation_addr, filter_addr, mode, ignoredShapeId, maxHits);if(!returnedJSObj.hasOwnProperty('ptr')) return 0; return box2d.getPointer(returnedJSObj);")
+    public static native int internal_native_CastShapeMode_addr(int this_addr, int proxy_addr, int translation_addr, int filter_addr, int mode, long ignoredShapeId, int maxHits);
+
+    public B2WorldCastResult CastShapeClosest(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter) {
+        int addr = internal_native_CastShapeClosest_addr(native_address, proxy.native_address, translation.native_address, filter.native_address);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "proxy_addr", "translation_addr", "filter_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);var returnedJSObj = jsObj.CastShapeClosest(proxy_addr, translation_addr, filter_addr);if(!returnedJSObj.hasOwnProperty('ptr')) return 0; return box2d.getPointer(returnedJSObj);")
+    public static native int internal_native_CastShapeClosest_addr(int this_addr, int proxy_addr, int translation_addr, int filter_addr);
+
     public B2WorldOverlapResult OverlapAABB(B2AABB aabb, B2QueryFilter filter) {
         int addr = internal_native_OverlapAABB_addr(native_address, aabb.native_address, filter.native_address);
         if (addr == 0)
@@ -429,4 +493,16 @@ public final class B2World extends NativeObject {
 
     @org.teavm.jso.JSBody(params = {"this_addr", "mover_addr", "translation_addr", "velocity_addr", "collideFilter_addr", "castFilter_addr", "maxIterations"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);var returnedJSObj = jsObj.SolveMover(mover_addr, translation_addr, velocity_addr, collideFilter_addr, castFilter_addr, maxIterations);if(!returnedJSObj.hasOwnProperty('ptr')) return 0; return box2d.getPointer(returnedJSObj);")
     public static native int internal_native_SolveMover_addr(int this_addr, int mover_addr, int translation_addr, int velocity_addr, int collideFilter_addr, int castFilter_addr, int maxIterations);
+
+    public B2MoverResult SolveMoverWithSurfaceOverrides(B2Capsule mover, B2Vec2 translation, B2Vec2 velocity, B2QueryFilter collideFilter, B2QueryFilter castFilter, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations) {
+        int addr = internal_native_SolveMoverWithSurfaceOverrides_addr(native_address, mover.native_address, translation.native_address, velocity.native_address, collideFilter.native_address, castFilter.native_address, shapeIdA, maxPushA, clipVelocityA, shapeIdB, maxPushB, clipVelocityB, maxIterations);
+        if (addr == 0)
+            return B2MoverResult.NULL;
+        B2MoverResult B2MoverResult_NEW = B2MoverResult.native_new();
+        B2MoverResult_NEW.internal_reset(addr, true);
+        return B2MoverResult_NEW;
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "mover_addr", "translation_addr", "velocity_addr", "collideFilter_addr", "castFilter_addr", "shapeIdA", "maxPushA", "clipVelocityA", "shapeIdB", "maxPushB", "clipVelocityB", "maxIterations"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2World);var returnedJSObj = jsObj.SolveMoverWithSurfaceOverrides(mover_addr, translation_addr, velocity_addr, collideFilter_addr, castFilter_addr, shapeIdA, maxPushA, clipVelocityA, shapeIdB, maxPushB, clipVelocityB, maxIterations);if(!returnedJSObj.hasOwnProperty('ptr')) return 0; return box2d.getPointer(returnedJSObj);")
+    public static native int internal_native_SolveMoverWithSurfaceOverrides_addr(int this_addr, int mover_addr, int translation_addr, int velocity_addr, int collideFilter_addr, int castFilter_addr, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations);
 }

@@ -32,6 +32,14 @@ public final class B2Rot extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2rot_create_float_addr")
     public static native long internal_native_create_float_addr(float radians);
 
+    public B2Rot(float cosine, float sine) {
+        long addr = internal_native_create_float_float_addr(cosine, sine);
+        internal_reset(addr, true);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2rot_create_float_float_addr")
+    public static native long internal_native_create_float_float_addr(float cosine, float sine);
+
     /**
      * Dummy constructor, used internally to creates objects without C++ pointer
      */
@@ -87,6 +95,20 @@ public final class B2Rot extends NativeObject {
 
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2rot_setidentity")
     public static native void internal_native_SetIdentity(long this_addr);
+
+    public void PreMultiply(B2Rot rotation) {
+        internal_native_PreMultiply(native_address, rotation.native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2rot_premultiply")
+    public static native void internal_native_PreMultiply(long this_addr, long rotation_addr);
+
+    public float RelativeAngle(B2Rot other) {
+        return internal_native_RelativeAngle(native_address, other.native_address);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2rot_relativeangle")
+    public static native float internal_native_RelativeAngle(long this_addr, long other_addr);
 
     public B2Vec2 RotateVector(B2Vec2 vector) {
         long addr = internal_native_RotateVector_addr(native_address, vector.native_address);

@@ -398,6 +398,27 @@ public final class B2Body extends NativeObject {
     @org.teavm.jso.JSBody(params = {"this_addr", "scale"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Body);jsObj.SetGravityScale(scale);")
     public static native void internal_native_SetGravityScale(int this_addr, float scale);
 
+    public float GetSleepThreshold() {
+        return internal_native_GetSleepThreshold(native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Body);var returnedJSObj = jsObj.GetSleepThreshold();return returnedJSObj;")
+    public static native float internal_native_GetSleepThreshold(int this_addr);
+
+    public void SetSleepThreshold(float threshold) {
+        internal_native_SetSleepThreshold(native_address, threshold);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "threshold"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Body);jsObj.SetSleepThreshold(threshold);")
+    public static native void internal_native_SetSleepThreshold(int this_addr, float threshold);
+
+    public boolean HasSupportingContact(float minimumNormalY, int capacity) {
+        return internal_native_HasSupportingContact(native_address, minimumNormalY, capacity);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "minimumNormalY", "capacity"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Body);var returnedJSObj = jsObj.HasSupportingContact(minimumNormalY, capacity);return returnedJSObj;")
+    public static native boolean internal_native_HasSupportingContact(int this_addr, float minimumNormalY, int capacity);
+
     public boolean IsAwake() {
         return internal_native_IsAwake(native_address);
     }

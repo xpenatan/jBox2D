@@ -10,7 +10,6 @@ import java.util.List;
 
 /** Java port of Box2D 3.1.1's Joints / Cantilever sample. */
 public final class CantileverSample extends AbstractBox2DSample {
-    private final B2Body ground;
     private final List<B2Body> bodies = new ArrayList<B2Body>();
     private final List<B2Joint> joints = new ArrayList<B2Joint>();
     private float linearHertz = 15.0f;
@@ -21,22 +20,13 @@ public final class CantileverSample extends AbstractBox2DSample {
     private boolean collideConnected;
 
     public CantileverSample() {
-        ground = createStaticBody(0.0f, 0.0f, 0.0f);
+        B2Body ground = createStaticBody(0.0f, 0.0f, 0.0f);
+        B2Body previous = ground;
         for(int i = 0; i < 8; i++) {
             B2Body body = createDynamicBody(0.5f + i, 0.0f, 0.0f);
             body.SetAwake(false);
             addCapsuleShape(body, -0.5f, 0.0f, 0.5f, 0.0f, 0.125f, 20.0f, 0.6f, 0.0f, 0.0f);
             bodies.add(body);
-        }
-        recreateJoints();
-    }
-
-    private void recreateJoints() {
-        for(B2Joint joint : joints) destroyJoint(joint);
-        joints.clear();
-        B2Body previous = ground;
-        for(int i = 0; i < bodies.size(); i++) {
-            B2Body body = bodies.get(i);
             B2WeldJointDef def = new B2WeldJointDef();
             B2Vec2 pivot = vector(i, 0.0f), localA = copyLocalPoint(previous, pivot);
             B2Vec2 localB = copyLocalPoint(body, pivot);
@@ -55,13 +45,13 @@ public final class CantileverSample extends AbstractBox2DSample {
     public List<Box2DSampleControl> controls() {
         ArrayList<Box2DSampleControl> c = new ArrayList<Box2DSampleControl>();
         c.add(Box2DSampleControl.slider("Linear Hertz", 0, 20, .1f, () -> linearHertz,
-                value -> { linearHertz = value; recreateJoints(); }));
+                value -> { linearHertz = value; for(B2Joint joint : joints) joint.WeldSetLinearHertz(value); }));
         c.add(Box2DSampleControl.slider("Linear Damping Ratio", 0, 10, .1f, () -> linearDamping,
-                value -> { linearDamping = value; recreateJoints(); }));
+                value -> { linearDamping = value; for(B2Joint joint : joints) joint.WeldSetLinearDampingRatio(value); }));
         c.add(Box2DSampleControl.slider("Angular Hertz", 0, 20, .1f, () -> angularHertz,
-                value -> { angularHertz = value; recreateJoints(); }));
+                value -> { angularHertz = value; for(B2Joint joint : joints) joint.WeldSetAngularHertz(value); }));
         c.add(Box2DSampleControl.slider("Angular Damping Ratio", 0, 10, .1f, () -> angularDamping,
-                value -> { angularDamping = value; recreateJoints(); }));
+                value -> { angularDamping = value; for(B2Joint joint : joints) joint.WeldSetAngularDampingRatio(value); }));
         c.add(Box2DSampleControl.checkbox("Collide Connected", () -> collideConnected ? 1 : 0,
                 value -> { collideConnected = value != 0; for(B2Joint joint : joints) joint.SetCollideConnected(collideConnected); }));
         c.add(Box2DSampleControl.slider("Gravity Scale", -1, 1, .1f, () -> gravityScale,

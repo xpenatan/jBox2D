@@ -187,6 +187,20 @@ public final class B2 extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2_versionrevision")
     public static native int internal_native_VersionRevision();
 
+    public static float Cos(float radians) {
+        return internal_native_Cos(radians);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2_cos")
+    public static native float internal_native_Cos(float radians);
+
+    public static float Sin(float radians) {
+        return internal_native_Sin(radians);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2_sin")
+    public static native float internal_native_Sin(float radians);
+
     public static void SetLengthUnitsPerMeter(float lengthUnits) {
         internal_native_SetLengthUnitsPerMeter(lengthUnits);
     }

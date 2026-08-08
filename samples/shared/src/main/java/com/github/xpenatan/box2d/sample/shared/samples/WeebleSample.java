@@ -14,7 +14,8 @@ public final class WeebleSample extends AbstractBox2DSample {
     private float explosionMagnitude = 8.0f;
 
     public WeebleSample() {
-        addGroundSegment(-20.0f, 0.0f, 20.0f, 0.0f);
+        B2Body ground = createStaticBody(0.0f, 0.0f, 0.0f);
+        addSegmentShape(ground, -20.0f, 0.0f, 20.0f, 0.0f, 0.0f, 0.1f, 0.0f);
         weeble = createDynamicBody(0.0f, 3.0f, 0.25f * PI);
         addCapsuleShape(weeble, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
                 1.0f, 0.1f, 1.0f, 0.0f);
@@ -30,17 +31,27 @@ public final class WeebleSample extends AbstractBox2DSample {
     }
 
     private void explode() {
-        B2Vec2 position = weeble.GetPosition();
-        float dx = position.GetX();
-        float dy = position.GetY();
-        float length = Math.max(0.1f, (float)Math.sqrt(dx * dx + dy * dy));
-        applyLinearImpulseToCenter(weeble, explosionMagnitude * dx / length, explosionMagnitude * dy / length);
-        release(position);
+        explode(0.0f, 0.0f, 2.0f, 0.1f, explosionMagnitude);
     }
 
     @Override
     public void draw(Box2DSampleDraw draw) {
         draw.circle(0.0f, 0.0f, 2.0f, 0xFF00FFFF);
+
+        B2Vec2 localPoint = vector(0.0f, 2.0f);
+        B2Vec2 worldPoint = weeble.GetWorldPoint(localPoint);
+        B2Vec2 center = weeble.GetWorldCenterOfMass();
+        B2Vec2 linearVelocity = weeble.GetLinearVelocity();
+        float rx = worldPoint.GetX() - center.GetX();
+        float ry = worldPoint.GetY() - center.GetY();
+        float omega = weeble.GetAngularVelocity();
+        float vx = linearVelocity.GetX() - omega * ry;
+        float vy = linearVelocity.GetY() + omega * rx;
+        draw.segment(worldPoint.GetX(), worldPoint.GetY(), worldPoint.GetX() + vx, worldPoint.GetY() + vy,
+                0xFF0000FF);
+        draw.segment(worldPoint.GetX() + 0.05f, worldPoint.GetY(),
+                worldPoint.GetX() + vx + 0.05f, worldPoint.GetY() + vy, 0x00FF00FF);
+        release(linearVelocity, center, worldPoint, localPoint);
     }
 
     @Override

@@ -51,11 +51,27 @@ public final class GhostBumpsSample extends AbstractBox2DSample {
     }
 
     private void addGroundTile(float x, float y, float angle, float hx, float hy) {
-        B2Vec2 center = vector(x,y); B2Rot rot = new B2Rot(angle);
-        B2Polygon poly = bevel > 0 ? B2Polygon.CreateOffsetRoundedBox(hx,hy,center,rot,Math.min(bevel,.2f))
-                : B2Polygon.CreateOffsetBox(hx,hy,center,rot);
-        B2ShapeDef def = shapeDef(0,friction,0,0); createPolygonShape(ground,def,poly);
-        release(def,poly,rot,center);
+        float[][] local;
+        if(bevel > 0.0f) {
+            float hb = bevel;
+            local = new float[][] {
+                    {hx + hb, hy - 0.05f}, {hx, hy}, {-hx, hy}, {-hx - hb, hy - 0.05f},
+                    {-hx - hb, -hy + 0.05f}, {-hx, -hy}, {hx, -hy}, {hx + hb, -hy + 0.05f}
+            };
+        }
+        else {
+            local = new float[][] {{hx, hy}, {-hx, hy}, {-hx, -hy}, {hx, -hy}};
+        }
+        B2Rot rotation = new B2Rot(angle);
+        float cosine = rotation.GetCosine();
+        float sine = rotation.GetSine();
+        float[] vertices = new float[2 * local.length];
+        for(int i = 0; i < local.length; i++) {
+            vertices[2 * i] = x + cosine * local[i][0] - sine * local[i][1];
+            vertices[2 * i + 1] = y + sine * local[i][0] + cosine * local[i][1];
+        }
+        addPolygonShape(ground, vertices, 0.0f, 0.0f, friction, 0.0f, 0.0f);
+        release(rotation);
     }
 
     private void launch() {

@@ -70,7 +70,6 @@ final class CarAssembly {
     }
 
     void setSpeed(float value) {
-        if(speed == value) return;
         speed = value;
         rearAxle.WheelSetMotorSpeed(value);
         frontAxle.WheelSetMotorSpeed(value);

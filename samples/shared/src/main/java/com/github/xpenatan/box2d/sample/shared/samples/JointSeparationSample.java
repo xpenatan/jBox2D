@@ -15,6 +15,8 @@ public final class JointSeparationSample extends AbstractBox2DSample {
     private final List<String> labels = new ArrayList<String>();
     private float impulse = 500.0f;
     private float gravity = -10.0f;
+    private float jointHertz = 60.0f;
+    private float jointDampingRatio = 2.0f;
 
     public JointSeparationSample() {
         B2Body ground = addGroundSegment(-40.0f, 0.0f, 40.0f, 0.0f);
@@ -51,6 +53,10 @@ public final class JointSeparationSample extends AbstractBox2DSample {
                 Box2DSampleControl.slider("gravity", -500, 500, 1, () -> gravity,
                         value -> { gravity = value; setGravity(0.0f, value); }),
                 Box2DSampleControl.button("impulse", this::impulse),
-                Box2DSampleControl.slider("magnitude", 0, 1000, 1, () -> impulse, value -> impulse = value));
+                Box2DSampleControl.slider("magnitude", 0, 1000, 1, () -> impulse, value -> impulse = value),
+                Box2DSampleControl.slider("hertz", 15, 120, 1, () -> jointHertz,
+                        value -> { jointHertz = value; for(B2Joint joint : showcase.joints) joint.SetConstraintTuning(value, jointDampingRatio); }),
+                Box2DSampleControl.slider("damping", 0, 10, .1f, () -> jointDampingRatio,
+                        value -> { jointDampingRatio = value; for(B2Joint joint : showcase.joints) joint.SetConstraintTuning(jointHertz, value); }));
     }
 }

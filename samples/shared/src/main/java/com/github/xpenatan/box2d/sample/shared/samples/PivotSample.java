@@ -18,7 +18,7 @@ public final class PivotSample extends AbstractBox2DSample {
         addGroundSegment(-20.0f, 0.0f, 20.0f, 0.0f);
         body = createDynamicBody(0.0f, 3.0f, 0.0f);
         setLinearVelocity(body, 5.0f, 0.0f);
-        body.SetAngularVelocity(5.0f / lever);
+        body.SetAngularVelocity(-5.0f / lever);
         addBoxShape(body, 0.1f, lever, 1.0f, 0.6f, 0.0f, 0.0f);
     }
 

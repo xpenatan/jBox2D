@@ -60,11 +60,11 @@ public final class Box2DSampleController {
         int next = Math.max(0, Math.min(index, entries.size() - 1));
         if(next == selectedIndex && sample != null) return;
         selectedIndex = next;
-        if(runtimeLoaded) createSelectedSample();
+        if(runtimeLoaded) createSelectedSample(true);
     }
 
     public void restartSample() {
-        if(runtimeLoaded) createSelectedSample();
+        if(runtimeLoaded) createSelectedSample(false);
     }
 
     public List<Box2DSampleEntry> entries() { return entries; }
@@ -81,12 +81,16 @@ public final class Box2DSampleController {
     private void ensureSampleReady() {
         if(sample != null) return;
         if(runtimeError != null) throw new IllegalStateException("Failed to load the jBox2D runtime", runtimeError);
-        if(runtimeLoaded) createSelectedSample();
+        if(runtimeLoaded) createSelectedSample(true);
     }
 
-    private void createSelectedSample() {
+    private void createSelectedSample(boolean resetSubStepCount) {
         disposeSample();
         accumulator = 0.0f;
+        if(resetSubStepCount) {
+            // Box2D's testbed restores this default whenever the selected sample changes.
+            settings.setSubStepCount(4);
+        }
         Box2DSampleEntry entry = selectedEntry();
         sample = entry.create();
         host.onSampleChanged(entry, sample);

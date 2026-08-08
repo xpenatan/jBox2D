@@ -137,6 +137,27 @@ public final class B2Joint extends NativeObject {
     @org.teavm.jso.JSBody(params = {"this_addr", "anchor_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.SetLocalAnchorB(anchor_addr);")
     public static native void internal_native_SetLocalAnchorB(int this_addr, int anchor_addr);
 
+    public float GetReferenceAngle() {
+        return internal_native_GetReferenceAngle(native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);var returnedJSObj = jsObj.GetReferenceAngle();return returnedJSObj;")
+    public static native float internal_native_GetReferenceAngle(int this_addr);
+
+    public void SetReferenceAngle(float angle) {
+        internal_native_SetReferenceAngle(native_address, angle);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "angle"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.SetReferenceAngle(angle);")
+    public static native void internal_native_SetReferenceAngle(int this_addr, float angle);
+
+    public void SetConstraintTuning(float hertz, float dampingRatio) {
+        internal_native_SetConstraintTuning(native_address, hertz, dampingRatio);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "hertz", "dampingRatio"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.SetConstraintTuning(hertz, dampingRatio);")
+    public static native void internal_native_SetConstraintTuning(int this_addr, float hertz, float dampingRatio);
+
     public boolean GetCollideConnected() {
         return internal_native_GetCollideConnected(native_address);
     }
@@ -388,12 +409,26 @@ public final class B2Joint extends NativeObject {
     @org.teavm.jso.JSBody(params = {"this_addr", "force"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.PrismaticSetMaxMotorForce(force);")
     public static native void internal_native_PrismaticSetMaxMotorForce(int this_addr, float force);
 
+    public float PrismaticGetMotorForce() {
+        return internal_native_PrismaticGetMotorForce(native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);var returnedJSObj = jsObj.PrismaticGetMotorForce();return returnedJSObj;")
+    public static native float internal_native_PrismaticGetMotorForce(int this_addr);
+
     public float PrismaticGetTranslation() {
         return internal_native_PrismaticGetTranslation(native_address);
     }
 
     @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);var returnedJSObj = jsObj.PrismaticGetTranslation();return returnedJSObj;")
     public static native float internal_native_PrismaticGetTranslation(int this_addr);
+
+    public float PrismaticGetSpeed() {
+        return internal_native_PrismaticGetSpeed(native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);var returnedJSObj = jsObj.PrismaticGetSpeed();return returnedJSObj;")
+    public static native float internal_native_PrismaticGetSpeed(int this_addr);
 
     public void RevoluteEnableSpring(boolean enabled) {
         internal_native_RevoluteEnableSpring(native_address, enabled);
@@ -458,12 +493,47 @@ public final class B2Joint extends NativeObject {
     @org.teavm.jso.JSBody(params = {"this_addr", "torque"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.RevoluteSetMaxMotorTorque(torque);")
     public static native void internal_native_RevoluteSetMaxMotorTorque(int this_addr, float torque);
 
+    public float RevoluteGetMotorTorque() {
+        return internal_native_RevoluteGetMotorTorque(native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);var returnedJSObj = jsObj.RevoluteGetMotorTorque();return returnedJSObj;")
+    public static native float internal_native_RevoluteGetMotorTorque(int this_addr);
+
     public float RevoluteGetAngle() {
         return internal_native_RevoluteGetAngle(native_address);
     }
 
     @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);var returnedJSObj = jsObj.RevoluteGetAngle();return returnedJSObj;")
     public static native float internal_native_RevoluteGetAngle(int this_addr);
+
+    public void WeldSetLinearHertz(float hertz) {
+        internal_native_WeldSetLinearHertz(native_address, hertz);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "hertz"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.WeldSetLinearHertz(hertz);")
+    public static native void internal_native_WeldSetLinearHertz(int this_addr, float hertz);
+
+    public void WeldSetLinearDampingRatio(float ratio) {
+        internal_native_WeldSetLinearDampingRatio(native_address, ratio);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "ratio"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.WeldSetLinearDampingRatio(ratio);")
+    public static native void internal_native_WeldSetLinearDampingRatio(int this_addr, float ratio);
+
+    public void WeldSetAngularHertz(float hertz) {
+        internal_native_WeldSetAngularHertz(native_address, hertz);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "hertz"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.WeldSetAngularHertz(hertz);")
+    public static native void internal_native_WeldSetAngularHertz(int this_addr, float hertz);
+
+    public void WeldSetAngularDampingRatio(float ratio) {
+        internal_native_WeldSetAngularDampingRatio(native_address, ratio);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "ratio"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.WeldSetAngularDampingRatio(ratio);")
+    public static native void internal_native_WeldSetAngularDampingRatio(int this_addr, float ratio);
 
     public void WheelEnableSpring(boolean enabled) {
         internal_native_WheelEnableSpring(native_address, enabled);
@@ -520,4 +590,11 @@ public final class B2Joint extends NativeObject {
 
     @org.teavm.jso.JSBody(params = {"this_addr", "torque"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);jsObj.WheelSetMaxMotorTorque(torque);")
     public static native void internal_native_WheelSetMaxMotorTorque(int this_addr, float torque);
+
+    public float WheelGetMotorTorque() {
+        return internal_native_WheelGetMotorTorque(native_address);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Joint);var returnedJSObj = jsObj.WheelGetMotorTorque();return returnedJSObj;")
+    public static native float internal_native_WheelGetMotorTorque(int this_addr);
 }

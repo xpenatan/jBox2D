@@ -346,6 +346,25 @@ public final class B2Shape extends NativeObject {
     @org.teavm.jso.JSBody(params = {"this_addr", "polygon_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Shape);jsObj.SetPolygon(polygon_addr);")
     public static native void internal_native_SetPolygon(int this_addr, int polygon_addr);
 
+    public void Scale(float ratio) {
+        internal_native_Scale(native_address, ratio);
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr", "ratio"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Shape);jsObj.Scale(ratio);")
+    public static native void internal_native_Scale(int this_addr, float ratio);
+
+    public B2WorldOverlapResult GetSensorOverlaps() {
+        int addr = internal_native_GetSensorOverlaps_addr(native_address);
+        if (addr == 0)
+            return B2WorldOverlapResult.NULL;
+        B2WorldOverlapResult B2WorldOverlapResult_NEW = B2WorldOverlapResult.native_new();
+        B2WorldOverlapResult_NEW.internal_reset(addr, true);
+        return B2WorldOverlapResult_NEW;
+    }
+
+    @org.teavm.jso.JSBody(params = {"this_addr"}, script = "var jsObj = box2d.wrapPointer(this_addr, box2d.B2Shape);var returnedJSObj = jsObj.GetSensorOverlaps();if(!returnedJSObj.hasOwnProperty('ptr')) return 0; return box2d.getPointer(returnedJSObj);")
+    public static native int internal_native_GetSensorOverlaps_addr(int this_addr);
+
     public B2AABB GetAABB() {
         int addr = internal_native_GetAABB_addr(native_address);
         if (addr == 0)

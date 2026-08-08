@@ -2,6 +2,10 @@ package com.github.xpenatan.box2d;
 
 import com.github.xpenatan.jParser.api.NativeObject;
 import com.github.xpenatan.jParser.loader.JParserLibraryLoaderListener;
+import com.github.xpenatan.box2d.sample.shared.Box2DSample;
+import com.github.xpenatan.box2d.sample.shared.Box2DSampleEntry;
+import com.github.xpenatan.box2d.sample.shared.Box2DSampleSettings;
+import com.github.xpenatan.box2d.sample.shared.samples.Box2DSampleRegistry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -139,6 +143,32 @@ public class Box2DJniSmokeTest {
             if(world.IsValid()) world.Destroy();
             dispose(second, first, world, bodyDef, worldDef);
         }
+    }
+
+    @Test
+    public void everyOfficialSampleConstructsStepsAndDisposes() throws Exception {
+        loadBox2D();
+
+        Box2DSampleSettings settings = new Box2DSampleSettings();
+        int count = 0;
+        for(Box2DSampleEntry entry : Box2DSampleRegistry.entries()) {
+            Box2DSample sample = null;
+            try {
+                sample = entry.create();
+                assertTrue(entry.displayName() + " created an invalid world", sample.world().IsValid());
+                sample.step(1.0f / 60.0f, settings);
+                sample.controls();
+                count++;
+            }
+            catch(Throwable throwable) {
+                throw new AssertionError("Failed sample: " + entry.displayName(), throwable);
+            }
+            finally {
+                if(sample != null) sample.dispose();
+            }
+        }
+
+        assertEquals("the catalog must match Box2D 3.1.1's registrations", 110, count);
     }
 
     private static void loadBox2D() throws Exception {

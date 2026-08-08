@@ -90,6 +90,12 @@ final public class JNI_B2Body {
 
     public static native void internal_native_SetGravityScale(long this_addr, float scale);
 
+    public static native float internal_native_GetSleepThreshold(long this_addr);
+
+    public static native void internal_native_SetSleepThreshold(long this_addr, float threshold);
+
+    public static native boolean internal_native_HasSupportingContact(long this_addr, float minimumNormalY, int capacity);
+
     public static native boolean internal_native_IsAwake(long this_addr);
 
     public static native void internal_native_SetAwake(long this_addr, boolean awake);

@@ -8,6 +8,7 @@ import com.github.xpenatan.box2d.B2Circle;
 import com.github.xpenatan.box2d.B2Polygon;
 import com.github.xpenatan.box2d.B2QueryFilter;
 import com.github.xpenatan.box2d.B2RayResult;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Segment;
 import com.github.xpenatan.box2d.B2Shape;
 import com.github.xpenatan.box2d.B2ShapeProxy;
@@ -18,8 +19,6 @@ import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleDraw;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /** Java port of Box2D 3.1.1's Collision / Cast World sample. */
@@ -116,14 +115,16 @@ public final class CastWorldSample extends AbstractBox2DSample {
             release(result);
         }
         else {
+            B2Shape ignoredShape = shapes[IGNORE_INDEX];
+            long ignoredShapeId = ignoredShape != null && ignoredShape.IsValid() ? ignoredShape.GetId() : 0L;
             B2WorldCastResult result;
-            if(castType == 0) result = world().CastRay(origin, translation, filter);
+            if(castType == 0) result = world().CastRayMode(origin, translation, filter, mode, ignoredShapeId, 3);
             else {
                 B2ShapeProxy proxy = castProxy();
-                result = world().CastShape(proxy, translation, filter);
+                result = world().CastShapeMode(proxy, translation, filter, mode, ignoredShapeId, 3);
                 release(proxy);
             }
-            selectHits(result);
+            copyHits(result);
             release(result);
         }
         release(filter, translation, origin);
@@ -131,7 +132,8 @@ public final class CastWorldSample extends AbstractBox2DSample {
 
     private B2ShapeProxy castProxy() {
         B2ShapeProxy proxy = new B2ShapeProxy();
-        float c = (float)Math.cos(angle), s = (float)Math.sin(angle);
+        B2Rot rotation = new B2Rot(angle);
+        float c = rotation.GetCosine(), s = rotation.GetSine();
         if(castType == 1) {
             B2Vec2 center = new B2Vec2(rayStartX, rayStartY);
             B2Circle circle = new B2Circle(center, castRadius);
@@ -146,35 +148,22 @@ public final class CastWorldSample extends AbstractBox2DSample {
             release(capsule, p2, p1);
         }
         else {
-            float[][] local = {{-0.25f,-0.5f},{0.25f,-0.5f},{0.25f,0.5f},{-0.25f,0.5f}};
-            for(float[] p : local) {
-                B2Vec2 point = new B2Vec2(rayStartX + c*p[0] - s*p[1], rayStartY + s*p[0] + c*p[1]);
-                proxy.AddPoint(point); release(point);
-            }
-            proxy.SetRadius(castRadius);
+            B2Vec2 center = new B2Vec2(rayStartX, rayStartY);
+            B2Polygon box = B2Polygon.CreateOffsetRoundedBox(0.25f, 0.5f, center, rotation, castRadius);
+            proxy.SetPolygon(box);
+            release(box, center);
         }
+        release(rotation);
         return proxy;
     }
 
-    private void selectHits(B2WorldCastResult result) {
-        ArrayList<B2WorldCastHit> candidates = new ArrayList<B2WorldCastHit>();
-        for(int i = 0; i < result.GetHitCount(); i++) {
-            B2WorldCastHit hit = result.GetHit(i);
-            if(hit.GetFraction() > 0.0f && !isIgnored(hit.GetShapeId())) candidates.add(hit);
-            else release(hit);
-        }
-        if(mode == 1 || mode == 3) Collections.sort(candidates, Comparator.comparingDouble(B2WorldCastHit::GetFraction));
-        hitCount = Math.min(mode <= 1 ? 1 : 3, candidates.size());
+    private void copyHits(B2WorldCastResult result) {
+        hitCount = Math.min(3, result.GetHitCount());
         for(int i = 0; i < hitCount; i++) {
-            B2WorldCastHit value = candidates.get(i);
+            B2WorldCastHit value = result.GetHit(i);
             copy(value.GetPoint(), value.GetNormal(), value.GetFraction(), i);
+            release(value);
         }
-        for(B2WorldCastHit value : candidates) release(value);
-    }
-
-    private boolean isIgnored(long shapeId) {
-        B2Shape ignored = shapes[IGNORE_INDEX];
-        return ignored != null && ignored.IsValid() && ignored.GetId() == shapeId;
     }
 
     private void copy(B2Vec2 point, B2Vec2 normal, float fraction, int index) {
@@ -202,16 +191,47 @@ public final class CastWorldSample extends AbstractBox2DSample {
             float cx = rayStartX + fractions[i] * (rayEndX - rayStartX);
             float cy = rayStartY + fractions[i] * (rayEndY - rayStartY);
             draw.segment(rayStartX, rayStartY, cx, cy, 0xD3D3D3FF);
-            draw.point(hitX[i], hitY[i], 7.0f, colors[i]);
-            draw.segment(hitX[i], hitY[i], hitX[i] + normalX[i], hitY[i] + normalY[i], 0xFF00FFFF);
+            draw.point(hitX[i], hitY[i], 5.0f, simple ? 0x00FF00FF : colors[i]);
+            float normalScale = simple ? 0.5f : 1.0f;
+            draw.segment(hitX[i], hitY[i], hitX[i] + normalScale * normalX[i],
+                    hitY[i] + normalScale * normalY[i], 0xFF00FFFF);
+            if(!simple) drawCastShape(draw, fractions[i], 0xFFFF00FF);
         }
         draw.point(rayStartX, rayStartY, 5.0f, 0x00FF00FF);
-        if(castType == 1) draw.circle(rayStartX, rayStartY, castRadius, 0xFFFF00FF);
+        if(!simple && hitCount == 0) drawCastShape(draw, 1.0f, castType == 1 ? 0x808080FF : 0xFFFF00FF);
+        B2Shape ignored = shapes[IGNORE_INDEX];
+        if(ignored != null && ignored.IsValid()) {
+            B2Vec2 position = bodies[IGNORE_INDEX].GetPosition();
+            draw.worldText(position.GetX() - 0.2f, position.GetY(), "ign", 0xFFFFFFFF);
+            release(position);
+        }
+    }
+
+    private void drawCastShape(Box2DSampleDraw draw, float fraction, int color) {
+        if(castType == 0) return;
+        float centerX = rayStartX + fraction * (rayEndX - rayStartX);
+        float centerY = rayStartY + fraction * (rayEndY - rayStartY);
+        if(castType == 1) {
+            draw.circle(centerX, centerY, castRadius, color);
+        }
         else if(castType == 2) {
-            float c = 0.25f*(float)Math.cos(angle), s = 0.25f*(float)Math.sin(angle);
-            draw.segment(rayStartX-c, rayStartY-s, rayStartX+c, rayStartY+s, 0xFFFF00FF);
-            draw.circle(rayStartX-c, rayStartY-s, castRadius, 0xFFFF00FF);
-            draw.circle(rayStartX+c, rayStartY+s, castRadius, 0xFFFF00FF);
+            B2Rot rotation = new B2Rot(angle);
+            float c = 0.25f * rotation.GetCosine();
+            float s = 0.25f * rotation.GetSine();
+            release(rotation);
+            draw.segment(centerX - c, centerY - s, centerX + c, centerY + s, color);
+            draw.circle(centerX - c, centerY - s, castRadius, color);
+            draw.circle(centerX + c, centerY + s, castRadius, color);
+        }
+        else {
+            B2ShapeProxy proxy = new B2ShapeProxy();
+            CollisionSampleSupport.add(proxy, -0.25f, -0.5f);
+            CollisionSampleSupport.add(proxy, 0.25f, -0.5f);
+            CollisionSampleSupport.add(proxy, 0.25f, 0.5f);
+            CollisionSampleSupport.add(proxy, -0.25f, 0.5f);
+            proxy.SetRadius(castRadius);
+            CollisionSampleSupport.drawProxy(draw, proxy, centerX, centerY, angle, color, false);
+            release(proxy);
         }
     }
 

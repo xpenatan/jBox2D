@@ -40,6 +40,8 @@ final public class JNI_B2World {
 
     public static native void internal_native_EnableContinuous(long this_addr, boolean enabled);
 
+    public static native void internal_native_EnableSpeculative(long this_addr, boolean enabled);
+
     public static native float internal_native_GetRestitutionThreshold(long this_addr);
 
     public static native void internal_native_SetRestitutionThreshold(long this_addr, float threshold);
@@ -53,6 +55,12 @@ final public class JNI_B2World {
     public static native void internal_native_SetMaximumLinearSpeed(long this_addr, float speed);
 
     public static native void internal_native_SetContactTuning(long this_addr, float hertz, float dampingRatio, float pushSpeed);
+
+    public static native void internal_native_Explode(long this_addr, long position_addr, float radius, float falloff, float impulsePerLength);
+
+    public static native void internal_native_EnableParityCustomFilter(long this_addr, boolean enabled);
+
+    public static native void internal_native_EnableOneSidedPlatform(long this_addr, long playerShapeId, float radius);
 
     public static native void internal_native_RebuildStaticTree(long this_addr);
 
@@ -88,6 +96,12 @@ final public class JNI_B2World {
 
     public static native long internal_native_CastShape_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr);
 
+    public static native long internal_native_CastRayMode_addr(long this_addr, long origin_addr, long translation_addr, long filter_addr, int mode, long ignoredShapeId, int maxHits);
+
+    public static native long internal_native_CastShapeMode_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr, int mode, long ignoredShapeId, int maxHits);
+
+    public static native long internal_native_CastShapeClosest_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr);
+
     public static native long internal_native_OverlapAABB_addr(long this_addr, long aabb_addr, long filter_addr);
 
     public static native long internal_native_OverlapShape_addr(long this_addr, long proxy_addr, long filter_addr);
@@ -95,4 +109,6 @@ final public class JNI_B2World {
     public static native float internal_native_CastMover(long this_addr, long mover_addr, long translation_addr, long filter_addr);
 
     public static native long internal_native_SolveMover_addr(long this_addr, long mover_addr, long translation_addr, long velocity_addr, long collideFilter_addr, long castFilter_addr, int maxIterations);
+
+    public static native long internal_native_SolveMoverWithSurfaceOverrides_addr(long this_addr, long mover_addr, long translation_addr, long velocity_addr, long collideFilter_addr, long castFilter_addr, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations);
 }

@@ -163,6 +163,17 @@ public final class B2Body extends NativeObject {
     public void SetGravityScale(float scale) {
     }
 
+    public float GetSleepThreshold() {
+        return 0;
+    }
+
+    public void SetSleepThreshold(float threshold) {
+    }
+
+    public boolean HasSupportingContact(float minimumNormalY, int capacity) {
+        return false;
+    }
+
     public boolean IsAwake() {
         return false;
     }

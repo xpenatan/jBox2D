@@ -1,5 +1,6 @@
 package com.github.xpenatan.box2d.sample.shared.samples;
 
+import com.github.xpenatan.box2d.B2;
 import com.github.xpenatan.box2d.B2Body;
 import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Transform;
@@ -23,13 +24,13 @@ public final class KinematicSample extends AbstractBox2DSample {
 
     @Override
     protected void beforeStep(float deltaSeconds) {
-        targetX = 2.0f * amplitude * (float)Math.cos(time);
-        targetY = amplitude * (float)Math.sin(2.0f * time);
+        targetX = 2.0f * amplitude * B2.Cos(time);
+        targetY = amplitude * B2.Sin(2.0f * time);
         float angle = 2.0f * time;
-        axisX = -(float)Math.sin(angle);
-        axisY = (float)Math.cos(angle);
         B2Vec2 point = vector(targetX, targetY);
         B2Rot rotation = new B2Rot(angle);
+        axisX = -rotation.GetSine();
+        axisY = rotation.GetCosine();
         B2Transform target = new B2Transform(point, rotation);
         body.SetTargetTransform(target, deltaSeconds);
         release(target, rotation, point);

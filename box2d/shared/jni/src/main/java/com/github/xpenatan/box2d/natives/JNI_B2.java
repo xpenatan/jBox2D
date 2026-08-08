@@ -56,6 +56,10 @@ final public class JNI_B2 {
 
     public static native int internal_native_VersionRevision();
 
+    public static native float internal_native_Cos(float radians);
+
+    public static native float internal_native_Sin(float radians);
+
     public static native void internal_native_SetLengthUnitsPerMeter(float lengthUnits);
 
     public static native float internal_native_GetLengthUnitsPerMeter();

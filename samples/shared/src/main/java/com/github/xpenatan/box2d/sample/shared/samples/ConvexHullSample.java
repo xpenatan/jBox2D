@@ -2,6 +2,7 @@ package com.github.xpenatan.box2d.sample.shared.samples;
 
 import com.github.xpenatan.box2d.B2;
 import com.github.xpenatan.box2d.B2Hull;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Vec2;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleDraw;
@@ -24,15 +25,18 @@ public final class ConvexHullSample extends AbstractBox2DSample {
 
     private void generate() {
         float angle = PI * randomFloat(0.0f, 1.0f);
-        float c = (float)Math.cos(angle);
-        float s = (float)Math.sin(angle);
+        B2Rot rotation = new B2Rot(angle);
         int count = Math.min(8, B2.MaxPolygonVertices());
         for(int i = 0; i < count; i++) {
             float x = Math.max(-4.0f, Math.min(4.0f, randomFloat(0.0f, 10.0f)));
             float y = Math.max(-4.0f, Math.min(4.0f, randomFloat(0.0f, 10.0f)));
-            points[2 * i] = c * x - s * y;
-            points[2 * i + 1] = s * x + c * y;
+            B2Vec2 value = vector(x, y);
+            B2Vec2 rotated = rotation.RotateVector(value);
+            points[2 * i] = rotated.GetX();
+            points[2 * i + 1] = rotated.GetY();
+            release(rotated, value);
         }
+        release(rotation);
         generation++;
     }
 
@@ -43,8 +47,9 @@ public final class ConvexHullSample extends AbstractBox2DSample {
             hull.AddPoint(point);
             release(point);
         }
-        valid = hull.Compute() && hull.IsValid();
-        hullCount = valid ? Math.min(hull.GetPointCount(), 8) : 0;
+        boolean computed = hull.Compute();
+        hullCount = computed ? Math.min(hull.GetPointCount(), 8) : 0;
+        valid = hullCount > 0 && hull.IsValid();
         for(int i = 0; i < hullCount; i++) {
             B2Vec2 point = hull.GetPoint(i);
             hullPoints[2 * i] = point.GetX();
@@ -56,8 +61,19 @@ public final class ConvexHullSample extends AbstractBox2DSample {
 
     @Override
     protected void beforeStep(float deltaSeconds) {
-        if(bulk) for(int i = 0; i < 1000; i++) { generate(); compute(); if(!valid) { bulk = false; break; } }
-        else { if(auto) generate(); compute(); }
+        if(bulk) {
+            for(int i = 0; i < 10000; i++) {
+                generate();
+                compute();
+                if(hullCount == 0) continue;
+                if(!valid) { bulk = false; break; }
+            }
+        }
+        else {
+            if(auto) generate();
+            compute();
+            if(hullCount > 0 && !valid) auto = false;
+        }
     }
 
     @Override

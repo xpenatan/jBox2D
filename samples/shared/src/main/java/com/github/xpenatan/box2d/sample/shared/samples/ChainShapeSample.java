@@ -29,6 +29,15 @@ public final class ChainShapeSample extends AbstractBox2DSample {
     public ChainShapeSample() {
         B2Body ground = createStaticBody(0.0f, 0.0f, 0.0f);
         chain = addChain(ground, LOOP, true, friction);
+        for(int i = 0; i < chain.GetSegmentCount(); i++) {
+            B2Shape segment = chain.GetSegment(i);
+            com.github.xpenatan.box2d.B2SurfaceMaterial material = segment.GetSurfaceMaterial();
+            material.SetFriction(0.2f);
+            material.SetCustomColor(0x4682B4);
+            material.SetUserMaterialId(42);
+            segment.SetSurfaceMaterial(material);
+            release(material, segment);
+        }
         launch();
     }
 

@@ -16,6 +16,8 @@ public final class DoorSample extends AbstractBox2DSample {
     private float impulse = 50000.0f;
     private float maximumTranslationError;
     private boolean enableLimit = true;
+    private float jointHertz = 240.0f;
+    private float jointDampingRatio = 1.0f;
     private float tipX;
     private float tipY;
 
@@ -29,7 +31,9 @@ public final class DoorSample extends AbstractBox2DSample {
         def.SetBodyIdA(ground.GetId()); def.SetBodyIdB(door.GetId()); def.SetLocalAnchorA(a); def.SetLocalAnchorB(b);
         def.SetTargetAngle(0); def.SetEnableSpring(true); def.SetHertz(1); def.SetDampingRatio(.5f);
         def.SetLowerAngle(-.5f * PI); def.SetUpperAngle(.5f * PI); def.SetEnableLimit(enableLimit);
-        joint = createRevoluteJoint(def); release(b, a, def);
+        joint = createRevoluteJoint(def);
+        joint.SetConstraintTuning(jointHertz, jointDampingRatio);
+        release(b, a, def);
     }
 
     private void applyImpulse() {
@@ -55,6 +59,10 @@ public final class DoorSample extends AbstractBox2DSample {
                 Box2DSampleControl.slider("magnitude", 1000, 100000, 1, () -> impulse, value -> impulse = value),
                 Box2DSampleControl.checkbox("limit", () -> enableLimit ? 1 : 0,
                         value -> { enableLimit = value != 0; joint.RevoluteEnableLimit(enableLimit); }),
+                Box2DSampleControl.slider("hertz", 15, 480, 1, () -> jointHertz,
+                        value -> { jointHertz = value; joint.SetConstraintTuning(value, jointDampingRatio); }),
+                Box2DSampleControl.slider("damping", 0, 10, .1f, () -> jointDampingRatio,
+                        value -> { jointDampingRatio = value; joint.SetConstraintTuning(jointHertz, value); }),
                 Box2DSampleControl.dynamicText(() -> "translation error = " + maximumTranslationError));
     }
 }

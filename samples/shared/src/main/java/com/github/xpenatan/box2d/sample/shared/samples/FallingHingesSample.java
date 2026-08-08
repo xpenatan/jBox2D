@@ -63,18 +63,18 @@ public final class FallingHingesSample extends AbstractBox2DSample {
         if(transformHash == 0) {
             B2BodyEvents events = world().GetBodyEvents();
             if(events.GetMoveCount() == 0 && world().GetAwakeBodyCount() == 0) {
-                int hash = 0x811C9DC5;
+                int hash = 5381;
                 for(B2Body body : bodies) {
                     B2Transform transform = body.GetTransform();
                     B2Vec2 position = transform.GetPosition();
                     B2Rot rotation = transform.GetRotation();
-                    hash = fnv(hash, Float.floatToIntBits(position.GetX()));
-                    hash = fnv(hash, Float.floatToIntBits(position.GetY()));
-                    hash = fnv(hash, Float.floatToIntBits(rotation.GetCosine()));
-                    hash = fnv(hash, Float.floatToIntBits(rotation.GetSine()));
+                    hash = hashFloat(hash, position.GetX());
+                    hash = hashFloat(hash, position.GetY());
+                    hash = hashFloat(hash, rotation.GetCosine());
+                    hash = hashFloat(hash, rotation.GetSine());
                     release(rotation, position, transform);
                 }
-                transformHash = hash == 0 ? 1 : hash;
+                transformHash = hash;
                 sleepStep = stepCount;
             }
             release(events);
@@ -82,14 +82,15 @@ public final class FallingHingesSample extends AbstractBox2DSample {
         stepCount++;
     }
 
-    private static int fnv(int hash, int value) {
-        for(int shift = 0; shift < 32; shift += 8) hash = (hash ^ ((value >>> shift) & 0xFF)) * 0x01000193;
+    private static int hashFloat(int hash, float value) {
+        int bits = Float.floatToIntBits(value);
+        for(int shift = 0; shift < 32; shift += 8) hash = 33 * hash + ((bits >>> shift) & 0xFF);
         return hash;
     }
 
     @Override
     public List<Box2DSampleControl> controls() {
-        String hash = String.format(java.util.Locale.US, "sleep step = %d, hash = 0x%08x", sleepStep, transformHash);
-        return Collections.singletonList(Box2DSampleControl.text(hash));
+        return Collections.singletonList(Box2DSampleControl.dynamicText(() -> String.format(
+                java.util.Locale.US, "sleep step = %d, hash = 0x%08x", sleepStep, transformHash)));
     }
 }

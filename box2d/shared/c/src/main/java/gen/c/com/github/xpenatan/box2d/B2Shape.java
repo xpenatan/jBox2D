@@ -346,6 +346,25 @@ public final class B2Shape extends NativeObject {
     @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2shape_setpolygon")
     public static native void internal_native_SetPolygon(long this_addr, long polygon_addr);
 
+    public void Scale(float ratio) {
+        internal_native_Scale(native_address, ratio);
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2shape_scale")
+    public static native void internal_native_Scale(long this_addr, float ratio);
+
+    public B2WorldOverlapResult GetSensorOverlaps() {
+        long addr = internal_native_GetSensorOverlaps_addr(native_address);
+        if (addr == 0)
+            return B2WorldOverlapResult.NULL;
+        B2WorldOverlapResult B2WorldOverlapResult_NEW = B2WorldOverlapResult.native_new();
+        B2WorldOverlapResult_NEW.internal_reset(addr, true);
+        return B2WorldOverlapResult_NEW;
+    }
+
+    @org.teavm.interop.Import(name = "com_github_xpenatan_box2d_b2shape_getsensoroverlaps_addr")
+    public static native long internal_native_GetSensorOverlaps_addr(long this_addr);
+
     public B2AABB GetAABB() {
         long addr = internal_native_GetAABB_addr(native_address);
         if (addr == 0)

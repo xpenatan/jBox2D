@@ -154,6 +154,13 @@ public final class B2Shape extends NativeObject {
     public void SetPolygon(B2Polygon polygon) {
     }
 
+    public void Scale(float ratio) {
+    }
+
+    public B2WorldOverlapResult GetSensorOverlaps() {
+        return null;
+    }
+
     public B2AABB GetAABB() {
         return null;
     }

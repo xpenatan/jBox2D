@@ -58,9 +58,6 @@ val box2dWebRuntime = if(useMavenArtifacts) {
 }
 
 fun Task.stageBox2DWebRuntime(distribution: String) {
-    if(!useMavenArtifacts) {
-        dependsOn(":box2d:builder:jParser_build_web_wasm")
-    }
     inputs.files(box2dWebRuntime)
     doLast {
         val scriptsDir = layout.buildDirectory.dir("dist/$distribution/webapp/scripts").get().asFile
@@ -72,7 +69,14 @@ fun Task.stageBox2DWebRuntime(distribution: String) {
         }
         val missing = listOf("box2d.js", "box2d.wasm").filterNot { scriptsDir.resolve(it).isFile }
         if(missing.isNotEmpty()) {
-            throw GradleException("Missing jBox2D web runtime files: ${missing.joinToString()}")
+            val sourceHint = if(useMavenArtifacts) {
+                "The resolved jBox2D web-wasm Maven artifact does not contain the runtime files."
+            } else {
+                "Run :box2d:builder:jParser_build_web_wasm first."
+            }
+            throw GradleException(
+                "Missing jBox2D web runtime files: ${missing.joinToString()}. $sourceHint"
+            )
         }
     }
 }

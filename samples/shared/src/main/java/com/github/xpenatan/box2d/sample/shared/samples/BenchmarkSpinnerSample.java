@@ -6,6 +6,7 @@ import com.github.xpenatan.box2d.B2Capsule;
 import com.github.xpenatan.box2d.B2Circle;
 import com.github.xpenatan.box2d.B2Polygon;
 import com.github.xpenatan.box2d.B2RevoluteJointDef;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Shape;
 import com.github.xpenatan.box2d.B2ShapeDef;
 import com.github.xpenatan.box2d.B2Vec2;
@@ -16,11 +17,16 @@ public final class BenchmarkSpinnerSample extends AbstractBox2DSample {
         B2Body ground = createStaticBody(0.0f, 0.0f, 0.0f);
         float[] points = new float[720];
         float angleStep = -2.0f * PI / 360.0f;
+        B2Rot rotation = new B2Rot(angleStep);
+        B2Vec2 point = new B2Vec2(40.0f, 0.0f);
         for(int i = 0; i < 360; i++) {
-            float angle = i * angleStep;
-            points[2 * i] = 40.0f * (float)Math.cos(angle);
-            points[2 * i + 1] = 32.0f + 40.0f * (float)Math.sin(angle);
+            points[2 * i] = point.GetX();
+            points[2 * i + 1] = point.GetY() + 32.0f;
+            B2Vec2 next = rotation.RotateVector(point);
+            release(point);
+            point = next;
         }
+        release(point, rotation);
         addChain(ground, points, true, 0.1f);
 
         B2Body spinner = BenchmarkSampleSupport.createBody(this, B2.DynamicBody(), 0.0f, 12.0f, 0.0f,

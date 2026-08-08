@@ -124,7 +124,8 @@ libfdx WebGL and WebGPU:
 .\gradlew.bat :samples:fdx:platforms:web:box2d_fdx_webgpu_js_run
 ```
 
-These tasks build and stage the Emscripten Box2D side module used by the browser distributions. libfdx WebGPU uses the JavaScript target; its WasmGC target currently uses WebGL.
+These tasks stage the Emscripten Box2D side module already produced by
+`:box2d:builder:jParser_build_web_wasm`; they do not rebuild Box2D. libfdx WebGPU uses the JavaScript target; its WasmGC target currently uses WebGL.
 
 ### Android
 

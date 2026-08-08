@@ -14,6 +14,8 @@ final public class JNI_B2Rot {
 
     public static native long internal_native_create_float_addr(float radians);
 
+    public static native long internal_native_create_float_float_addr(float cosine, float sine);
+
     public static native void internal_native_deleteNative(long this_addr);
 
     public static native float internal_native_GetCosine(long this_addr);
@@ -25,6 +27,10 @@ final public class JNI_B2Rot {
     public static native void internal_native_Set(long this_addr, float radians);
 
     public static native void internal_native_SetIdentity(long this_addr);
+
+    public static native void internal_native_PreMultiply(long this_addr, long rotation_addr);
+
+    public static native float internal_native_RelativeAngle(long this_addr, long other_addr);
 
     public static native long internal_native_RotateVector_addr(long this_addr, long vector_addr);
 

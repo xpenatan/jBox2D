@@ -7,6 +7,7 @@ import com.github.xpenatan.box2d.B2PrismaticJointDef;
 import com.github.xpenatan.box2d.B2RevoluteJointDef;
 import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2ShapeDef;
+import com.github.xpenatan.box2d.B2SurfaceMaterial;
 import com.github.xpenatan.box2d.B2Vec2;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
 import java.util.Arrays;
@@ -67,33 +68,40 @@ public final class GearLiftSample extends AbstractBox2DSample {
         slider.SetLocalAxisA(axis); slider.SetMaxMotorForce(.2f); slider.SetEnableMotor(true); slider.SetCollideConnected(true);
         createPrismaticJoint(slider); release(axis, lb, la, world, slider);
 
+        B2ShapeDef particleShapeDef = shapeDef(1.0f, 0.6f, 0.0f, 0.3f);
+        int[] colors = {0x808080, 0xDCDCDC, 0xD3D3D3, 0x778899, 0xA9A9A9};
         for(int i = 0; i < 20; i++) {
             float py = 4.25f + .2f * i;
             for(int j = 0; j < 10; j++) {
                 float px = -3.15f + .2f * j;
-                B2Body particle = createDynamicBody(px, py, randomFloat(-PI, PI));
-                int type = (i + j) % 3;
-                if(type == 0) addPolygonShape(particle, new float[] {-.08f, -.07f, .09f, -.06f, .02f, .1f},
-                        .015f, 1, .4f, 0, .3f);
-                else if(type == 1) addRoundedBoxShape(particle, .07f, .09f, .015f, 1, .4f, 0, .3f);
-                else addCircleShape(particle, 0, 0, .08f, 1, .4f, 0, .3f);
+                B2Body particle = createDynamicBody(px, py, 0.0f);
+                B2Polygon polygon = randomPolygon(0.1f);
+                polygon.SetRadius(randomFloat(0.01f, 0.02f));
+                B2SurfaceMaterial material = particleShapeDef.GetMaterial();
+                material.SetCustomColor(colors[randomInt(0, 4)]);
+                particleShapeDef.SetMaterial(material);
+                createPolygonShape(particle, particleShapeDef, polygon);
+                release(material, polygon);
             }
         }
+        release(particleShapeDef);
     }
 
     private B2Body createGear(float x, float y, float radius, float toothCenterRadius, float toothHalfWidth,
             float toothHalfHeight, float toothRadius) {
         B2Body body = createDynamicBody(x, y, 0); addCircleShape(body, 0, 0, radius, 1, .1f, 0, 0);
         B2ShapeDef def = shapeDef(1, .1f, 0, 0);
+        B2Rot rotation = new B2Rot();
+        B2Rot deltaRotation = new B2Rot(2.0f * PI / 16.0f);
+        B2Vec2 baseCenter = vector(toothCenterRadius, 0.0f);
         for(int i = 0; i < 16; i++) {
-            float angle = 2 * PI * i / 16;
-            B2Vec2 center = vector(toothCenterRadius * (float)Math.cos(angle),
-                    toothCenterRadius * (float)Math.sin(angle));
-            B2Rot rotation = new B2Rot(angle);
+            B2Vec2 center = rotation.RotateVector(baseCenter);
             B2Polygon tooth = B2Polygon.CreateOffsetRoundedBox(toothHalfWidth, toothHalfHeight, center, rotation, toothRadius);
-            createPolygonShape(body, def, tooth); release(tooth, rotation, center);
+            createPolygonShape(body, def, tooth);
+            rotation.PreMultiply(deltaRotation);
+            release(tooth, center);
         }
-        release(def); return body;
+        release(baseCenter, deltaRotation, rotation, def); return body;
     }
 
     private B2RevoluteJointDef revoluteAt(B2Body a, B2Body b, float x, float y) {

@@ -69,6 +69,16 @@ public final class B2Joint extends NativeObject {
     public void SetLocalAnchorB(B2Vec2 anchor) {
     }
 
+    public float GetReferenceAngle() {
+        return 0;
+    }
+
+    public void SetReferenceAngle(float angle) {
+    }
+
+    public void SetConstraintTuning(float hertz, float dampingRatio) {
+    }
+
     public boolean GetCollideConnected() {
         return false;
     }
@@ -180,7 +190,15 @@ public final class B2Joint extends NativeObject {
     public void PrismaticSetMaxMotorForce(float force) {
     }
 
+    public float PrismaticGetMotorForce() {
+        return 0;
+    }
+
     public float PrismaticGetTranslation() {
+        return 0;
+    }
+
+    public float PrismaticGetSpeed() {
         return 0;
     }
 
@@ -211,8 +229,24 @@ public final class B2Joint extends NativeObject {
     public void RevoluteSetMaxMotorTorque(float torque) {
     }
 
+    public float RevoluteGetMotorTorque() {
+        return 0;
+    }
+
     public float RevoluteGetAngle() {
         return 0;
+    }
+
+    public void WeldSetLinearHertz(float hertz) {
+    }
+
+    public void WeldSetLinearDampingRatio(float ratio) {
+    }
+
+    public void WeldSetAngularHertz(float hertz) {
+    }
+
+    public void WeldSetAngularDampingRatio(float ratio) {
     }
 
     public void WheelEnableSpring(boolean enabled) {
@@ -237,5 +271,9 @@ public final class B2Joint extends NativeObject {
     }
 
     public void WheelSetMaxMotorTorque(float torque) {
+    }
+
+    public float WheelGetMotorTorque() {
+        return 0;
     }
 }

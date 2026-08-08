@@ -22,6 +22,6 @@ public final class PinballSample extends AbstractBox2DSample {
     }
     private B2Joint flipper(B2Body g,B2Body b,float x,float y,float lo,float hi){B2RevoluteJointDef d=new B2RevoluteJointDef();B2Vec2 a=vector(x,y),z=vector(0,0);d.SetBodyIdA(g.GetId());d.SetBodyIdB(b.GetId());d.SetLocalAnchorA(a);d.SetLocalAnchorB(z);d.SetEnableMotor(true);d.SetMaxMotorTorque(1000);d.SetEnableLimit(true);d.SetLowerAngle(lo);d.SetUpperAngle(hi);B2Joint j=createRevoluteJoint(d);release(z,a,d);return j;}
     private void spinner(B2Body g,float x,float y){B2Body b=createDynamicBody(x,y,0);addBoxShape(b,1.5f,.125f,1,.6f,0,0);addBoxShape(b,.125f,1.5f,1,.6f,0,0);B2RevoluteJointDef d=new B2RevoluteJointDef();B2Vec2 a=vector(x,y),z=vector(0,0);d.SetBodyIdA(g.GetId());d.SetBodyIdB(b.GetId());d.SetLocalAnchorA(a);d.SetLocalAnchorB(z);d.SetEnableMotor(true);d.SetMaxMotorTorque(.1f);createRevoluteJoint(d);release(z,a,d);}
-    @Override protected void beforeStep(float dt){leftJoint.RevoluteSetMotorSpeed(flip?20:-10);rightJoint.RevoluteSetMotorSpeed(flip?-20:10);}
+    @Override protected void afterStep(float dt){leftJoint.RevoluteSetMotorSpeed(flip?20:-10);rightJoint.RevoluteSetMotorSpeed(flip?-20:10);}
     @Override public void keyDown(int key){if(key==' ')flip=true;}@Override public void keyUp(int key){if(key==' ')flip=false;}
 }

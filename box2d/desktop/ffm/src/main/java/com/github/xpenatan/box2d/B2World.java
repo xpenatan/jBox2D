@@ -225,6 +225,18 @@ public final class B2World extends NativeObject {
         }
     }
 
+    public void EnableSpeculative(boolean enabled) {
+        internal_native_EnableSpeculative(native_address, enabled);
+    }
+
+    public static void internal_native_EnableSpeculative(long this_addr, boolean enabled) {
+        try {
+            FFMHandles.internal_native_EnableSpeculative__JZ.invokeExact(this_addr, enabled);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     public float GetRestitutionThreshold() {
         return internal_native_GetRestitutionThreshold(native_address);
     }
@@ -304,6 +316,42 @@ public final class B2World extends NativeObject {
     public static void internal_native_SetContactTuning(long this_addr, float hertz, float dampingRatio, float pushSpeed) {
         try {
             FFMHandles.internal_native_SetContactTuning__JFFF.invokeExact(this_addr, hertz, dampingRatio, pushSpeed);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public void Explode(B2Vec2 position, float radius, float falloff, float impulsePerLength) {
+        internal_native_Explode(native_address, position.native_address, radius, falloff, impulsePerLength);
+    }
+
+    public static void internal_native_Explode(long this_addr, long position_addr, float radius, float falloff, float impulsePerLength) {
+        try {
+            FFMHandles.internal_native_Explode__JJFFF.invokeExact(this_addr, position_addr, radius, falloff, impulsePerLength);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public void EnableParityCustomFilter(boolean enabled) {
+        internal_native_EnableParityCustomFilter(native_address, enabled);
+    }
+
+    public static void internal_native_EnableParityCustomFilter(long this_addr, boolean enabled) {
+        try {
+            FFMHandles.internal_native_EnableParityCustomFilter__JZ.invokeExact(this_addr, enabled);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public void EnableOneSidedPlatform(long playerShapeId, float radius) {
+        internal_native_EnableOneSidedPlatform(native_address, playerShapeId, radius);
+    }
+
+    public static void internal_native_EnableOneSidedPlatform(long this_addr, long playerShapeId, float radius) {
+        try {
+            FFMHandles.internal_native_EnableOneSidedPlatform__JJF.invokeExact(this_addr, playerShapeId, radius);
         } catch (Throwable e) {
             throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
         }
@@ -589,6 +637,57 @@ public final class B2World extends NativeObject {
         }
     }
 
+    public B2WorldCastResult CastRayMode(B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        long addr = internal_native_CastRayMode_addr(native_address, origin.native_address, translation.native_address, filter.native_address, mode, ignoredShapeId, maxHits);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    public static long internal_native_CastRayMode_addr(long this_addr, long origin_addr, long translation_addr, long filter_addr, int mode, long ignoredShapeId, int maxHits) {
+        try {
+            return (long) FFMHandles.internal_native_CastRayMode_addr__JJJJIJI.invokeExact(this_addr, origin_addr, translation_addr, filter_addr, mode, ignoredShapeId, maxHits);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public B2WorldCastResult CastShapeMode(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter, int mode, long ignoredShapeId, int maxHits) {
+        long addr = internal_native_CastShapeMode_addr(native_address, proxy.native_address, translation.native_address, filter.native_address, mode, ignoredShapeId, maxHits);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    public static long internal_native_CastShapeMode_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr, int mode, long ignoredShapeId, int maxHits) {
+        try {
+            return (long) FFMHandles.internal_native_CastShapeMode_addr__JJJJIJI.invokeExact(this_addr, proxy_addr, translation_addr, filter_addr, mode, ignoredShapeId, maxHits);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
+    public B2WorldCastResult CastShapeClosest(B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter) {
+        long addr = internal_native_CastShapeClosest_addr(native_address, proxy.native_address, translation.native_address, filter.native_address);
+        if (addr == 0)
+            return B2WorldCastResult.NULL;
+        B2WorldCastResult B2WorldCastResult_NEW = B2WorldCastResult.native_new();
+        B2WorldCastResult_NEW.internal_reset(addr, true);
+        return B2WorldCastResult_NEW;
+    }
+
+    public static long internal_native_CastShapeClosest_addr(long this_addr, long proxy_addr, long translation_addr, long filter_addr) {
+        try {
+            return (long) FFMHandles.internal_native_CastShapeClosest_addr__JJJJ.invokeExact(this_addr, proxy_addr, translation_addr, filter_addr);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     public B2WorldOverlapResult OverlapAABB(B2AABB aabb, B2QueryFilter filter) {
         long addr = internal_native_OverlapAABB_addr(native_address, aabb.native_address, filter.native_address);
         if (addr == 0)
@@ -652,6 +751,23 @@ public final class B2World extends NativeObject {
         }
     }
 
+    public B2MoverResult SolveMoverWithSurfaceOverrides(B2Capsule mover, B2Vec2 translation, B2Vec2 velocity, B2QueryFilter collideFilter, B2QueryFilter castFilter, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations) {
+        long addr = internal_native_SolveMoverWithSurfaceOverrides_addr(native_address, mover.native_address, translation.native_address, velocity.native_address, collideFilter.native_address, castFilter.native_address, shapeIdA, maxPushA, clipVelocityA, shapeIdB, maxPushB, clipVelocityB, maxIterations);
+        if (addr == 0)
+            return B2MoverResult.NULL;
+        B2MoverResult B2MoverResult_NEW = B2MoverResult.native_new();
+        B2MoverResult_NEW.internal_reset(addr, true);
+        return B2MoverResult_NEW;
+    }
+
+    public static long internal_native_SolveMoverWithSurfaceOverrides_addr(long this_addr, long mover_addr, long translation_addr, long velocity_addr, long collideFilter_addr, long castFilter_addr, long shapeIdA, float maxPushA, boolean clipVelocityA, long shapeIdB, float maxPushB, boolean clipVelocityB, int maxIterations) {
+        try {
+            return (long) FFMHandles.internal_native_SolveMoverWithSurfaceOverrides_addr__JJJJJJJFZJFZI.invokeExact(this_addr, mover_addr, translation_addr, velocity_addr, collideFilter_addr, castFilter_addr, shapeIdA, maxPushA, clipVelocityA, shapeIdB, maxPushB, clipVelocityB, maxIterations);
+        } catch (Throwable e) {
+            throw com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.rethrow(e);
+        }
+    }
+
     private static final class FFMHandles {
 
         static final java.lang.invoke.MethodHandle internal_native_create_addr__ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_create_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG));
@@ -684,6 +800,8 @@ public final class B2World extends NativeObject {
 
         static final java.lang.invoke.MethodHandle internal_native_EnableContinuous__JZ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_enablecontinuous", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_BOOLEAN));
 
+        static final java.lang.invoke.MethodHandle internal_native_EnableSpeculative__JZ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_enablespeculative", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_BOOLEAN));
+
         static final java.lang.invoke.MethodHandle internal_native_GetRestitutionThreshold__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_getrestitutionthreshold", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_SetRestitutionThreshold__JF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_setrestitutionthreshold", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
@@ -697,6 +815,12 @@ public final class B2World extends NativeObject {
         static final java.lang.invoke.MethodHandle internal_native_SetMaximumLinearSpeed__JF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_setmaximumlinearspeed", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
 
         static final java.lang.invoke.MethodHandle internal_native_SetContactTuning__JFFF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_setcontacttuning", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT));
+
+        static final java.lang.invoke.MethodHandle internal_native_Explode__JJFFF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_explode", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT));
+
+        static final java.lang.invoke.MethodHandle internal_native_EnableParityCustomFilter__JZ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_enableparitycustomfilter", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_BOOLEAN));
+
+        static final java.lang.invoke.MethodHandle internal_native_EnableOneSidedPlatform__JJF = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_enableonesidedplatform", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT));
 
         static final java.lang.invoke.MethodHandle internal_native_RebuildStaticTree__J = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_rebuildstatictree", FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG));
 
@@ -732,6 +856,12 @@ public final class B2World extends NativeObject {
 
         static final java.lang.invoke.MethodHandle internal_native_CastShape_addr__JJJJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_castshape_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 
+        static final java.lang.invoke.MethodHandle internal_native_CastRayMode_addr__JJJJIJI = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_castraymode_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_INT, ValueLayout.JAVA_LONG, ValueLayout.JAVA_INT));
+
+        static final java.lang.invoke.MethodHandle internal_native_CastShapeMode_addr__JJJJIJI = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_castshapemode_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_INT, ValueLayout.JAVA_LONG, ValueLayout.JAVA_INT));
+
+        static final java.lang.invoke.MethodHandle internal_native_CastShapeClosest_addr__JJJJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_castshapeclosest_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
+
         static final java.lang.invoke.MethodHandle internal_native_OverlapAABB_addr__JJJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_overlapaabb_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_OverlapShape_addr__JJJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_overlapshape_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
@@ -739,5 +869,7 @@ public final class B2World extends NativeObject {
         static final java.lang.invoke.MethodHandle internal_native_CastMover__JJJJ = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallDefault("com_github_xpenatan_box2d_b2world_castmover", FunctionDescriptor.of(ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
 
         static final java.lang.invoke.MethodHandle internal_native_SolveMover_addr__JJJJJJI = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_solvemover_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_INT));
+
+        static final java.lang.invoke.MethodHandle internal_native_SolveMoverWithSurfaceOverrides_addr__JJJJJJJFZJFZI = com.github.xpenatan.jparser.runtime.helper.FFMDowncallHelper.downcallCritical("com_github_xpenatan_box2d_b2world_solvemoverwithsurfaceoverrides_addr", FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_BOOLEAN, ValueLayout.JAVA_LONG, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_BOOLEAN, ValueLayout.JAVA_INT));
     }
 }

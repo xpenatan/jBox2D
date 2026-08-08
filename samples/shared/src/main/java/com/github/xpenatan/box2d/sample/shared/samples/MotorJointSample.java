@@ -1,7 +1,9 @@
 package com.github.xpenatan.box2d.sample.shared.samples;
 
+import com.github.xpenatan.box2d.B2;
 import com.github.xpenatan.box2d.B2Body;
 import com.github.xpenatan.box2d.B2Joint;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Vec2;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleControl;
 import com.github.xpenatan.box2d.sample.shared.Box2DSampleDraw;
@@ -33,8 +35,8 @@ public final class MotorJointSample extends AbstractBox2DSample {
     @Override
     protected void beforeStep(float deltaSeconds) {
         if(go) time += deltaSeconds;
-        targetX = 6.0f * (float)Math.sin(2.0f * time);
-        targetY = 8.0f + 4.0f * (float)Math.sin(time);
+        targetX = 6.0f * B2.Sin(2.0f * time);
+        targetY = 8.0f + 4.0f * B2.Sin(time);
         targetAngle = 2.0f * time;
         B2Vec2 offset = vector(targetX, targetY);
         joint.MotorSetLinearOffset(offset);
@@ -53,7 +55,9 @@ public final class MotorJointSample extends AbstractBox2DSample {
 
     @Override
     public void draw(Box2DSampleDraw draw) {
-        float c = (float)Math.cos(targetAngle), s = (float)Math.sin(targetAngle);
+        B2Rot rotation = new B2Rot(targetAngle);
+        float c = rotation.GetCosine(), s = rotation.GetSine();
+        release(rotation);
         draw.segment(targetX, targetY, targetX + c, targetY + s, 0xFF0000FF);
         draw.segment(targetX, targetY, targetX - s, targetY + c, 0x00FF00FF);
     }

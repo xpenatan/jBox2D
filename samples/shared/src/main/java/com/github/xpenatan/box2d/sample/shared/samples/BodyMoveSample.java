@@ -5,6 +5,7 @@ import com.github.xpenatan.box2d.B2Body;
 import com.github.xpenatan.box2d.B2BodyDef;
 import com.github.xpenatan.box2d.B2BodyEvents;
 import com.github.xpenatan.box2d.B2BodyMoveEvent;
+import com.github.xpenatan.box2d.B2Polygon;
 import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Transform;
 import com.github.xpenatan.box2d.B2Vec2;
@@ -57,9 +58,10 @@ public final class BodyMoveSample extends AbstractBox2DSample {
                     addBoxShape(body, 0.35f, 0.35f, 1.0f, 0.6f, 0.0f, 0.0f);
                     break;
                 default:
-                    addPolygonShape(body, new float[] {
-                            -0.5f, -0.3f, 0.45f, -0.45f, 0.65f, 0.1f, 0.15f, 0.65f, -0.55f, 0.4f
-                    }, 0.1f, 1.0f, 0.6f, 0.0f, 0.0f);
+                    B2Polygon polygon = randomPolygon(0.75f);
+                    polygon.SetRadius(0.1f);
+                    createPolygonShape(body, polygon, 1.0f, 0.6f, 0.0f, 0.0f, null);
+                    release(polygon);
                     break;
             }
             bodies.add(body);
@@ -69,18 +71,7 @@ public final class BodyMoveSample extends AbstractBox2DSample {
     }
 
     private void explode() {
-        for(B2Body body : bodies) {
-            if(!body.IsValid()) continue;
-            B2Vec2 position = body.GetPosition();
-            float dx = position.GetX();
-            float dy = position.GetY() + 5.0f;
-            float distance = (float)Math.sqrt(dx * dx + dy * dy);
-            if(distance > 0.001f && distance < 10.0f) {
-                float scale = explosionMagnitude * (1.0f - distance / 10.0f) / distance;
-                applyLinearImpulseToCenter(body, dx * scale, dy * scale);
-            }
-            release(position);
-        }
+        explode(0.0f, -5.0f, 10.0f, 0.1f, explosionMagnitude);
     }
 
     @Override

@@ -21,7 +21,7 @@ public final class BadBodySample extends AbstractBox2DSample {
     }
 
     @Override
-    protected void beforeStep(float deltaSeconds) {
+    protected void afterStep(float deltaSeconds) {
         applyForceToCenter(badBody, 0.0f, 10.0f);
     }
 

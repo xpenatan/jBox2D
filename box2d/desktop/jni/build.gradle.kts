@@ -21,21 +21,14 @@ tasks.named<Copy>("processTestResources") {
     from(provider { nativePaths.map(::file).filter { it.exists() } })
 }
 
-val currentPlatformBuildTask = when {
-    System.getProperty("os.name").lowercase().contains("windows") && System.getProperty("os.arch").contains("64") -> ":box2d:builder:jParser_build_windows64_jni"
-    System.getProperty("os.name").lowercase().contains("linux") && System.getProperty("os.arch").contains("64") -> ":box2d:builder:jParser_build_linux64_jni"
-    System.getProperty("os.name").lowercase().contains("mac") && System.getProperty("os.arch").lowercase().let { it.contains("aarch64") || it.contains("arm64") } -> ":box2d:builder:jParser_build_macArm_jni"
-    System.getProperty("os.name").lowercase().contains("mac") && System.getProperty("os.arch").contains("64") -> ":box2d:builder:jParser_build_mac64_jni"
-    else -> null
-}
-
-tasks.named<Copy>("processTestResources") {
-    currentPlatformBuildTask?.let { dependsOn(it) }
-}
-
 tasks.named<Test>("test") {
-    currentPlatformBuildTask?.let { dependsOn(it) }
     jvmArgs("--enable-native-access=ALL-UNNAMED")
+
+    val isolatedTestTmp = layout.buildDirectory.dir("tmp/native-tests").get().asFile
+    systemProperty("java.io.tmpdir", isolatedTestTmp.absolutePath)
+    doFirst {
+        isolatedTestTmp.mkdirs()
+    }
 }
 
 dependencies {
@@ -45,6 +38,7 @@ dependencies {
     implementation(libs.jparserRuntimeDesktopJniMacX64)
     implementation(libs.jparserRuntimeDesktopJniMacArm64)
     testImplementation(libs.junit)
+    testImplementation(project(":samples:shared"))
 }
 
 java {

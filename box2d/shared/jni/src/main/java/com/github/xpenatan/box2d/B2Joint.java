@@ -150,6 +150,30 @@ public final class B2Joint extends NativeObject {
         com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_SetLocalAnchorB(this_addr, anchor_addr);
     }
 
+    public float GetReferenceAngle() {
+        return internal_native_GetReferenceAngle(native_address);
+    }
+
+    public static float internal_native_GetReferenceAngle(long this_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_GetReferenceAngle(this_addr);
+    }
+
+    public void SetReferenceAngle(float angle) {
+        internal_native_SetReferenceAngle(native_address, angle);
+    }
+
+    public static void internal_native_SetReferenceAngle(long this_addr, float angle) {
+        com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_SetReferenceAngle(this_addr, angle);
+    }
+
+    public void SetConstraintTuning(float hertz, float dampingRatio) {
+        internal_native_SetConstraintTuning(native_address, hertz, dampingRatio);
+    }
+
+    public static void internal_native_SetConstraintTuning(long this_addr, float hertz, float dampingRatio) {
+        com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_SetConstraintTuning(this_addr, hertz, dampingRatio);
+    }
+
     public boolean GetCollideConnected() {
         return internal_native_GetCollideConnected(native_address);
     }
@@ -436,12 +460,28 @@ public final class B2Joint extends NativeObject {
         com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_PrismaticSetMaxMotorForce(this_addr, force);
     }
 
+    public float PrismaticGetMotorForce() {
+        return internal_native_PrismaticGetMotorForce(native_address);
+    }
+
+    public static float internal_native_PrismaticGetMotorForce(long this_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_PrismaticGetMotorForce(this_addr);
+    }
+
     public float PrismaticGetTranslation() {
         return internal_native_PrismaticGetTranslation(native_address);
     }
 
     public static float internal_native_PrismaticGetTranslation(long this_addr) {
         return com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_PrismaticGetTranslation(this_addr);
+    }
+
+    public float PrismaticGetSpeed() {
+        return internal_native_PrismaticGetSpeed(native_address);
+    }
+
+    public static float internal_native_PrismaticGetSpeed(long this_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_PrismaticGetSpeed(this_addr);
     }
 
     public void RevoluteEnableSpring(boolean enabled) {
@@ -516,12 +556,52 @@ public final class B2Joint extends NativeObject {
         com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_RevoluteSetMaxMotorTorque(this_addr, torque);
     }
 
+    public float RevoluteGetMotorTorque() {
+        return internal_native_RevoluteGetMotorTorque(native_address);
+    }
+
+    public static float internal_native_RevoluteGetMotorTorque(long this_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_RevoluteGetMotorTorque(this_addr);
+    }
+
     public float RevoluteGetAngle() {
         return internal_native_RevoluteGetAngle(native_address);
     }
 
     public static float internal_native_RevoluteGetAngle(long this_addr) {
         return com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_RevoluteGetAngle(this_addr);
+    }
+
+    public void WeldSetLinearHertz(float hertz) {
+        internal_native_WeldSetLinearHertz(native_address, hertz);
+    }
+
+    public static void internal_native_WeldSetLinearHertz(long this_addr, float hertz) {
+        com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_WeldSetLinearHertz(this_addr, hertz);
+    }
+
+    public void WeldSetLinearDampingRatio(float ratio) {
+        internal_native_WeldSetLinearDampingRatio(native_address, ratio);
+    }
+
+    public static void internal_native_WeldSetLinearDampingRatio(long this_addr, float ratio) {
+        com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_WeldSetLinearDampingRatio(this_addr, ratio);
+    }
+
+    public void WeldSetAngularHertz(float hertz) {
+        internal_native_WeldSetAngularHertz(native_address, hertz);
+    }
+
+    public static void internal_native_WeldSetAngularHertz(long this_addr, float hertz) {
+        com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_WeldSetAngularHertz(this_addr, hertz);
+    }
+
+    public void WeldSetAngularDampingRatio(float ratio) {
+        internal_native_WeldSetAngularDampingRatio(native_address, ratio);
+    }
+
+    public static void internal_native_WeldSetAngularDampingRatio(long this_addr, float ratio) {
+        com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_WeldSetAngularDampingRatio(this_addr, ratio);
     }
 
     public void WheelEnableSpring(boolean enabled) {
@@ -586,5 +666,13 @@ public final class B2Joint extends NativeObject {
 
     public static void internal_native_WheelSetMaxMotorTorque(long this_addr, float torque) {
         com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_WheelSetMaxMotorTorque(this_addr, torque);
+    }
+
+    public float WheelGetMotorTorque() {
+        return internal_native_WheelGetMotorTorque(native_address);
+    }
+
+    public static float internal_native_WheelGetMotorTorque(long this_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Joint.internal_native_WheelGetMotorTorque(this_addr);
     }
 }

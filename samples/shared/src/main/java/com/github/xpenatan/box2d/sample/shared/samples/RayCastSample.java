@@ -6,6 +6,7 @@ import com.github.xpenatan.box2d.B2Circle;
 import com.github.xpenatan.box2d.B2Collision;
 import com.github.xpenatan.box2d.B2Hull;
 import com.github.xpenatan.box2d.B2Polygon;
+import com.github.xpenatan.box2d.B2Rot;
 import com.github.xpenatan.box2d.B2Segment;
 import com.github.xpenatan.box2d.B2ShapeProxy;
 import com.github.xpenatan.box2d.B2Vec2;
@@ -84,7 +85,9 @@ public final class RayCastSample extends AbstractBox2DSample {
     }
 
     private float[] localRay(float x, float y) {
-        float c = (float)Math.cos(angle), s = (float)Math.sin(angle);
+        B2Rot rotation = new B2Rot(angle);
+        float c = rotation.GetCosine(), s = rotation.GetSine();
+        release(rotation);
         float sx = rayStartX - x, sy = rayStartY - y;
         float dx = rayEndX - rayStartX, dy = rayEndY - rayStartY;
         return new float[]{c * sx + s * sy, -s * sx + c * sy, c * dx + s * dy, -s * dx + c * dy};
@@ -129,13 +132,14 @@ public final class RayCastSample extends AbstractBox2DSample {
     private void accept(B2CastResult result, float x, float y) {
         if(!result.GetHit() || result.GetFraction() > hitFraction) return;
         B2Vec2 point = result.GetPoint(); B2Vec2 normal = result.GetNormal();
-        float c = (float)Math.cos(angle), s = (float)Math.sin(angle);
+        B2Rot rotation = new B2Rot(angle);
+        float c = rotation.GetCosine(), s = rotation.GetSine();
         hitX = x + c * point.GetX() - s * point.GetY();
         hitY = y + s * point.GetX() + c * point.GetY();
         normalX = c * normal.GetX() - s * normal.GetY();
         normalY = s * normal.GetX() + c * normal.GetY();
         hitFraction = result.GetFraction(); hit = true;
-        release(normal, point);
+        release(rotation, normal, point);
     }
 
     @Override public void mouseDown(float x, float y, int button, int modifiers) {

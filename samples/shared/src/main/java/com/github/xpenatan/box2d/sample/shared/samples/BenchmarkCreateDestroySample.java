@@ -53,6 +53,7 @@ public final class BenchmarkCreateDestroySample extends AbstractBox2DSample {
         }
         release(shapeDef, box);
         createMilliseconds += (System.nanoTime() - start) * 1.0e-6;
+        world().Step(1.0f / 60.0f, 4);
     }
 
     @Override

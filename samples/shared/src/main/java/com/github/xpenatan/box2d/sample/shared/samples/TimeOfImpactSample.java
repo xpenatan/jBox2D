@@ -33,11 +33,10 @@ public final class TimeOfImpactSample extends AbstractBox2DSample {
 
     @Override protected void beforeStep(float deltaSeconds){
         B2Sweep sweepA=new B2Sweep();
-        setSweep(sweepA,0,0,0,0,0,0);
+        setSweep(sweepA,0,0,0,0,1,0,1,0);
         B2Sweep sweepB=new B2Sweep();
-        float angle1=(float)Math.atan2(0.841092527,-0.540891349);
-        float angle2=(float)Math.atan2(0.889056742,-0.457797021);
-        setSweep(sweepB,-15.833271f,45.352028f,-15.832434f,45.341305f,angle1,angle2);
+        setSweep(sweepB,-15.833271f,45.352028f,-15.832434f,45.341305f,
+                -0.540891349f,0.841092527f,-0.457797021f,0.889056742f);
         B2TOIInput input=new B2TOIInput();input.SetProxyA(proxyA);input.SetProxyB(proxyB);input.SetSweepA(sweepA);input.SetSweepB(sweepB);input.SetMaxFraction(1);
         B2TOIOutput output=B2Collision.TimeOfImpact(input);fraction=output.GetFraction();state=output.GetState();
         B2Transform transformA=B2Collision.GetSweepTransform(sweepA,0);
@@ -55,8 +54,10 @@ public final class TimeOfImpactSample extends AbstractBox2DSample {
         release(transformB1,transformBHit,transformB0,transformA,output,input,sweepB,sweepA);
     }
 
-    private static void setSweep(B2Sweep sweep,float x1,float y1,float x2,float y2,float a1,float a2){
-        B2Vec2 center=new B2Vec2();B2Vec2 c1=new B2Vec2(x1,y1);B2Vec2 c2=new B2Vec2(x2,y2);B2Rot q1=new B2Rot(a1);B2Rot q2=new B2Rot(a2);
+    private static void setSweep(B2Sweep sweep,float x1,float y1,float x2,float y2,
+            float c1r,float s1r,float c2r,float s2r){
+        B2Vec2 center=new B2Vec2();B2Vec2 c1=new B2Vec2(x1,y1);B2Vec2 c2=new B2Vec2(x2,y2);
+        B2Rot q1=new B2Rot(c1r,s1r);B2Rot q2=new B2Rot(c2r,s2r);
         sweep.SetLocalCenter(center);sweep.SetCenter1(c1);sweep.SetCenter2(c2);sweep.SetRotation1(q1);sweep.SetRotation2(q2);
         release(q2,q1,c2,c1,center);
     }

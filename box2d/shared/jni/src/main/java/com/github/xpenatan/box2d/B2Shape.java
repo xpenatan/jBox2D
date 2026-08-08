@@ -383,6 +383,27 @@ public final class B2Shape extends NativeObject {
         com.github.xpenatan.box2d.natives.JNI_B2Shape.internal_native_SetPolygon(this_addr, polygon_addr);
     }
 
+    public void Scale(float ratio) {
+        internal_native_Scale(native_address, ratio);
+    }
+
+    public static void internal_native_Scale(long this_addr, float ratio) {
+        com.github.xpenatan.box2d.natives.JNI_B2Shape.internal_native_Scale(this_addr, ratio);
+    }
+
+    public B2WorldOverlapResult GetSensorOverlaps() {
+        long addr = internal_native_GetSensorOverlaps_addr(native_address);
+        if (addr == 0)
+            return B2WorldOverlapResult.NULL;
+        B2WorldOverlapResult B2WorldOverlapResult_NEW = B2WorldOverlapResult.native_new();
+        B2WorldOverlapResult_NEW.internal_reset(addr, true);
+        return B2WorldOverlapResult_NEW;
+    }
+
+    public static long internal_native_GetSensorOverlaps_addr(long this_addr) {
+        return com.github.xpenatan.box2d.natives.JNI_B2Shape.internal_native_GetSensorOverlaps_addr(this_addr);
+    }
+
     public B2AABB GetAABB() {
         long addr = internal_native_GetAABB_addr(native_address);
         if (addr == 0)

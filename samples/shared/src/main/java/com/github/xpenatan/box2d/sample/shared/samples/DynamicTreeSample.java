@@ -15,6 +15,7 @@ import java.util.List;
 public final class DynamicTreeSample extends AbstractBox2DSample {
     private static final class Proxy {
         float x, y, width, height;
+        float lowerX, lowerY, upperX, upperY;
         float fatLowerX, fatLowerY, fatUpperX, fatUpperY;
         int id;
         int rayStamp = -1;
@@ -23,8 +24,8 @@ public final class DynamicTreeSample extends AbstractBox2DSample {
 
     private final ArrayList<Proxy> proxies = new ArrayList<Proxy>();
     private B2DynamicTree tree;
-    private int rows = 100;
-    private int columns = 100;
+    private int rows = BenchmarkSampleSupport.DEBUG_SIZE ? 100 : 1000;
+    private int columns = BenchmarkSampleSupport.DEBUG_SIZE ? 100 : 1000;
     private float fill = 0.25f;
     private float grid = 1.0f;
     private float ratio = 5.0f;
@@ -62,6 +63,8 @@ public final class DynamicTreeSample extends AbstractBox2DSample {
                 float base = randomFloat(0.1f, 0.5f);
                 if(randomFloat(-1.0f, 1.0f) > 0.0f) { proxy.width = aspect * base; proxy.height = base; }
                 else { proxy.width = base; proxy.height = aspect * base; }
+                proxy.lowerX = x; proxy.lowerY = y;
+                proxy.upperX = x + proxy.width; proxy.upperY = y + proxy.height;
                 setFatBounds(proxy);
                 B2AABB aabb = aabb(proxy.fatLowerX, proxy.fatLowerY, proxy.fatUpperX, proxy.fatUpperY);
                 proxy.id = tree.CreateProxy(aabb, B2.DefaultCategoryBits(), proxies.size());
@@ -81,10 +84,10 @@ public final class DynamicTreeSample extends AbstractBox2DSample {
     }
 
     private static void setFatBounds(Proxy proxy) {
-        proxy.fatLowerX = proxy.x - 0.1f;
-        proxy.fatLowerY = proxy.y - 0.1f;
-        proxy.fatUpperX = proxy.x + proxy.width + 0.1f;
-        proxy.fatUpperY = proxy.y + proxy.height + 0.1f;
+        proxy.fatLowerX = proxy.lowerX - 0.1f;
+        proxy.fatLowerY = proxy.lowerY - 0.1f;
+        proxy.fatUpperX = proxy.upperX + 0.1f;
+        proxy.fatUpperY = proxy.upperY + 0.1f;
     }
 
     @Override
@@ -107,26 +110,28 @@ public final class DynamicTreeSample extends AbstractBox2DSample {
             release(result, translation, origin);
         }
 
-        boolean moved = false;
         for(int i = 0; i < proxies.size(); i++) {
             Proxy proxy = proxies.get(i);
             if(randomFloat(0.0f, 1.0f) >= moveFraction) continue;
-            proxy.x += moveDelta * randomFloat(-1.0f, 1.0f);
-            proxy.y += moveDelta * randomFloat(-1.0f, 1.0f);
-            float lowerX = proxy.x;
-            float lowerY = proxy.y;
-            float upperX = proxy.x + proxy.width;
-            float upperY = proxy.y + proxy.height;
-            if(lowerX >= proxy.fatLowerX && lowerY >= proxy.fatLowerY
-                    && upperX <= proxy.fatUpperX && upperY <= proxy.fatUpperY) continue;
+            float dx = moveDelta * randomFloat(-1.0f, 1.0f);
+            float dy = moveDelta * randomFloat(-1.0f, 1.0f);
+            proxy.x += dx;
+            proxy.y += dy;
+            // Match the C sample exactly. It intentionally applies the sampled
+            // displacement again while constructing the new tight AABB.
+            proxy.lowerX = proxy.x + dx;
+            proxy.lowerY = proxy.y + dy;
+            proxy.upperX = proxy.x + dx + proxy.width;
+            proxy.upperY = proxy.y + dy + proxy.height;
+            if(proxy.lowerX >= proxy.fatLowerX && proxy.lowerY >= proxy.fatLowerY
+                    && proxy.upperX <= proxy.fatUpperX && proxy.upperY <= proxy.fatUpperY) continue;
             setFatBounds(proxy);
             B2AABB fat = aabb(proxy.fatLowerX, proxy.fatLowerY, proxy.fatUpperX, proxy.fatUpperY);
             if(updateType == 0) tree.MoveProxy(proxy.id, fat);
             else tree.EnlargeProxy(proxy.id, fat);
             release(fat);
-            moved = true;
         }
-        rebuilt = updateType == 0 || !moved ? 0 : tree.Rebuild(updateType == 1);
+        rebuilt = updateType == 0 ? 0 : tree.Rebuild(updateType == 1);
         tree.Validate();
         timeStamp++;
     }
@@ -154,8 +159,8 @@ public final class DynamicTreeSample extends AbstractBox2DSample {
     public void draw(Box2DSampleDraw draw) {
         for(Proxy proxy : proxies) {
             boolean hit = proxy.queryStamp == timeStamp - 1 || proxy.rayStamp == timeStamp - 1;
-            CollisionSampleSupport.drawAABB(draw, proxy.x, proxy.y, proxy.x + proxy.width,
-                    proxy.y + proxy.height, hit ? 0x00FF00FF : 0x0000FFFF);
+            CollisionSampleSupport.drawAABB(draw, proxy.lowerX, proxy.lowerY, proxy.upperX,
+                    proxy.upperY, hit ? 0x00FF00FF : 0x0000FFFF);
         }
         if(queryDrag) CollisionSampleSupport.drawAABB(draw, Math.min(startX, endX), Math.min(startY, endY),
                 Math.max(startX, endX), Math.max(startY, endY), 0xFFFFFFFF);
@@ -177,11 +182,15 @@ public final class DynamicTreeSample extends AbstractBox2DSample {
                 Box2DSampleControl.slider("move", 0, 1, 0.01f, () -> moveFraction, v -> moveFraction = v),
                 Box2DSampleControl.slider("delta", 0, 1, 0.01f, () -> moveDelta, v -> moveDelta = v),
                 Box2DSampleControl.combo("update", new String[]{"Incremental", "Full Rebuild", "Partial Rebuild"},
-                        () -> updateType, v -> updateType = (int)v),
-                Box2DSampleControl.button("Rebuild", this::buildTree),
+                        () -> updateType, v -> { updateType = (int)v; buildTree(); }),
                 Box2DSampleControl.dynamicText(() -> String.format(
-                        "proxies = %d, height = %d, area ratio = %.1f, rebuilt = %d, visits = %d/%d",
-                        proxies.size(), tree.GetHeight(), tree.GetAreaRatio(), rebuilt, nodeVisits, leafVisits)),
+                        "proxies = %d, height = %d, hmin = %d, area ratio = %.1f, rebuilt = %d, visits = %d/%d",
+                        proxies.size(), tree.GetHeight(), minimumHeight(), tree.GetAreaRatio(), rebuilt,
+                        nodeVisits, leafVisits)),
                 Box2DSampleControl.text("mouse 1: ray cast; shift + mouse 1: query"));
+    }
+
+    private int minimumHeight() {
+        return proxies.isEmpty() ? 0 : (int)Math.ceil(Math.log(proxies.size()) / Math.log(2.0) - 1.0);
     }
 }

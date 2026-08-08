@@ -41,11 +41,17 @@ public final class RollingResistanceSample extends AbstractBox2DSample {
         }
     }
 
+    private void recreateScene() {
+        recreateWorld();
+        sceneBodies.clear();
+        createScene();
+    }
+
     @Override
     public void keyDown(int key) {
-        if(key == '1') { lift = 0.0f; createScene(); }
-        else if(key == '2') { lift = 5.0f; createScene(); }
-        else if(key == '3') { lift = -5.0f; createScene(); }
+        if(key == '1') { lift = 0.0f; recreateScene(); }
+        else if(key == '2') { lift = 5.0f; recreateScene(); }
+        else if(key == '3') { lift = -5.0f; recreateScene(); }
     }
 
     @Override
@@ -57,8 +63,8 @@ public final class RollingResistanceSample extends AbstractBox2DSample {
     @Override
     public List<Box2DSampleControl> controls() {
         return Arrays.asList(
-                Box2DSampleControl.button("Level (1)", () -> { lift = 0; createScene(); }),
-                Box2DSampleControl.button("Uphill (2)", () -> { lift = 5; createScene(); }),
-                Box2DSampleControl.button("Downhill (3)", () -> { lift = -5; createScene(); }));
+                Box2DSampleControl.button("Level (1)", () -> { lift = 0; recreateScene(); }),
+                Box2DSampleControl.button("Uphill (2)", () -> { lift = 5; recreateScene(); }),
+                Box2DSampleControl.button("Downhill (3)", () -> { lift = -5; recreateScene(); }));
     }
 }
